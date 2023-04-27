@@ -1,0 +1,16 @@
+{
+    "files.autoSave": "onFocusChange",
+    "workbench.tree.indent": 24,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.detectIndentation": false,
+    "[julia]": {
+        "editor.defaultFormatter": "singularitti.vscode-julia-formatter"
+    },
+    "juliaFormatter.margin": 160,
+    "juliaFormatter.alwaysForIn": true,
+    "juliaFormatter.annotateUntypedFieldsWithAny": false,
+    "juliaFormatter.whitespaceInKwargs": false,
+    "juliaFormatter.overwriteFlags": true,
+    "juliaFormatter.alwaysUseReturn": true,
+}

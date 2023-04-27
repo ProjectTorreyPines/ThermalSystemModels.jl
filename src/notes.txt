@@ -1,0 +1,11 @@
+things i need to add
+
+mass flow rate is set by nodal connections
+
+
+System object Should have 
+    controllers (controlable elements and nodes, sources)
+    sensors
+
+Other
+    Heat source/sink
