@@ -43,8 +43,8 @@ full_dict = Dict()
 gfull,  comp_names, edgelabel_mat, full_dict, comp_dict = TSM.network2graph2(sys.cycles[1]; verbose = false)
 offset = ne(gfull)
 
-for idx = 2:5
-    gobj,  nms, edgelabel_mat, edgelabel_dict, comp_dict = TSM.network2graph2(sys.cycles[idx]; verbose = false, component_dict = comp_dict)
+for idx in 2:5
+    gobj,  nms, edgelabel_mat, edgelabel_dict = TSM.network2graph2!(comp_dict,sys.cycles[idx] ; verbose = false)
     source_t = [keyval[1] for keyval ∈ collect(keys(edgelabel_dict))]
     target_t = [keyval[2] for keyval ∈ collect(keys(edgelabel_dict))]
     for i = 1:ne(gobj)
