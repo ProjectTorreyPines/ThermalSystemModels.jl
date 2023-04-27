@@ -119,6 +119,7 @@ TSM = ThermalSystem_Models
         nodecolor = :lightblue,
         edge_label_box = false,
         axis_buffer = 0.1)
+        
         using PlotlyJS
         #                  0             1          2          3                   4               5               6           7
         Energy_Sys = ["Fusion Core", "Divertor" , "blanket" , "breeder" ,"Intermediate_loop", "Thermal Cycle", "Cold Utility", "Electric"];

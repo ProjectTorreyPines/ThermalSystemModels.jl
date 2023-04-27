@@ -110,17 +110,36 @@ for hx in sys.heat_exchangers
 
 end
 
-gp=graphplot(gfull, names = comp_names,
-    curves=true,
+
+
+using NetworkLayout
+layout = Spring(Ptype=Float32)
+positions = Spring(Ptype = Float64)(adjacency_matrix(gfull))
+# typeof(position)
+# y = positions[:,2
+# display(x)
+length(positions)
+x = zeros(length(positions),1)
+y = zeros(length(positions),1)
+for (idx,pos) in enumerate(positions)
+    x[idx]=pos[1] * 10
+    y[idx]=pos[2] * 10
+end
+# position[1]
+
+
+fig2=GraphRecipes.graphplot(gfull, names = comp_names,
+    curves=false,
+    x=x, y=y,
     nodeshape   =  :rect,
     edgelabel   = full_dict,
-    nodesize    = 0.1,
-    curvature_scalar = 0.01,
     nodecolor = :lightblue,
+    nodesize    = 1,
     edge_label_box = false,
-    axis_buffer = 0.1)
+    fontsize = 20,
+    axis_buffer = 0.0)
 
-display(gp)
+    display(fig2)
 
 using PlotlyJS
 #                  0             1          2          3                   4               5               6           7
