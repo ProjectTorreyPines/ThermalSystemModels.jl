@@ -105,7 +105,7 @@ function network2graph2!(component_dict::Dict, cycle_network::component_network;
     num_vert    = node_count(cycle_network) # number of nodes (vertices)
 
     g           = DiGraph(num_elem)
-    nms =[]
+    nms = String[]
     edgelabel_dict = Dict()
     edgelabel_mat = Array{String}(undef, num_vert, num_vert)
     comp_offset = length(component_dict)

@@ -35,25 +35,35 @@ display(df)
 TSM.component_info(sys.cycles[4])
 TSM.show_node_simple(sys.cycles[4])
 
-grp = Vector{Any}(undef,length(sys.cycles))
+gfull = Vector{Any}(undef,length(sys.cycles))
 elabs = Vector{Any}(undef,length(sys.cycles))
 nprev = 0;
 full_dict = Dict()
 
-gfull,  comp_names, edgelabel_mat, full_dict, comp_dict = TSM.network2graph2(sys.cycles[1]; verbose = false)
-offset = ne(gfull)
+comp_names = Vector{Any}(undef,length(sys.cycles))
+
+gfull[1],  names, edgelabel_mat, full_dict, comp_dict = TSM.network2graph2(sys.cycles[1]; verbose = false)
+
+comp_names[1] = names
+
+
+@show keys(comp_names)
 
 for idx in 2:5
-    gobj,  nms, edgelabel_mat, edgelabel_dict = TSM.network2graph2!(comp_dict,sys.cycles[idx] ; verbose = false)
+    offset = ne(gfull[idx-1])
+    gfull[idx],  nms, edgelabel_mat, edgelabel_dict = TSM.network2graph2!(comp_dict,sys.cycles[idx] ; verbose = false)
     source_t = [keyval[1] for keyval ∈ collect(keys(edgelabel_dict))]
     target_t = [keyval[2] for keyval ∈ collect(keys(edgelabel_dict))]
-    for i = 1:ne(gobj)
+    for i = 1:ne(gfull[idx])
         full_dict[(source_t[i]+offset,target_t[i]+offset)] = edgelabel_dict[(source_t[i],target_t[i])]
     end
-    comp_names = vcat(comp_names,nms)
-    gfull = blockdiag(gfull,gobj)
-    offset = ne(gfull)
+    comp_names[idx] = nms
+    @show keys(comp_names), typeof(nms), nms
+    _ = blockdiag(gfull[idx-1],gfull[idx])
+    offset = ne(gfull[idx])
 end
+
+@show keys(comp_names)
 
 
 for hx in sys.heat_exchangers
