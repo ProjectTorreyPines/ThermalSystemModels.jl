@@ -168,6 +168,7 @@ TSM = ThermalSystem_Models
         )
 
         display(p2)
+        sleep(30)
         
         
 end
