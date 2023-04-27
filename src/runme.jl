@@ -1,16 +1,14 @@
-
+using ThermalSystem_Models
+using Test
 using Roots, DataFrames, XSteam, Printf
-using Graphs, Plots
-using GraphPlot 
-using GraphRecipes, LinearAlgebra
-# # using PlotlyJS
-# # using SankeyPlots
-gr()
-include("01-fluid_data.jl")
-include("02-nodes.jl")
-include("03-utilities.jl")
-include("04-components.jl")
-include("05-networks.jl")
+using Graphs, GraphPlot , GraphRecipes
+using Plots, GraphRecipes, LinearAlgebra
+using  PlotlyJS
+
+TSM = ThermalSystem_Models
+
+
+
 
 # cycle_vec   
 #   1    divertor_circuit     
@@ -25,48 +23,29 @@ include("05-networks.jl")
 #   3    breeder_heat_exchanger
 #   4    boiler_heat_exchanger
 
-sys = rankine_with_loops()
-run_sys(sys; NITER = 5)
-df = eval_sys(sys)
+sys = TSM.rankine_with_loops()
+TSM.run_sys(sys; NITER = 5)
+df = TSM.eval_sys(sys)
 Wnet_cycle = df.Wout[5]-df.Win[5]
 η_cycle = Wnet_cycle/df.Qtx[5]
 η_total = (df.Wout[6]-df.Win[6])/df.Qh[6]
-@printf "\t η_cyle = %.2f\n" η_cycle
-@printf "\t η_tot = %.2f\n" η_total
+println("\t η_cyle = $(η_cycle)" )
+println(" η_tot = $(η_total)")
 display(df)
-component_info(sys.cycles[4])
-show_node_simple(sys.cycles[4])
+TSM.component_info(sys.cycles[4])
+TSM.show_node_simple(sys.cycles[4])
 
-using Plots
-# using GraphRecipes, LinearAlgebra
-# gnew,  nms, edgelabel_mat, edgelabel_dict = network2graph2(sys.cycles[3]; verbose = false)
-# gin,nms2, edgelabel_mat_int, edgelabel_dict_int = network2graph2(sys.cycles[4]; verbose = false)
-
-f(x::Int64,y::Int64,Any) = 1.0
-# gnew,  nms, edgelabel_mat, edgelabel_dict = network2graph2(sys.cycles[1]; verbose = false)
-# p = Plots.plot(
-#     graphplot(gnew, names = nms,
-#     curves=true,
-#     nodeshape   =  :rect,
-#     edgelabel   = edgelabel_dict,
-#     nodesize    = 0.1,
-#     curvature_scalar = 0.01,
-#     nodecolor = :lightblue,
-#     edgewidth = f,
-#     edge_label_box = false,
-#     axis_buffer = 0.1)
-# )
 grp = Vector{Any}(undef,length(sys.cycles))
 # gobj = Vector{Any}(undef,length(sys.cycles))
 elabs = Vector{Any}(undef,length(sys.cycles))
 nprev = 0;
 full_dict = Dict()
 
-gfull,  comp_names, edgelabel_mat, full_dict, comp_dict = network2graph2(sys.cycles[1]; verbose = false)
+gfull,  comp_names, edgelabel_mat, full_dict, comp_dict = TSM.network2graph2(sys.cycles[1]; verbose = false)
 offset = ne(gfull)
 
 for idx = 2:5
-    gobj,  nms, edgelabel_mat, edgelabel_dict, comp_dict = network2graph2(sys.cycles[idx]; verbose = false, component_dict = comp_dict)
+    gobj,  nms, edgelabel_mat, edgelabel_dict, comp_dict = TSM.network2graph2(sys.cycles[idx]; verbose = false, component_dict = comp_dict)
     source_t = [keyval[1] for keyval ∈ collect(keys(edgelabel_dict))]
     target_t = [keyval[2] for keyval ∈ collect(keys(edgelabel_dict))]
     for i = 1:ne(gobj)
@@ -99,9 +78,9 @@ for hx in sys.heat_exchangers
     if length(hot_opt) > 1
         for opt in hot_opt
             actual_element = comp_dict[opt]
-            if get_inlet_temp(actual_element) == get_inlet_temp(hot_element)
+            if TSM.get_inlet_temp(actual_element) == TSM.get_inlet_temp(hot_element)
                 # actual element found
-                println("Found element $(get_inlet_temp(actual_element)) and $(get_inlet_temp(hot_element))")
+                println("Found element $(TSM.get_inlet_temp(actual_element)) and $(TSM.get_inlet_temp(hot_element))")
                 src=opt
             end
         end
@@ -112,9 +91,9 @@ for hx in sys.heat_exchangers
     if length(cld_opt) > 1
         for opt in cld_opt
             actual_element = comp_dict[opt]
-            if get_inlet_temp(actual_element) == get_inlet_temp(cld_element)
+            if TSM.get_inlet_temp(actual_element) == TSM.get_inlet_temp(cld_element)
                 # actual element found
-                println("Found element $(get_inlet_temp(actual_element)) and $(get_inlet_temp(cld_element))")
+                println("Found element $(TSM.get_inlet_temp(actual_element)) and $(TSM.get_inlet_temp(cld_element))")
                 src=opt
             end
         end
@@ -132,8 +111,6 @@ for hx in sys.heat_exchangers
 
 end
 
-
-
 gp=graphplot(gfull, names = comp_names,
     curves=true,
     nodeshape   =  :rect,
@@ -145,10 +122,4 @@ gp=graphplot(gfull, names = comp_names,
     axis_buffer = 0.1)
 
 display(gp)
-Plots.savefig(gp,"Graph_1.pdf")
 
-
-# # indexin(hx.hot_stream.name,comp_names)
-# # collect(vert(gfull))
-# display(comp_names)
-# comp_names
