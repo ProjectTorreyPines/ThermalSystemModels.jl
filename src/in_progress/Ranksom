@@ -1,0 +1,30 @@
+
+# @component function SteamPort(; name, Assumptions = [])
+
+#     @named p = BasicSteamPin()
+#     @named n = BasicSteamPin()
+#     @named w = WorkPin()
+#     @named q = HeatTransferPin()
+    
+#     sts = @variables ΔT(t) ΔP(t) Δs(t) Δh(t)
+    
+#     eqs = Equation[
+#         0 ~ q.Q̇ + w.Ẇ + p.Φ + n.Φ   # conservation of energy
+#         0 ~ p.ṁ + n.ṁ
+#     ]
+
+#     if :adiabatic in Assumptions
+#         push!(eqs,0 ~ q.Q̇)
+#     end
+
+#     if :isentropic in Assumptions
+#         push!(eqs, 0 ~ Δs)
+#     end
+
+#     if :isobaric in Assumptions
+#         push!(eqs, 0 ~ w.Ẇ)
+#     end
+
+#     # ODESystem(eqs, t,sts, []; name = name, systems = [p,n,w,q])
+#     compose(ODESystem(eqs,t,sts,[]; name = name),p,n,q,w)
+# end
