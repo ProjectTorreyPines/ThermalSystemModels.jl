@@ -4,7 +4,7 @@ using NonlinearSolve, Printf
 using Plots
 @variables t
 Logging.disable_logging(Logging.Warn)
-
+include("03-MTK_UTILS.jl")
 # data from [2]
 cppb(x)     = (0.195 - 9.116e-6 .* x) .* 1000  # J/kgK
 vpb(x)      = 1 / (10520.35 - 1.19051 .* x)      # m³/kg
@@ -132,7 +132,7 @@ end
             w.Ẇ ~ p.ṁ * p.v * ΔP * 1e5 / η
             n.T  ~ p.T + (w.Ẇ - p.v*ΔP)/p.cp # work, multiply by 100 to get to kPa
             ] 
-    extend(ODESystem(eqs,t,[],ps; name = name), oneport)
+    extend(ODESystem(eqs,t,[],ps;systems = [w], name = name), oneport)
 end
 
 @component function IncompressibleHeaatTransfer(; name)

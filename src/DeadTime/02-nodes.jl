@@ -89,9 +89,6 @@ function outlet_nodes(nodes::miso_nodes)
     return [nodes.B.node_num],[nodes.B.P], [nodes.B.T]
 end
 
-
-
-
 # getters and setters
 function get_pressure(n::component_nodes)
     return n.P

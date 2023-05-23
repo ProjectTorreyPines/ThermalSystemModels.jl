@@ -1,11 +1,17 @@
 things i need to add
-
 mass flow rate is set by nodal connections
-
-
 System object Should have 
     controllers (controlable elements and nodes, sources)
     sensors
-
 Other
     Heat source/sink
+
+
+
+5/12/23 - Tasks
+    Can I use alias elimination to substitute property functions? 
+            Pin equation = [cp ~ cp_symbolic_function(T)]
+            push!(equation, cp_symbolic_function ~ PropsSI(...))
+            alias_elimination(equation)
+
+    Using Graphs 

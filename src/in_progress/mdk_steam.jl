@@ -532,8 +532,7 @@ function plotmod(smodel)
             method = :sfpd)
     
 
-    return p,var2idx,idx2var,varvar,eqgraph
-        
+    return p,var2idx,idx2var,varvar,eqgraph 
 end
 
 p,var2idx,idx2var,varvar,eqgraph=plotmod(smodel)
