@@ -154,7 +154,7 @@ begin
 
     nshape = Dict(i => :circle for i = 1:nv(G))
 
-    for i in topin--+-
+    for i in topin
         nshape[cdict[i]] = :circle
         ncolo[cdict[i]] = :yellow
     end
