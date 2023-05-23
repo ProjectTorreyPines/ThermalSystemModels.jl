@@ -128,6 +128,7 @@ end
 using Graphs, NetworkLayout, GraphMakie
 using GLMakie
 using GLMakie.Colors
+
 # Creating Graph Object
 begin
     G,cdict,vdict, epack = TSMD.system2graph(odesystem, verbose = false);
