@@ -28,30 +28,25 @@ Liq = TSMD.Liq
 #   3    breeder_heat_exchanger
 #   4    boiler_heat_exchanger
 
-sys = TSM.rankine_with_loops()
-TSM.run_sys(sys; NITER = 5)
-df = TSM.eval_sys(sys)
+sys = TSMT.rankine_with_loops()
+TSMT.run_sys(sys; NITER = 5)
+df = TSMT.eval_sys(sys)
 Wnet_cycle = df.Wout[5]-df.Win[5]
 η_cycle = Wnet_cycle/df.Qtx[5]
 η_total = (df.Wout[6]-df.Win[6])/df.Qh[6]
 println("\t η_cyle = $(η_cycle)" )
 println(" η_tot = $(η_total)")
 display(df)
-TSM.component_info(sys.cycles[4])
-TSM.show_node_simple(sys.cycles[4])
+TSMT.component_info(sys.cycles[4])
+TSMT.show_node_simple(sys.cycles[4])
 
 gfull = Vector{Any}(undef,length(sys.cycles))
 elabs = Vector{Any}(undef,length(sys.cycles))
 nprev = 0;
 full_dict = Dict()
-
 comp_names = Vector{Any}(undef,length(sys.cycles))
-
 gfull[1],  names, edgelabel_mat, full_dict, comp_dict = TSM.network2graph2(sys.cycles[1]; verbose = false)
-
 comp_names[1] = names
-
-
 @show keys(comp_names)
 
 for idx in 2:5
@@ -66,6 +61,7 @@ for idx in 2:5
     @show keys(comp_names), typeof(nms), nms
     _ = blockdiag(gfull[idx-1],gfull[idx])
     offset = ne(gfull[idx])
+end
 function init_test()
     sys = TSM.rankine_with_loops()
     TSM.run_sys(sys; NITER = 5)

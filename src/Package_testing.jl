@@ -20,16 +20,16 @@ end
 #                       TESTING METADATA
 # Notes: Didnt work very well
 #=============================================================#
-    @named tstpart = Steam.AdiabaticTurbine()
-    @named tstpart2 = Steam.IdealBoiler()
-    @variables t
-    @named copysys = ODESystem(equations(tstpart),t; metadata = Dict(:description => "SteamTurbine"))
-    @named copysys2 = ODESystem(equations(tstpart2),t; metadata = Dict(:description => "boiler"))
-    @named cyss = extend(tstpart, ODESystem(Equation[],t; name = :not, metadata = Dict(:description => "SteamTurbine")))
-    @named dyss = extend(tstpart2, ODESystem(Equation[],t; name = :not, metadata = Dict(:description => "SteamBoiler")))
-    eq = Steam.hydro_connect(cyss.n,dyss.p)
-    @named newsys = ODESystem(eq,t; systems = [cyss,dyss])
-    # substitute(equations(copysys), Steam.hydro_prop_dict)
+    # @named tstpart = Steam.AdiabaticTurbine()
+    # @named tstpart2 = Steam.IdealBoiler()
+    # @variables t
+    # @named copysys = ODESystem(equations(tstpart),t; metadata = Dict(:description => "SteamTurbine"))
+    # @named copysys2 = ODESystem(equations(tstpart2),t; metadata = Dict(:description => "boiler"))
+    # @named cyss = extend(tstpart, ODESystem(Equation[],t; name = :not, metadata = Dict(:description => "SteamTurbine")))
+    # @named dyss = extend(tstpart2, ODESystem(Equation[],t; name = :not, metadata = Dict(:description => "SteamBoiler")))
+    # eq = Steam.hydro_connect(cyss.n,dyss.p)
+    # @named newsys = ODESystem(eq,t; systems = [cyss,dyss])
+    # # substitute(equations(copysys), Steam.hydro_prop_dict)
 
 #=============================================================#
 #        OPEN FEEDWATER AND CLOSED FEEDWATER RANKINE LOOP  
@@ -206,10 +206,8 @@ defs =[simple_sys.div_mass_fcn => 50
 tspan = (0.0,10.0)
 prob = ODEProblem(simple_sys,[],tspan,defs)
 kwargs = (abstol=1e-5, reltol=1e-1)
-sol   = solve(prob, Rodas3();kwargs...);
-copyplant,Plant,sol = TSMD.test_full_system_rankine();
-
-
+# sol   = solve(prob, Rodas3();kwargs...);
+# copyplant,Plant,sol = TSMD.test_full_system_rankine();
 
 TSMD.showsol()
 begin
@@ -319,8 +317,6 @@ end
                     # ticks = :auto)sing Makie.Colors
 g = wheel_digraph(10)
 f, ax, p = graphplot(g, edge_width=4, edge_color=[colorant"black" for i in 1:ne(g)])
-
-
 
 g = wheel_graph(10)
 f, ax, p = graphplot(g,
