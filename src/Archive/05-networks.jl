@@ -103,6 +103,41 @@ function network2graph(cycle_network::component_network; verbose = false)
 
 end
 
+function network2graph2!(component_dict::Dict, cycle_network::component_network; verbose = false)
+   
+    #   Input component Dict to directly add to exisiting Dict
+    num_elem    = elem_count(cycle_network) # number of elements
+    num_vert    = node_count(cycle_network) # number of nodes (vertices)
+
+    g           = DiGraph(num_elem)
+    nms = String[]
+    edgelabel_dict = Dict()
+    edgelabel_mat = Array{String}(undef, num_vert, num_vert)
+    comp_offset = length(component_dict)
+    for (idx1,el1) in enumerate(cycle_network.elements)
+        component_dict[idx1+comp_offset] = el1
+        # add_vertex!(g)
+        push!(nms,el1.name)
+        inn, Pin, Tin = inlet_nodes(el1.nodes)
+        for (idxa,node_idx) in enumerate(inn)
+            press = Pin[idxa]
+            temp = Tin[idxa]
+            edg_str = "$(round(press)) Bar, $(round(temp-273.15)) C" 
+            for (idx2,el2) in  enumerate(cycle_network.elements)
+                onn,p2,t2 = outlet_nodes(el2.nodes)
+                for src_node in onn
+                    if src_node == node_idx
+                        add_edge!(g,idx2,idx1)
+                        edgelabel_mat[idx2, idx1] = edgelabel_dict[(idx2, idx1)] = edg_str
+                        verbose ? println("EDGE added :  $(el2.name) to $(el1.name)  <=> $(src_node) ") : nothing
+                    end
+                end
+            end
+        end
+    end
+
+    return g,nms, edgelabel_mat, edgelabel_dict
+end
 function network2graph2(cycle_network::component_network; verbose = false, component_dict = Dict())
     
     #   Input component Dict to directly add to exisiting Dict
