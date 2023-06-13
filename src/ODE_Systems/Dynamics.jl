@@ -37,8 +37,8 @@ module Dynamics
         ps = @parameters ϵ = ϵ
         
         eqs = [
-            ΔTdes = ((B.p.T - A.p.T) * ϵ)                                                   # max temperature change by gas, + if heat from gas to steam
-            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)  )-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)  ) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)  )-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ)  )     # heat transfer out of A -> B , if A/T > B/T 
+            ΔTdes ~ ((B.p.T - A.p.T) * ϵ)                                                   # max temperature change by gas, + if heat from gas to steam
+            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
             0 ~ A.Q̇ + B.Q̇
         ]
 

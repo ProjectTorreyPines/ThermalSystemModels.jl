@@ -1,5 +1,5 @@
 # module ThermoIncompressible
-using ModelingToolkit, Plots, DifferentialEquations, Revise, Unitful, CoolProp, Symbolics, Logging
+using ModelingToolkit, Plots, DifferentialEquations, Revise, CoolProp, Symbolics, Logging
 using NonlinearSolve, Printf
 using Plots
 @variables t
