@@ -24,26 +24,29 @@ module Dynamics
         @variables Q̇(t)=0.0 Cmin(t)=0.0
         
         eqs = [
-            Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+            Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #heat transfer out of A -> B , if A/T > B/T 
             0 ~ A.Q̇ + B.Q̇
             A.Q̇ ~ -Q̇
         ]
-        ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+        ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95])
     end
     
     #   Steam to Gas
-    @component function S2G_HeatExchanger(;name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer() )
+    @component function S2G_HeatExchanger(;name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer(),returnmode = :eqs)
     
         ps = @parameters ϵ = ϵ
-    
-        @variables Q̇(t)=0.0 Cmin(t)=0.0
         
         eqs = [
-            Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+            ΔTdes = ((B.p.T - A.p.T) * ϵ)                                                   # max temperature change by gas, + if heat from gas to steam
+            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)  )-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)  ) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)  )-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ)  )     # heat transfer out of A -> B , if A/T > B/T 
             0 ~ A.Q̇ + B.Q̇
-            A.Q̇ ~ -Q̇
         ]
-        ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+
+        if returnmode == :ode
+            ODESystem(eqs, t, [], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+        else
+            return eqs
+        end
     end
     
     #   Liquid To Steam
@@ -70,7 +73,7 @@ module Dynamics
             0 ~ A.Q̇ + B.Q̇
         ]
         if returnmode == :ode
-            ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+            ODESystem(eqs, t, [], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
         else
             return eqs
         end
@@ -847,7 +850,7 @@ module Dynamics
     
         saveat = LinRange(1.0,9.0,25)
     
-        kwargs = (abstol=1e-10, reltol=1e-2, saveat =saveat)
+        kwargs = (abstol=1e-10, reltol=1e-2, saveat = saveat)
     
         prob = ODAEProblem(SimplePlant,[],tspan,)
     
