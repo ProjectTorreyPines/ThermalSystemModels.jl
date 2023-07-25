@@ -284,16 +284,16 @@ liq_properties(n::component_nodes) = liq_properties(n.working_fluid;P = n.P, T =
 gas_properties(g::component_nodes) = gas_properties(g.working_fluid;P=g.P,T=g.T)
 
 
-function gastype(working_fluid::Symbol)
+# function gastype(working_fluid::Symbol)
 
-    if working_fluid in [:air, :helium] 
-        return :gas
-    else
-        return :liq
-    end
+#     if working_fluid in [:air, :helium] 
+#         return :gas
+#     else
+#         return :liq
+#     end
 
 
-end
+# end
 
 function calculate_fluid_properties(n::component_nodes)
     fluid =  n.working_fluid

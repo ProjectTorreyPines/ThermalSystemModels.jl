@@ -1,1 +1,7 @@
 /Manifest.toml
+src/Package_testing.jl
+src/Playground/Gtesting.jl
+src/Playground/Package_testing.jl
+src/Playground/Package_testing2.jl
+src/Playground/pcktst.jl
+src/Playground/Workflows.jl

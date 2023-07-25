@@ -1,10 +1,24 @@
 # module ThermoGas
+#=============================================================#
+#                      THERMOGAS
+# DEFAULT FLUID = HELIUM
+#   units
+#       pressure, bar
+#       temperature, Kelvin
+#       mass flow, kg/s
+#
+#   Sign convention
+#       Heat in (Q) is positive
+#       Heat out is negative
+#       Work out is negative
+#       Work in is positive
+#=============================================================#
 using ModelingToolkit, Plots, DifferentialEquations, Revise, Unitful, CoolProp,  Logging
 using NonlinearSolve, Printf
 Revise.retry()
 Logging.disable_logging(Logging.Warn)
 @variables t
-include("03-MTK_UTILS.jl")
+# include("03-MTK_UTILS.jl")
 # begin
 #     hpt_he(x,y) = PropsSI("HMASS","P",x*u"bar","T",y*u"K","He").val;
 #     tph_he(x,y) = PropsSI("T","P",x*u"bar","h",y*u"J/kg","He").val;
@@ -12,7 +26,12 @@ include("03-MTK_UTILS.jl")
 #   PROPERTIES DICT
 cphe(x) = 5192.0    #J/kg/K
 cvhe(x) = 3115.8    #J/kg/K
-khe(x) = 1.667
+khe(x)  = 1.667
+
+gcpfunc(x) = cphe(x)
+gcvfunc(x) = cvhe(x)
+gkfunc(x) = khe(x)
+
 @variables x
 @register_symbolic gcpfunc(x)
 @register_symbolic gcvfunc(x)
@@ -126,7 +145,7 @@ end
         0 ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [p,n], defaults = [P => 0.1])
+    ODESystem(eqs, t,[], ps; name = name, systems = [p,n])
 end
 
 @component function SetTemperature(;name, T = 300)
@@ -146,13 +165,13 @@ end
 #   HELIUM COMPONENTS
 @component function SinglePortReservoir(;name, P = 0.1, T = 300)
     @named n = ThermoPin(Pdef = P, Tdef = T)
-    ps = @parameters P=P 
+    ps = @parameters P=P T=T
     eqs = [
         n.P ~ P
         n.T ~ T
         n.Φ ~ 0
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n], defaults = [P => 0.1, T =>300])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n])
 end
 
 @component function TwoPortReservoir(;name, P = 0.1, T = 300)
@@ -169,7 +188,7 @@ end
         n.Φ ~ 0
         ΔΦ ~ p.Φ -  n.Φ
     ]
-    ODESystem(eqs, t,sts, ps; name = name, systems = [p,n], defaults = [P => 0.1, T =>300, ΔΦ => 0.0])
+    ODESystem(eqs, t,sts, ps; name = name, systems = [p,n], defaults = [ΔΦ => 0.0])
 end
 
 @component function GasFlowSource(;name, Ṁ = 1.0)
@@ -184,7 +203,7 @@ end
             p.T ~ n.T 
             n.P ~ p.P
         ]
-    ODESystem(eqs, t, [], ps; name = name, systems = [n,p], defaults = [Ṁ => 1.0])
+    ODESystem(eqs, t, [], ps; name = name, systems = [n,p])
 end
 
 @component function GasFlowValve(;name)
@@ -234,6 +253,28 @@ end
     ODESystem(eqs,t,[Q̇,C],ps; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0, C => 5192])
 end
 
+"""
+    FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)
+    Ability to change mass flow rate to achieve desired outlet temperature
+"""
+@component function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
+    @named p = ThermoPin()
+    @named n = ThermoPin()
+    @named q = HeatTransferPin()
+    st = @variables Q̇(t)=0.0 C(t)=5192 ṁ(t)=1.0
+    ps = @parameters ΔP = ΔP Tout = Tout
+    eqs = [
+        n.T ~ Tout
+        p.ṁ ~ q.Q̇ /((n.T - p.T)*p.cp)           # q = mcp*ΔT
+        0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        C ~ p.ṁ * p.cp          # duty
+        0 ~ q.Q̇ - Q̇ 
+        n.P ~ p.P - ΔP
+    ]
+    ODESystem(eqs,t,[Q̇,C,ṁ],ps; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0, C => 5192.0, ṁ => 1.0])
+end
+
 @component function FixedThermoHeatTransfer(; name, Qin = 1e6)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -267,22 +308,38 @@ end
     ODESystem(eqs,t,[],ps; name = name, systems = [p,n,w], defaults = [η => η, rp => rp])
 end
 
-@component function PassiveThermoCompressor(; name, η = 1.0)
+# @component function PassiveThermoCompressor(; name, η = 1.0)
+#     @named p = ThermoPin()
+#     @named n = ThermoPin()
+#     @named w = WorkPin()
+
+#     ps = @parameters η = η
+#     sts = @variables rp(t) = 3.5
+
+#     eqs = [
+#         0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
+#         n.P ~ p.P * rp
+#         n.T ~ p.T * ((1.0 - η - (rp^((p.k-1)/p.k))) / (-η))
+#         w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
+#         w.Ẇ ~ p.Φ + n.Φ
+#     ]
+#     ODESystem(eqs,t,sts,ps; name = name, systems = [p,n,w], defaults = [rp => 3.5])
+# end
+
+@component function PassiveThermoCompressor2(; name, η = 1.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named w = WorkPin()
 
     ps = @parameters η = η
-    sts = @variables rp(t) = 3.5
 
     eqs = [
         0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
-        n.P ~ p.P * rp
-        n.T ~ p.T * ((1.0 - η - (rp^((p.k-1)/p.k))) / (-η))
+        n.T ~ p.T * ((1.0 - η - ((n.P/p.P)^((p.k-1)/p.k))) / (-η))
         w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
         w.Ẇ ~ p.Φ + n.Φ
     ]
-    ODESystem(eqs,t,sts,ps; name = name, systems = [p,n,w], defaults = [rp => 3.5])
+    ODESystem(eqs,t,[],ps; name = name, systems = [p,n,w])
 end
 
 @component function ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
@@ -345,6 +402,18 @@ end
         Q̇ ~ p.Φ + n.Φ             # conservation of energy
         ]
     ODESystem(eqs, t, [Q̇,ΔP,ΔT,Δṁ], []; name = name, systems = [p,n], defaults = [Q̇ => 0, ΔT =>0, ΔP => 0, Δṁ => 0])
+end
+
+@component function ReliefElement(;name)
+    @named p = ThermoPin()
+    @named n = ThermoPin()
+    @named q = HeatTransferPin()
+    # 0 variables, 3 equations for pin
+    eqs = [
+        n.ṁ + p.ṁ ~ 0           # has to be negative
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
+        ]
+    ODESystem(eqs, t,[], []; name = name, systems = [p,n,q])
 end
 
 @component function throttle(;name)

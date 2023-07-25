@@ -4,7 +4,7 @@ using Graphs, Plots, GraphRecipes
 using DifferentialEquations
 @variables t
 Logging.disable_logging(Logging.Warn)
-include("03-MTK_UTILS.jl")
+# include("03-MTK_UTILS.jl")
 ##
 #       Need todo: Coolprops, validation
 #               Connect work nodes - master energy balance?
@@ -246,7 +246,7 @@ end
         n.h  ~ stm_hsatfunc(P)
         n.Φ ~ 0
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n], defaults = [P => 0.1])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n])
 end
 
 @component function MultiPhaseGnd(;name, P = 0.1)
@@ -256,7 +256,7 @@ end
         n.P ~ P
         n.Φ ~ 0
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n], defaults = [P => 0.1])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n])
 end
 
 @component function SuperHeatedReservoir(;name, P = 150, T = 600)
@@ -267,7 +267,7 @@ end
         0 ~ stm_hptfunc(P,T) + n.h
         n.Φ ~ -n.ṁ * n.h
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n], defaults = [P => 0.1, T => T])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n])
 end
 
 @component function ioReservoir(;name, P = 0.1, fixboth = false)
@@ -284,7 +284,7 @@ end
         push!(eqs,p.P ~ P)
         # push!(eqs,p.h ~ n.h)
     end
-    ODESystem(eqs, t,[], ps; name = name, systems = [n,p], defaults = [P => 0.1 ])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n,p])
 end
 
 @component function TwoPortReservoir(;name, P = 0.1)
@@ -300,7 +300,7 @@ end
         0 ~ n.ṁ + p.ṁ                                                           # 1/density = specific volume
         0 ~ n.Φ + p.Φ
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n,p], defaults = [P => 0.1 ])
+    ODESystem(eqs, t,[], ps; name = name, systems = [n,p])
 end
 
 @component function ContinuityReservoir2(;name)
@@ -394,14 +394,13 @@ end
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     @named w = WorkPin()
-    
     ps = @parameters η = η P=Pout
 
     eqs = Equation[
         w.Ẇ ~ p.Φ + n.Φ                         # conservation of energy
         0 ~ p.ṁ + n.ṁ
         n.h  ~ p.h + p.v *1e5* (n.P - p.P) / η  # work, multiply by 100 to get to kPa
-        0  ~ p.ṁ * (n.h - p.h)  + w.Ẇ 
+        w.Ẇ  ~ p.ṁ * (n.h - p.h)
     ]
 
     if setpressure
@@ -412,7 +411,7 @@ end
         eqs = vcat(eqs,p.h  ~ stm_hsatfunc(p.P))
     end
     # extenda([ODESystem(eqs, t,[], ps; name = name, defaults = [η => 0.6, P => Pout]), p,n,w])
-    ODESystem(eqs, t,[], ps; name = name, systems = [p,n,w], defaults = [η => .6, P => 10])
+    ODESystem(eqs, t,[], ps; name = name, systems = [p,n,w])
 end
 
 @component function Splitter(;name)
@@ -447,7 +446,7 @@ end
         w.Ẇ ~ Ẇ
         0 ~ p.ṁ + n.ṁ      
         n.h  ~ p.h - (p.h-stm_hpsfunc(n.P,p.s))*η
-        0 ~ p.ṁ * (n.h - p.h) + w.Ẇ
+        w.Ẇ ~ p.ṁ * (n.h - p.h)
     ]
 
     if setpressure
@@ -485,7 +484,7 @@ end
 
     eqs = vcat(split_connect,hp_connect,lp_connect)
 
-    compose(ODESystem(eqs, t,[], ps; name = name, systems = [yn,zn,p], defaults = [η => 1.0, Py => 10, Pz => 0.1]), hp,lp)
+    compose(ODESystem(eqs, t,[], ps; name = name, systems = [yn,zn,p]), hp,lp)
     # ODESystem(eqs, t,[], ps; name = name, systems = [p,hp,lp], defaults = [η => 1.0, Py => 10, Pz => 0.1])
     # extend(ODESystem(eqs, t,sts, ps; name = name, systems = [hp,lp], defaults = [η => 1.0 Py => 10 Pz => 0.1]),split)
 end
@@ -503,7 +502,7 @@ end
         n.h ~ p.h + q.Q̇/(p.ṁ)
         n.P ~ p.P
     ]
-    ODESystem(eqs,t,[Q̇,C],[]; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0, C => 400])
+    ODESystem(eqs,t,[Q̇,C],[]; name = name, systems = [p,n,q])
 end
 
 @component function TunableSteamHeatTransfer(;name, Q̇in = 150e6)
@@ -576,6 +575,21 @@ end
     ODESystem(eqs, t,sts, []; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0])
 end
 
+@component function ReliefElement(;name, pressurecontrol = false)
+    @named p = BasicSteamPin()
+    @named n = BasicSteamPin()
+    @named q = HeatTransferPin()
+    # 0 variables, 3 equations for pin
+    eqs = [
+        n.ṁ + p.ṁ ~ 0           # has to be negative
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
+        ]
+    if pressurecontrol
+        eqs = vcat(eqs, n.P ~ p.P)
+    end
+    ODESystem(eqs, t,[], []; name = name, systems = [p,n,q])
+end
+
 @component function OpenFeedwaterHeater(;name)
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
@@ -596,7 +610,7 @@ end
         0 ~ n.ṁ + p1.ṁ + p2.ṁ
         0 ~ n.Φ + (p1.Φ + p2.Φ)
     ]
-    ODESystem(eqs, t,sts, []; name = name, systems = [p1,p2,n], defaults = [yfrac => 0.5], continuous_events)
+    ODESystem(eqs, t,sts, []; name = name, systems = [p1,p2,n], continuous_events)
 end
 
 @component function MixingChamber(;name)

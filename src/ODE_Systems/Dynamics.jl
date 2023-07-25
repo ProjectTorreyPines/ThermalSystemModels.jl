@@ -17,7 +17,7 @@ module Dynamics
         include("01-Incompressible.jl")
     end
     
-    @component function L2G_HeatExchanger(;name, ϵ = 0.95, A = Liq.IncompressibleHeaatTransfer(), B = Gas.ThermoHeatTransfer())
+    @component function L2G_HeatExchanger(;name, ϵ = 0.95, A = Liq.IncompressibleHeatTransfer(), B = Gas.ThermoHeatTransfer())
 
         ps = @parameters ϵ = ϵ
     
@@ -33,47 +33,74 @@ module Dynamics
     
     #   Steam to Gas
     @component function S2G_HeatExchanger(;name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer(),returnmode = :eqs)
-    
-        ps = @parameters ϵ = ϵ
-        
-        eqs = [                                                 # max temperature change by gas, + if heat from gas to steam
-            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
-            0 ~ A.Q̇ + B.Q̇
-        ]
 
         if returnmode == :ode
-            ODESystem(eqs, t, [], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+                
+            ps = @parameters ϵ = ϵ
+            
+            eqs = [                                                 # max temperature change by gas, + if heat from gas to steam
+                A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                0 ~ A.Q̇ + B.Q̇
+            ]
+            ODESystem(eqs, t, [], ps; name = name, systems = [A,B])
         else
+            eqs = [                                                 # max temperature change by gas, + if heat from gas to steam
+            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+            0 ~ A.Q̇ + B.Q̇
+            ]
             return eqs
         end
     end
     
     #   Liquid To Steam
-    @component function L2S_HeatExchanger(;name, ϵ = 0.95, A = Liq.IncompressibleHeaatTransfer(), B = Steam.SteamHeatTransfer())
+
+    # @component function L2S_HeatExchanger(;name, ϵ = 0.95, A = Liq.IncompressibleHeatTransfer(), B = Steam.SteamHeatTransfer())
     
-        ps = @parameters ϵ = ϵ
+    #     ps = @parameters ϵ = ϵ
     
-        @variables Q̇(t)=0.0 Cmin(t)=0.0
+    #     @variables Q̇(t)=0.0 Cmin(t)=0.0
         
-        eqs = [
-            Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+    #     eqs = [
+    #         Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+    #         0 ~ A.Q̇ + B.Q̇
+    #         A.Q̇ ~ -Q̇
+    #     ]
+    #     ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+    # end
+    @component function L2S_HeatExchanger(;name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Liq.IncompressibleHeatTransfer(),returnmode = :eqs)
+
+        if returnmode == :ode
+                
+            ps = @parameters ϵ = ϵ
+            
+            eqs = [                                                 # max temperature change by gas, + if heat from gas to steam
+                A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                0 ~ A.Q̇ + B.Q̇
+            ]
+            ODESystem(eqs, t, [], ps; name = name, systems = [A,B])
+        else
+            eqs = [                                                 # max temperature change by gas, + if heat from gas to steam
+            A.Q̇ ~ ((A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) <= (B.C * ((B.p.T - A.p.T) * ϵ))) *(A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h)) + ((B.C * ((B.p.T - A.p.T) * ϵ)) <= (A.p.ṁ * (Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ))-A.p.h))) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
             0 ~ A.Q̇ + B.Q̇
-            A.Q̇ ~ -Q̇
-        ]
-        ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
+            ]
+            return eqs
+        end
     end
     
     @component function Gen_HeatExchanger(;name, ϵ = 0.95, A, B, returnmode = :ode)
-    
-        ps = @parameters ϵ = ϵ
-        
-        eqs = [
-            -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
-            0 ~ A.Q̇ + B.Q̇
-        ]
         if returnmode == :ode
+            ps = @parameters ϵ = ϵ
+        
+            eqs = [
+                -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+                0 ~ A.Q̇ + B.Q̇
+            ]
             ODESystem(eqs, t, [], ps; name = name, systems = [A,B], defaults = [ϵ => 0.95] )
         else
+            eqs = [
+                -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) *  A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+                0 ~ A.Q̇ + B.Q̇
+            ]
             return eqs
         end
     end
@@ -168,6 +195,7 @@ module Dynamics
         systems = [reservoir, valve, openfw, closedfw, mixer, pump1, pump2,pump3,turbine1,turbine2, boiler,reheat,condensor, ElectricGen, ElectricUtil,ColdUtil]
         ODESystem(connections, t;name = name, systems = systems)
     end
+    
     @component function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
             @named iores        = Steam.ioReservoir(P=Pmin, fixboth = false)
             @named valve        = Steam.SteamFlowValve()
@@ -361,8 +389,8 @@ module Dynamics
             @named valve    = Liq.IncompressibleFlowValve()
             @named pump     = Liq.PassiveIncompressiblePump()
             @named pset     = Liq.SetPressure(P=Pmax)
-            @named HeatIn   = Liq.IncompressibleHeaatTransfer()
-            @named HeatTx   = Liq.IncompressibleHeaatTransfer()
+            @named HeatIn   = Liq.IncompressibleHeatTransfer()
+            @named HeatTx   = Liq.IncompressibleHeatTransfer()
             @named HeatRej  = Liq.IdealCooler()
             @named throttle = Liq.throttle()
     
@@ -679,8 +707,9 @@ module Dynamics
         @named breeder_hx   = Gen_HeatExchanger(A = breeder_circuit.HeatTx, B = intloop.HeatInC, returnmode = :eq)
         @named wall_hx      = Gen_HeatExchanger(A = wall_circuit.HeatTx, B = intloop.HeatInB, returnmode =:eq)
         @named divertor_hx  = Gen_HeatExchanger(A = divertor_circuit.HeatTx, B = intloop.HeatInA,returnmode =:eq)
-        @named primary_hx   = Gen_HeatExchanger(A = powercycle.boiler, B = intloop.boilTx, returnmode =:eq)
-        @named reheat_hx   = Gen_HeatExchanger(A = powercycle.reheat, B = intloop.reheatTx, returnmode =:eq)
+        @named primary_hx   = S2G_HeatExchanger(A = powercycle.boiler, B = intloop.boilTx, returnmode =:eq)
+        @named reheat_hx   = S2G_HeatExchanger(A = powercycle.reheat, B = intloop.reheatTx, returnmode =:eq)
+        
         for eq in [breeder_hx, wall_hx, divertor_hx, primary_hx, reheat_hx]
             push!(auxeq,eq...)
         end
@@ -866,5 +895,160 @@ module Dynamics
         # p4 = plot(sol, vars = [intloop.WorkRes.Ẇ, breeder_circuit.WorkRes.Ẇ, divertor_circuit.WorkRes.Ẇ, powercycle.WorkRes.Ẇ], title = "Circulator work ")
         # p=plot!(p1,p2,p3,p4,layout = (4,1), size = (800,800))
         return copyplant,Plant, sol
+    end
+
+    ModelingToolkit.@variables t
+    function default_energy_sys()
+        sts = ModelingToolkit.@variables η_cycle(t)=0.5 η_bop(t)=0.5
+        @named Electric      = Gas.WorkPin()                # Connects to all pumps, turbines, compressors
+        @named HotUtility    = Gas.HeatTransferPin()
+        @named ColdUtility   = Gas.HeatTransferPin()
+        energy_sys = [Electric,HotUtility,ColdUtility]
+
+        sysdict = sys2dict(energy_sys)
+
+        return energy_sys,sts, sysdict
+    end
+
+    function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15)
+        params = @parameters Qwall = 100e6
+        pressure_max_wall   = max_pressure;  # bar
+        pressure_drop_wall  = pressrue_drop;
+        pressure_min_wall = pressure_max_wall-pressure_drop_wall;
+        Tmin_wall = Tmin;
+        Tmax_wall = Tmax;
+        
+        @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
+        @named wall_circulator      = Gas.PassiveThermoCompressor2(η = 0.9);
+        @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
+        @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
+        @named wall_hx              = Gas.ThermoHeatTransfer() ; 
+        @named wall_relief          = Gas.ReliefElement();
+        
+        wall_sys = [wall_supply,wall_circulator,wall_const_pressure,wall_heat,wall_hx,wall_relief];
+
+        sysdict = sys2dict(wall_sys)
+
+        wall_connections = vcat(Gas.gas_connect(wall_supply.n,wall_circulator.p,wall_relief.n),
+                                Gas.gas_connect(wall_circulator.n,wall_const_pressure.p),
+                                Gas.gas_connect(wall_const_pressure.n,wall_heat.p),
+                                Gas.gas_connect(wall_heat.n,wall_hx.p),
+                                Gas.gas_connect(wall_hx.n,wall_relief.p),
+                                wall_heat.Q̇ ~ Qwall);
+        return wall_sys, wall_connections, params, sysdict
+    end
+
+    function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15)
+        params = @parameters Qdivertor = 100e6
+        pressure_max_divertor = max_pressure;  # bar
+        pressure_drop_divertor = pressrue_drop;
+        pressure_min_divertor = pressure_max_divertor-pressure_drop_divertor;
+        Tmin_divertor = Tmin;
+        Tmax_divertor = Tmax;
+
+        @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
+        @named divertor_circulator      = Gas.PassiveThermoCompressor2(η = 0.9)
+        @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
+        @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
+        @named divertor_hx              = Gas.ThermoHeatTransfer()  
+        @named divertor_relief          = Gas.ReliefElement()
+        divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
+        sysdict = sys2dict(divertor_sys)
+        divertor_connections = vcat(Gas.gas_connect(divertor_supply.n,divertor_circulator.p,divertor_relief.n),
+                                Gas.gas_connect(divertor_circulator.n,divertor_const_pressure.p),
+                                Gas.gas_connect(divertor_const_pressure.n,divertor_heat.p),
+                                Gas.gas_connect(divertor_heat.n,divertor_hx.p),
+                                Gas.gas_connect(divertor_hx.n,divertor_relief.p),
+                                divertor_heat.Q̇ ~ Qdivertor)
+
+        return divertor_sys, divertor_connections, params, sysdict
+    end
+
+    function breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273.15, Tmax = 900+273.15)
+        params = @parameters Qbreeder = 100e6
+        pressure_max_breeder = max_pressure;  # bar
+        pressure_drop_breeder = pressrue_drop;
+        pressure_min_breeder = pressure_max_breeder-pressure_drop_breeder;
+        Tmin_breeder = Tmin;
+        Tmax_breeder = Tmax;
+        
+        @named breeder_supply           = Liq.SinglePortReservoir(P = pressure_min_breeder,T = Tmin_breeder)
+        @named breeder_circulator       = Liq.PassiveIncompressiblePump2(η = 0.9)
+        @named breeder_const_pressure   = Liq.SetPressure2(P=pressure_max_breeder)
+        @named breeder_heat       		= Liq.FlowControlIncompressibleHeatTransfer(ΔP = pressure_drop_breeder, Tout = Tmax_breeder)
+        @named breeder_hx               = Liq.IncompressibleHeatTransfer()
+        @named breeder_relief           = Liq.ReliefElement()
+        
+        breeder_sys = [breeder_supply,breeder_circulator,breeder_const_pressure,breeder_heat,breeder_hx,breeder_relief]
+        sysdict = sys2dict(breeder_sys)
+        breeder_connections = vcat(Liq.incompressible_connect(breeder_supply.n,breeder_circulator.p,breeder_relief.n),
+                                Liq.incompressible_connect(breeder_circulator.n,breeder_const_pressure.p),
+                                Liq.incompressible_connect(breeder_const_pressure.n,breeder_heat.p),
+                                Liq.incompressible_connect(breeder_heat.n,breeder_hx.p),
+                                Liq.incompressible_connect(breeder_hx.n,breeder_relief.p),
+                                breeder_heat.Q̇ ~ Qbreeder)
+
+
+        return breeder_sys, breeder_connections, params, sysdict
+    end
+
+    function feedwater_rankine(;max_pressure = 150,mid_pressure = 12, min_pressure = 0.1, flowrate = 50)
+        params = @parameters steam_ṁ = flowrate
+        steam_pmid = mid_pressure
+        steam_pmin = min_pressure
+        steam_pmax = max_pressure
+        @named steam_supply         = Steam.ContinuityReservoir()
+        @named steam_hp_pump        = Steam.AdiabaticPump(Pout = steam_pmax,setpressure = true, η=1.0)
+        @named steam_boiler         = Steam.SteamHeatTransfer()
+        @named steam_turbine        = Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = steam_pmid, Pzin = steam_pmin,ηin = 1.0) 
+        @named steam_lp_pump        = Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η=1.0)
+        @named steam_condensor      = Steam.IdealCondensor()
+        @named steam_openfw         = Steam.OpenFeedwaterHeater()
+
+        steam_connections = vcat(Steam.hydro_connect(steam_supply.n, steam_boiler.p),
+                            Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+                            Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
+                            Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
+                            Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
+                            Steam.hydro_connect(steam_lp_pump.n,steam_openfw.p2),
+                            Steam.hydro_connect(steam_openfw.n,steam_hp_pump.p),
+                            Steam.hydro_connect(steam_hp_pump.n,steam_supply.p),
+                            steam_boiler.n.ṁ ~ steam_ṁ)
+
+        steam_systems = [steam_boiler,steam_turbine,steam_lp_pump,steam_condensor,steam_openfw,steam_hp_pump, steam_supply];
+        sysdict = sys2dict(steam_systems)
+        return steam_systems, steam_connections, params,  sysdict
+    end
+
+    function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, )
+        params = @parameters inter_loop_ṁ = 100
+        pressure_max_loop = 40;  # bar
+        pressure_drop_loop = 8;
+        pressure_min_loop = pressure_max_loop-pressure_drop_loop;
+        Tmin_loop = 350+273.15;
+
+        pdrop_per = pressure_drop_loop / Nhx
+
+        @named inter_loop_supply            = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop);
+        @named inter_loop_circulator        = Gas.PassiveThermoCompressor2(η = 0.9);
+        @named inter_loop_const_pressure    = Gas.SetPressure(P=pressure_max_loop);
+        @named inter_loop_hx1		    	= Gas.ThermoHeatTransfer(ΔP = pdrop_per) ;
+        @named inter_loop_relief          	= Gas.ReliefElement();
+
+        inter_loop_sys = [inter_loop_supply,inter_loop_relief,inter_loop_circulator,inter_loop_const_pressure,inter_loop_hx1]
+        
+        inter_loop_connections = vcat(Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p,inter_loop_relief.n),
+                                        Gas.gas_connect(inter_loop_circulator.n,inter_loop_const_pressure.p),
+                                        Gas.gas_connect(inter_loop_const_pressure.n,inter_loop_hx1.p),
+                                        inter_loop_circulator.p.ṁ ~ inter_loop_ṁ);
+        for i = 2:Nhx
+            push!(inter_loop_sys,Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)") ,ΔP = pdrop_per));
+            inter_loop_connections = vcat(inter_loop_connections, Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p))
+        end
+        inter_loop_connections = vcat(inter_loop_connections, 
+                                    Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p))
+
+        sysdict = sys2dict(inter_loop_sys)
+        return inter_loop_sys, inter_loop_connections, params, sysdict
     end
 end
