@@ -1178,7 +1178,6 @@ function directed2undir_adjacency(G::AbstractGraph)
     return adjmat
 end
 #
-
 # Getters and setters
 """
 node_prop(G,prop)
@@ -1717,7 +1716,7 @@ end
         returns "" if not found
 """
 function find_common_name(stringvec::Vector{String}; verbose = false)
-    length(stringvec) == 1 ? (println("1 el"); return stringvec[1]) : nothing
+    length(stringvec) == 1 && verbose == true ? (println("1 el"); return stringvec[1]) : nothing
 
     check_str = stringvec[1]
     ref_str = stringvec[2]
@@ -1932,7 +1931,7 @@ function create_plot_graph(
         for id in in_diff
             # heat input
             verbose ? println("--") : nothing
-            println("Cycle  $fgv , Recieving Node $(v) , $(get_prop(gcopy,v,:name))")
+            verbose && println("Cycle  $fgv , Recieving Node $(v) , $(get_prop(gcopy,v,:name))")
             # src_v = in_diff[1]
             src_v = id
             src_flow_group_idx = findfirst(x -> src_v ∈ x, flow_groups) # cycle 2
@@ -1940,6 +1939,7 @@ function create_plot_graph(
             add_edge!(G2, src_flow_group_idx, fgv)
             set_prop!(G2, Edge(src_flow_group_idx, fgv), :referenced_edge, Edge(src_v, v))
             # println("Cycle  $fgv connected to cycle $(src_flow_group_idx),
+            if verbose
             @printf "Cycle %i has input from Cycle %i \n" fgv src_flow_group_idx
 
             @printf "Connection details:\n   Source:\t(Cycle: %i, Node: %i, component: %s) \n   Reciever:\t(Cycle: %i, Node: %i, component: %s)\n" src_flow_group_idx src_v get_prop(
@@ -1947,6 +1947,7 @@ function create_plot_graph(
                 src_v,
                 :name,
             ) fgv v get_prop(gcopy, v, :name)
+            end
             # (Node $(src_v), $(get_prop(gcopy,src_v,:name))) -> (Node $(v) , $(get_prop(gcopy,v,:name)))")
             # println("$src_v => $src_flow_group_idx")
             set_prop!(G2, src_flow_group_idx, :output, src_v)
@@ -1999,7 +2000,7 @@ function create_plot_graph(
             incoming_edges = [Edge(n_in, n) for n_in in inn]
             recieving_nodes =
                 [get_prop(G2, e, :referenced_edge).dst for e in incoming_edges] # edges in gcopy
-            println(recieving_nodes)
+            # println(recieving_nodes)
 
             # finding, for each recieving node, the number of neighbors which are also recieving nodes
             f = [
@@ -2024,13 +2025,13 @@ function create_plot_graph(
     for v in vertices(G2)
         # fgv = findfirst(x -> v ∈ x, flow_groups)
         inn = get_prop(G2, v, :input)
-        println(inn)
+        verbose && println(inn)
         outt = get_prop(G2, v, :output)
         if inn != -1
-            println("   Node group $(v) Heat reciever = $(get_prop(G,inn,:name))")
+            verbose && println("   Node group $(v) Heat reciever = $(get_prop(G,inn,:name))")
         end
         if outt != -1
-            println("                Heat Rejector = $(get_prop(G,outt,:name))")
+            verbose && println("                Heat Rejector = $(get_prop(G,outt,:name))")
         end
         # println("   Node group $(src_flow_group_idx) Heat rejector = $(get_prop(G2,src_v,:name))")
     end
@@ -2062,11 +2063,10 @@ function create_plot_graph(
             end
             count = count + 1
             if count > 5000
-                println("uh oh ,that was close")
                 break
             end
         end
-        println("Took $count itterations to reverse route path $(outt) => $(inn)")
+        verbose && println("Took $count itterations to reverse route path $(outt) => $(inn)")
     end
     ##
     non_flow_edges = Pair{Int64,Int64}[]
@@ -2134,7 +2134,7 @@ function layers_to_force!(
     ),
 )
     xs, ys, paths = solve_positions(Zarate(), gcopy)#force_layer=[3=>14], force_order =[10=>6, 7=>3, 3=>2],
-    doplot ? quick_plot(gcopy, xs, ys, paths) : nothing
+    # doplot ? quick_plot(gcopy, xs, ys, paths) : nothing
     path_pts = collect(values(paths))
 
     # node positions
@@ -2223,9 +2223,9 @@ function layers_to_force!(
         force_order = vSortReqs,
     )
     # xs, ys, paths = solve_positions(Zarate(), gcopy;  force_order = vSortReqs)
-    if doplot
-        quick_plot(gcopy, xs, ys, paths; nametext = true, plotattr = plotattr)
-    end
+    # if doplot
+    #     quick_plot(gcopy, xs, ys, paths; nametext = true, plotattr = plotattr)
+    # end
     return xLayReqs, vSortReqs, xs, ys, paths, lay2node
 end
 
@@ -2433,7 +2433,7 @@ function setVerticalSpacing!(
     xs = [nn[1] for nn in npos]
     ys = [nn[2] for nn in npos]
     # set_prop!(gc,:vertical_visibility_graph,gvert)
-    quick_plot(gc, xs, ys, paths; nametext = true, mode = :patha, plotattr = plotattr)
+    # quick_plot(gc, xs, ys, paths; nametext = true, mode = :patha, plotattr = plotattr)
     return xs, ys
 end
 
