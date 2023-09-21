@@ -1,5 +1,5 @@
 using ThermalSystem_Models
-using ModelingToolkit
+using ModelingToolkit, DifferentialEquations
 using Test
 using MetaGraphs
 using Plots
@@ -12,6 +12,12 @@ Liq = TSMD.Liq
 
 
 @testset "ThermalSystem_Models.jl" begin
+    TSM = ThermalSystem_Models
+    TSMD = TSM.Dynamics
+    MTK = ModelingToolkit
+    Steam = TSMD.Steam
+    Gas = TSMD.Gas
+    Liq = TSMD.Liq
     #=========================================================#
     #                Rankine feedwater
     #=========================================================#
@@ -105,7 +111,7 @@ Liq = TSMD.Liq
     simple_sys = structural_simplify(sys)
     tspan = (0.0, 1.0)
     prob = ODEProblem(simple_sys, [], tspan)
-    sol = solve(prob)
+    sol = DifferentialEquations.solve(prob)
     soln(v) = sol[v][end]
     GG = TSMD.system2metagraph(sys, utility_vector; soln = soln, verbose = false)
     # TSMD.showsol(vcat(steam_systems,[sdict[:steam_turbine].lp,sdict[:steam_turbine].hp]),sol)
@@ -121,11 +127,11 @@ Liq = TSMD.Liq
     println(sol[idict[:inter_loop_hx3].n.T][end])
     println("cycle eff  $(sol[η_cycle][end])")
     println("plant eff $(sol[η_bop][end])")
-    reverse_edge!(GG, 12, 21)
+    TSMD.reverse_edge!(GG, 12, 21)
     
     gcopy = TSMD.create_plot_graph(GG)
     xLayReqs, vSortReqs, xs, ys, paths, lay2node = TSMD.layers_to_force!(gcopy)
-    TSMD.initialize_plot_props!(gcopy, lay2node)
+    TSMD.initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
     gc = TSMD.add_plot_elments(gcopy; verbose = false)
     TSMD.set_default_node_prop!(gc, :height, 1.0)
 

@@ -591,135 +591,87 @@ function default_energy_sys()
     @named ColdUtility = Gas.HeatTransferPin()
     energy_sys = [Electric, HotUtility, ColdUtility]
 
-    sysdict = TSMD.sys2dict(energy_sys)
+    sysdict = sys2dict(energy_sys)
 
     return energy_sys, sts, sysdict
 end
 
-function wall_circuit(;
-    max_pressure = 80,
-    pressrue_drop = 5,
-    Tmin = 450 + 273.15,
-    Tmax = 550 + 273.15,
-)
-    params = @parameters Qwall = 100e6
-    pressure_max_wall = max_pressure  # bar
-    pressure_drop_wall = pressrue_drop
-    pressure_min_wall = pressure_max_wall - pressure_drop_wall
-    Tmin_wall = Tmin
-    Tmax_wall = Tmax
+function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
+    params = @parameters Qwall = load
+    pressure_max_wall   = max_pressure;  # bar
+    pressure_drop_wall  = pressrue_drop;
+    pressure_min_wall = pressure_max_wall-pressure_drop_wall;
+    Tmin_wall = Tmin;
+    Tmax_wall = Tmax;
+    
+    @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
+    @named wall_circulator      = Gas.PassiveThermoCompressor2(η = 0.9);
+    @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
+    @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
+    @named wall_hx              = Gas.ThermoHeatTransfer() ; 
+    @named wall_relief          = Gas.ReliefElement();
+    
+    wall_sys = [wall_supply,wall_circulator,wall_const_pressure,wall_heat,wall_hx,wall_relief];
 
-    @named wall_supply = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall)
-    @named wall_circulator = Gas.PassiveThermoCompressor2(η = 0.9)
-    @named wall_const_pressure = Gas.SetPressure(P = pressure_max_wall)
-    @named wall_heat =
-        Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall, Tout = Tmax_wall)
-    @named wall_hx = Gas.ThermoHeatTransfer()
-    @named wall_relief = Gas.ReliefElement()
+    sysdict = sys2dict(wall_sys)
 
-    wall_sys =
-        [wall_supply, wall_circulator, wall_const_pressure, wall_heat, wall_hx, wall_relief]
-
-    sysdict = TSMD.sys2dict(wall_sys)
-
-    wall_connections = vcat(
-        Gas.gas_connect(wall_supply.n, wall_circulator.p, wall_relief.n),
-        Gas.gas_connect(wall_circulator.n, wall_const_pressure.p),
-        Gas.gas_connect(wall_const_pressure.n, wall_heat.p),
-        Gas.gas_connect(wall_heat.n, wall_hx.p),
-        Gas.gas_connect(wall_hx.n, wall_relief.p),
-        wall_heat.Q̇ ~ Qwall,
-    )
+    wall_connections = vcat(Gas.gas_connect(wall_supply.n,wall_circulator.p,wall_relief.n),
+                            Gas.gas_connect(wall_circulator.n,wall_const_pressure.p),
+                            Gas.gas_connect(wall_const_pressure.n,wall_heat.p),
+                            Gas.gas_connect(wall_heat.n,wall_hx.p),
+                            Gas.gas_connect(wall_hx.n,wall_relief.p),
+                            wall_heat.Q̇ ~ Qwall);
     return wall_sys, wall_connections, params, sysdict
 end
+function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
+    params = @parameters Qdivertor = load
+    pressure_max_divertor = max_pressure;  # bar
+    pressure_drop_divertor = pressrue_drop;
+    pressure_min_divertor = pressure_max_divertor-pressure_drop_divertor;
+    Tmin_divertor = Tmin;
+    Tmax_divertor = Tmax;
 
-function divertor_circuit(;
-    max_pressure = 80,
-    pressrue_drop = 5,
-    Tmin = 450 + 273.15,
-    Tmax = 550 + 273.15,
-)
-    params = @parameters Qdivertor = 100e6
-    pressure_max_divertor = max_pressure  # bar
-    pressure_drop_divertor = pressrue_drop
-    pressure_min_divertor = pressure_max_divertor - pressure_drop_divertor
-    Tmin_divertor = Tmin
-    Tmax_divertor = Tmax
-
-    @named divertor_supply =
-        Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
-    @named divertor_circulator = Gas.PassiveThermoCompressor2(η = 0.9)
-    @named divertor_const_pressure = Gas.SetPressure(P = pressure_max_divertor)
-    @named divertor_heat =
-        Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor, Tout = Tmax_divertor)
-    @named divertor_hx = Gas.ThermoHeatTransfer()
-    @named divertor_relief = Gas.ReliefElement()
-    divertor_sys = [
-        divertor_supply,
-        divertor_circulator,
-        divertor_const_pressure,
-        divertor_heat,
-        divertor_hx,
-        divertor_relief,
-    ]
-    sysdict = TSMD.sys2dict(divertor_sys)
-    divertor_connections = vcat(
-        Gas.gas_connect(divertor_supply.n, divertor_circulator.p, divertor_relief.n),
-        Gas.gas_connect(divertor_circulator.n, divertor_const_pressure.p),
-        Gas.gas_connect(divertor_const_pressure.n, divertor_heat.p),
-        Gas.gas_connect(divertor_heat.n, divertor_hx.p),
-        Gas.gas_connect(divertor_hx.n, divertor_relief.p),
-        divertor_heat.Q̇ ~ Qdivertor,
-    )
+    @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
+    @named divertor_circulator      = Gas.PassiveThermoCompressor2(η = 0.9)
+    @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
+    @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
+    @named divertor_hx              = Gas.ThermoHeatTransfer()  
+    @named divertor_relief          = Gas.ReliefElement()
+    divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
+    sysdict = sys2dict(divertor_sys)
+    divertor_connections = vcat(Gas.gas_connect(divertor_supply.n,divertor_circulator.p,divertor_relief.n),
+                            Gas.gas_connect(divertor_circulator.n,divertor_const_pressure.p),
+                            Gas.gas_connect(divertor_const_pressure.n,divertor_heat.p),
+                            Gas.gas_connect(divertor_heat.n,divertor_hx.p),
+                            Gas.gas_connect(divertor_hx.n,divertor_relief.p),
+                            divertor_heat.Q̇ ~ Qdivertor)
 
     return divertor_sys, divertor_connections, params, sysdict
 end
 
-function breeder_circuit(;
-    max_pressure = 40,
-    pressrue_drop = 8,
-    Tmin = 750 + 273.15,
-    Tmax = 900 + 273.15,
-)
-    params = @parameters Qbreeder = 100e6
-    pressure_max_breeder = max_pressure  # bar
-    pressure_drop_breeder = pressrue_drop
-    pressure_min_breeder = pressure_max_breeder - pressure_drop_breeder
-    Tmin_breeder = Tmin
-    Tmax_breeder = Tmax
-
-    @named breeder_supply =
-        Liq.SinglePortReservoir(P = pressure_min_breeder, T = Tmin_breeder)
-    @named breeder_circulator = Liq.PassiveIncompressiblePump2(η = 0.9)
-    @named breeder_const_pressure = Liq.SetPressure2(P = pressure_max_breeder)
-    @named breeder_heat = Liq.FlowControlIncompressibleHeatTransfer(
-        ΔP = pressure_drop_breeder,
-        Tout = Tmax_breeder,
-    )
-    @named breeder_hx = Liq.IncompressibleHeatTransfer()
-    @named breeder_relief = Liq.ReliefElement()
-
-    breeder_sys = [
-        breeder_supply,
-        breeder_circulator,
-        breeder_const_pressure,
-        breeder_heat,
-        breeder_hx,
-        breeder_relief,
-    ]
-    sysdict = TSMD.sys2dict(breeder_sys)
-    breeder_connections = vcat(
-        Liq.incompressible_connect(
-            breeder_supply.n,
-            breeder_circulator.p,
-            breeder_relief.n,
-        ),
-        Liq.incompressible_connect(breeder_circulator.n, breeder_const_pressure.p),
-        Liq.incompressible_connect(breeder_const_pressure.n, breeder_heat.p),
-        Liq.incompressible_connect(breeder_heat.n, breeder_hx.p),
-        Liq.incompressible_connect(breeder_hx.n, breeder_relief.p),
-        breeder_heat.Q̇ ~ Qbreeder,
-    )
+function breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273.15, Tmax = 900+273.15, load = 100e6)
+    params = @parameters Qbreeder = load
+    pressure_max_breeder = max_pressure;  # bar
+    pressure_drop_breeder = pressrue_drop;
+    pressure_min_breeder = pressure_max_breeder-pressure_drop_breeder;
+    Tmin_breeder = Tmin;
+    Tmax_breeder = Tmax;
+    
+    @named breeder_supply           = Liq.SinglePortReservoir(P = pressure_min_breeder,T = Tmin_breeder)
+    @named breeder_circulator       = Liq.PassiveIncompressiblePump2(η = 0.9)
+    @named breeder_const_pressure   = Liq.SetPressure2(P=pressure_max_breeder)
+    @named breeder_heat       		= Liq.FlowControlIncompressibleHeatTransfer(ΔP = pressure_drop_breeder, Tout = Tmax_breeder)
+    @named breeder_hx               = Liq.IncompressibleHeatTransfer()
+    @named breeder_relief           = Liq.ReliefElement()
+    
+    breeder_sys = [breeder_supply,breeder_circulator,breeder_const_pressure,breeder_heat,breeder_hx,breeder_relief]
+    sysdict = sys2dict(breeder_sys)
+    breeder_connections = vcat(Liq.incompressible_connect(breeder_supply.n,breeder_circulator.p,breeder_relief.n),
+                            Liq.incompressible_connect(breeder_circulator.n,breeder_const_pressure.p),
+                            Liq.incompressible_connect(breeder_const_pressure.n,breeder_heat.p),
+                            Liq.incompressible_connect(breeder_heat.n,breeder_hx.p),
+                            Liq.incompressible_connect(breeder_hx.n,breeder_relief.p),
+                            breeder_heat.Q̇ ~ Qbreeder)
 
 
     return breeder_sys, breeder_connections, params, sysdict
@@ -771,141 +723,298 @@ function feedwater_rankine(;
         steam_hp_pump,
         steam_supply,
     ]
-    sysdict = TSMD.sys2dict(steam_systems)
+    sysdict = sys2dict(steam_systems)
     return steam_systems, steam_connections, params, sysdict
 end
 
-function feedwater_rankine2(;
-    max_pressure = 150,
-    mid_pressure = 10,
-    min_pressure = 0.1,
-    flowrate = 50,
-)
-    params = @parameters steam_ṁ = flowrate
-    steam_pmid = mid_pressure
-    steam_pmin = min_pressure
-    steam_pmax = max_pressure
-    # @named steam_supply         = Steam.Reservoir(P = steam_pmin) #Steam.ContinuityReservoir()
-    # @named steam_valve          = Steam.SteamFlowSource(ṁ = flowrate)
-    @named steam_hp_pump =
-        Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
-    @named steam_boiler = Steam.SteamHeatTransfer()
-    @named steam_turbine = Steam.SIMOAdiabaticTurbine(
-        setpressure = true,
-        Pyin = steam_pmid,
-        Pzin = steam_pmin,
-        ηin = 1.0,
-    )
-    @named steam_lp_pump =
-        Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
-    @named steam_condensor = Steam.IdealCondensor()
-    @named steam_openfw = Steam.OpenFeedwaterHeater()
-
-    steam_connections = vcat(
-        Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
-        Steam.hydro_connect(steam_hp_pump.n, steam_boiler.p),
-        Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-        Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
-        Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
-        Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
-        Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
-        steam_hp_pump.p.ṁ ~ steam_ṁ,
-    )
-
-    steam_systems = [
-        steam_boiler,
-        steam_turbine,
-        steam_lp_pump,
-        steam_condensor,
-        steam_openfw,
-        steam_hp_pump,
-    ]
-    sysdict = TSMD.sys2dict(steam_systems)
-    return steam_systems, steam_connections, params, sysdict
-end
-
-function rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
-    #presssure units in bar
-    params = @parameters steam_ṁ = flowrate
-    @named steam_supply = Steam.Reservoir(P = steam_pmin)
-    @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
-    @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
-    @named steam_boiler = Steam.SteamHeatTransfer()
-    @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
-    @named steam_condensor = Steam.ReliefElement()
-    steam_sys = [
-        steam_supply,
-        steam_valve,
-        steam_pump,
-        steam_boiler,
-        steam_turbine,
-        steam_condensor,
-    ]
-    steam_connections = vcat(
-        Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
-        Steam.hydro_connect(steam_valve.n, steam_pump.p),
-        Steam.hydro_connect(steam_pump.n, steam_boiler.p),
-        Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-        Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
-    )
-
-    sysdict = TSMD.sys2dict(steam_sys)
-    return steam_sys, steam_connections, params, sysdict
-end
-
-function intermediate_loop(;
-    Pmax = 40,
-    Pmin = 32,
-    Nhx = 3,
-    Tmin = 350 + 273.15,
-    flowrate = 50,
-)
+function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)
     params = @parameters inter_loop_ṁ = flowrate
-    pressure_max_loop = 40  # bar
-    pressure_drop_loop = 8
-    pressure_min_loop = pressure_max_loop - pressure_drop_loop
-    Tmin_loop = 350 + 273.15
+    pressure_max_loop = Pmax;  # bar
+    pressure_drop_loop = Pmax - Pmin;
+    pressure_min_loop = pressure_max_loop-pressure_drop_loop;
+    Tmin_loop = Tmin
 
     pdrop_per = pressure_drop_loop / Nhx
 
-    @named inter_loop_supply = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop)
-    @named inter_loop_circulator = Gas.PassiveThermoCompressor2(η = 0.9)
-    @named inter_loop_const_pressure = Gas.SetPressure(P = pressure_max_loop)
-    @named inter_loop_hx1 = Gas.ThermoHeatTransfer(ΔP = pdrop_per)
-    @named inter_loop_relief = Gas.ReliefElement()
+    @named inter_loop_supply            = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop);
+    @named inter_loop_circulator        = Gas.PassiveThermoCompressor2(η = 0.9);
+    @named inter_loop_const_pressure    = Gas.SetPressure(P=pressure_max_loop);
+    @named inter_loop_hx1		    	= Gas.ThermoHeatTransfer(ΔP = pdrop_per) ;
+    @named inter_loop_relief          	= Gas.ReliefElement();
 
-    inter_loop_sys = [
-        inter_loop_supply,
-        inter_loop_relief,
-        inter_loop_circulator,
-        inter_loop_const_pressure,
-        inter_loop_hx1,
-    ]
-
-    inter_loop_connections = vcat(
-        Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p, inter_loop_relief.n),
-        Gas.gas_connect(inter_loop_circulator.n, inter_loop_const_pressure.p),
-        Gas.gas_connect(inter_loop_const_pressure.n, inter_loop_hx1.p),
-        inter_loop_circulator.p.ṁ ~ inter_loop_ṁ,
-    )
+    inter_loop_sys = [inter_loop_supply,inter_loop_relief,inter_loop_circulator,inter_loop_const_pressure,inter_loop_hx1]
+    
+    inter_loop_connections = vcat(Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p,inter_loop_relief.n),
+                                    Gas.gas_connect(inter_loop_circulator.n,inter_loop_const_pressure.p),
+                                    Gas.gas_connect(inter_loop_const_pressure.n,inter_loop_hx1.p),
+                                    inter_loop_circulator.p.ṁ ~ inter_loop_ṁ);
     for i = 2:Nhx
-        push!(
-            inter_loop_sys,
-            Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)"), ΔP = pdrop_per),
-        )
-        inter_loop_connections = vcat(
-            inter_loop_connections,
-            Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p),
-        )
+        push!(inter_loop_sys,Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)") ,ΔP = pdrop_per));
+        inter_loop_connections = vcat(inter_loop_connections, Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p))
     end
-    inter_loop_connections = vcat(
-        inter_loop_connections,
-        Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p),
-    )
+    inter_loop_connections = vcat(inter_loop_connections, 
+                                Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p))
 
-    sysdict = TSMD.sys2dict(inter_loop_sys)
+    sysdict = sys2dict(inter_loop_sys)
     return inter_loop_sys, inter_loop_connections, params, sysdict
 end
+# function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
+#     params = @parameters Qdivertor = load
+#     pressure_max_divertor = max_pressure;  # bar
+#     pressure_drop_divertor = pressrue_drop;
+#     pressure_min_divertor = pressure_max_divertor-pressure_drop_divertor;
+#     Tmin_divertor = Tmin;
+#     Tmax_divertor = Tmax;
+
+#     @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
+#     @named divertor_circulator      = Gas.PassiveThermoCompressor2(η = 0.9)
+#     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
+#     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
+#     @named divertor_hx              = Gas.ThermoHeatTransfer()  
+#     @named divertor_relief          = Gas.ReliefElement()
+#     divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
+#     sysdict = sys2dict(divertor_sys)
+#     divertor_connections = vcat(Gas.gas_connect(divertor_supply.n,divertor_circulator.p,divertor_relief.n),
+#                             Gas.gas_connect(divertor_circulator.n,divertor_const_pressure.p),
+#                             Gas.gas_connect(divertor_const_pressure.n,divertor_heat.p),
+#                             Gas.gas_connect(divertor_heat.n,divertor_hx.p),
+#                             Gas.gas_connect(divertor_hx.n,divertor_relief.p),
+#                             divertor_heat.Q̇ ~ Qdivertor)
+
+#     return divertor_sys, divertor_connections, params, sysdict
+# end
+
+# function breeder_circuit(;
+#     max_pressure = 40,
+#     pressrue_drop = 8,
+#     Tmin = 750 + 273.15,
+#     Tmax = 900 + 273.15,
+# )
+#     params = @parameters Qbreeder = 100e6
+#     pressure_max_breeder = max_pressure  # bar
+#     pressure_drop_breeder = pressrue_drop
+#     pressure_min_breeder = pressure_max_breeder - pressure_drop_breeder
+#     Tmin_breeder = Tmin
+#     Tmax_breeder = Tmax
+
+#     @named breeder_supply =
+#         Liq.SinglePortReservoir(P = pressure_min_breeder, T = Tmin_breeder)
+#     @named breeder_circulator = Liq.PassiveIncompressiblePump2(η = 0.9)
+#     @named breeder_const_pressure = Liq.SetPressure2(P = pressure_max_breeder)
+#     @named breeder_heat = Liq.FlowControlIncompressibleHeatTransfer(
+#         ΔP = pressure_drop_breeder,
+#         Tout = Tmax_breeder,
+#     )
+#     @named breeder_hx = Liq.IncompressibleHeatTransfer()
+#     @named breeder_relief = Liq.ReliefElement()
+
+#     breeder_sys = [
+#         breeder_supply,
+#         breeder_circulator,
+#         breeder_const_pressure,
+#         breeder_heat,
+#         breeder_hx,
+#         breeder_relief,
+#     ]
+#     sysdict = sys2dict(breeder_sys)
+#     breeder_connections = vcat(
+#         Liq.incompressible_connect(
+#             breeder_supply.n,
+#             breeder_circulator.p,
+#             breeder_relief.n,
+#         ),
+#         Liq.incompressible_connect(breeder_circulator.n, breeder_const_pressure.p),
+#         Liq.incompressible_connect(breeder_const_pressure.n, breeder_heat.p),
+#         Liq.incompressible_connect(breeder_heat.n, breeder_hx.p),
+#         Liq.incompressible_connect(breeder_hx.n, breeder_relief.p),
+#         breeder_heat.Q̇ ~ Qbreeder,
+#     )
+
+
+#     return breeder_sys, breeder_connections, params, sysdict
+# end
+
+# function feedwater_rankine(;
+#     max_pressure = 150,
+#     mid_pressure = 25,
+#     min_pressure = 0.1,
+#     flowrate = 50,
+# )
+#     params = @parameters steam_ṁ = flowrate
+#     steam_pmid = mid_pressure
+#     steam_pmin = min_pressure
+#     steam_pmax = max_pressure
+#     @named steam_supply = Steam.ContinuityReservoir()
+#     @named steam_hp_pump =
+#         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
+#     @named steam_boiler = Steam.SteamHeatTransfer()
+#     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
+#         setpressure = true,
+#         Pyin = steam_pmid,
+#         Pzin = steam_pmin,
+#         ηin = 1.0,
+#     )
+#     @named steam_lp_pump =
+#         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
+#     @named steam_condensor = Steam.IdealCondensor()
+#     @named steam_openfw = Steam.OpenFeedwaterHeater()
+
+#     steam_connections = vcat(
+#         Steam.hydro_connect(steam_supply.n, steam_boiler.p),
+#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+#         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
+#         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
+#         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
+#         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
+#         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
+#         Steam.hydro_connect(steam_hp_pump.n, steam_supply.p),
+#         steam_boiler.p.ṁ ~ steam_ṁ,
+#     )
+
+#     steam_systems = [
+#         steam_boiler,
+#         steam_turbine,
+#         steam_lp_pump,
+#         steam_condensor,
+#         steam_openfw,
+#         steam_hp_pump,
+#         steam_supply,
+#     ]
+#     sysdict = sys2dict(steam_systems)
+#     return steam_systems, steam_connections, params, sysdict
+# end
+
+# function feedwater_rankine2(;
+#     max_pressure = 150,
+#     mid_pressure = 10,
+#     min_pressure = 0.1,
+#     flowrate = 50,
+# )
+#     params = @parameters steam_ṁ = flowrate
+#     steam_pmid = mid_pressure
+#     steam_pmin = min_pressure
+#     steam_pmax = max_pressure
+#     # @named steam_supply         = Steam.Reservoir(P = steam_pmin) #Steam.ContinuityReservoir()
+#     # @named steam_valve          = Steam.SteamFlowSource(ṁ = flowrate)
+#     @named steam_hp_pump =
+#         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
+#     @named steam_boiler = Steam.SteamHeatTransfer()
+#     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
+#         setpressure = true,
+#         Pyin = steam_pmid,
+#         Pzin = steam_pmin,
+#         ηin = 1.0,
+#     )
+#     @named steam_lp_pump =
+#         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
+#     @named steam_condensor = Steam.IdealCondensor()
+#     @named steam_openfw = Steam.OpenFeedwaterHeater()
+
+#     steam_connections = vcat(
+#         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
+#         Steam.hydro_connect(steam_hp_pump.n, steam_boiler.p),
+#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+#         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
+#         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
+#         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
+#         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
+#         steam_hp_pump.p.ṁ ~ steam_ṁ,
+#     )
+
+#     steam_systems = [
+#         steam_boiler,
+#         steam_turbine,
+#         steam_lp_pump,
+#         steam_condensor,
+#         steam_openfw,
+#         steam_hp_pump,
+#     ]
+#     sysdict = sys2dict(steam_systems)
+#     return steam_systems, steam_connections, params, sysdict
+# end
+
+# function rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
+#     #presssure units in bar
+#     params = @parameters steam_ṁ = flowrate
+#     @named steam_supply = Steam.Reservoir(P = steam_pmin)
+#     @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
+#     @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
+#     @named steam_boiler = Steam.SteamHeatTransfer()
+#     @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
+#     @named steam_condensor = Steam.ReliefElement()
+#     steam_sys = [
+#         steam_supply,
+#         steam_valve,
+#         steam_pump,
+#         steam_boiler,
+#         steam_turbine,
+#         steam_condensor,
+#     ]
+#     steam_connections = vcat(
+#         Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
+#         Steam.hydro_connect(steam_valve.n, steam_pump.p),
+#         Steam.hydro_connect(steam_pump.n, steam_boiler.p),
+#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+#         Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
+#     )
+
+#     sysdict = sys2dict(steam_sys)
+#     return steam_sys, steam_connections, params, sysdict
+# # end
+
+# function intermediate_loop(;
+#     Pmax = 40,
+#     Pmin = 32,
+#     Nhx = 3,
+#     Tmin = 350 + 273.15,
+#     flowrate = 50,
+# )
+#     params = @parameters inter_loop_ṁ = flowrate
+#     pressure_max_loop = 40  # bar
+#     pressure_drop_loop = 8
+#     pressure_min_loop = pressure_max_loop - pressure_drop_loop
+#     Tmin_loop = 350 + 273.15
+
+#     pdrop_per = pressure_drop_loop / Nhx
+
+#     @named inter_loop_supply = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop)
+#     @named inter_loop_circulator = Gas.PassiveThermoCompressor2(η = 0.9)
+#     @named inter_loop_const_pressure = Gas.SetPressure(P = pressure_max_loop)
+#     @named inter_loop_hx1 = Gas.ThermoHeatTransfer(ΔP = pdrop_per)
+#     @named inter_loop_relief = Gas.ReliefElement()
+
+#     inter_loop_sys = [
+#         inter_loop_supply,
+#         inter_loop_relief,
+#         inter_loop_circulator,
+#         inter_loop_const_pressure,
+#         inter_loop_hx1,
+#     ]
+
+#     inter_loop_connections = vcat(
+#         Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p, inter_loop_relief.n),
+#         Gas.gas_connect(inter_loop_circulator.n, inter_loop_const_pressure.p),
+#         Gas.gas_connect(inter_loop_const_pressure.n, inter_loop_hx1.p),
+#         inter_loop_circulator.p.ṁ ~ inter_loop_ṁ,
+#     )
+#     for i = 2:Nhx
+#         push!(
+#             inter_loop_sys,
+#             Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)"), ΔP = pdrop_per),
+#         )
+#         inter_loop_connections = vcat(
+#             inter_loop_connections,
+#             Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p),
+#         )
+#     end
+#     inter_loop_connections = vcat(
+#         inter_loop_connections,
+#         Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p),
+#     )
+
+#     sysdict = sys2dict(inter_loop_sys)
+#     return inter_loop_sys, inter_loop_connections, params, sysdict
+# end
 
 function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
     TminCycle = 300
@@ -924,7 +1033,7 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
 
     @named cycle_regenerator_A = Gas.ThermoHeatTransfer()
     @named cycle_regenerator_B = Gas.ThermoHeatTransfer()
-    @named hx4 = TSMD.Gen_HeatExchanger(
+    @named hx4 = Gen_HeatExchanger(
         A = cycle_regenerator_A,
         B = cycle_regenerator_B,
         returnmode = :eq,
@@ -969,7 +1078,7 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
         cycle_cooler,
     ]
     # ODESystem(connections,t; name = name, systems = systemNames)
-    sysdict = TSMD.sys2dict(cyclesys)
+    sysdict = sys2dict(cyclesys)
     return cyclesys, connections, params, sysdict
 end
 
@@ -1146,7 +1255,458 @@ function set_default_node_props!(G, propname::Vector{Symbol}, propval::Vector{An
         [set_prop!(G, n, propname[i], propval[i]) for n in collect(vertices(G))]
     end
 end
+
+
+
+function init_node_prop!(g, propname, deft)
+    for i = 1:nv(g)
+        set_prop!(g, i, propname, deft)
+    end
+end
+# returns vector with all edge lengths for node vj
+function edge_d_func(G::AbstractGraph, vj::Int64)
+    nbs = all_neighbors(G, vj)
+
+    d = [
+        edge_d_func(
+            get_prop(G, vj, :pos)[1],
+            get_prop(G, vj, :pos)[2],
+            get_prop(G, vj, :width),
+            get_prop(G, vj, :height),
+            get_prop(G, vj, :normwidth),
+            get_prop(G, vj, :normheight),
+            get_prop(G, vi, :pos)[1],
+            get_prop(G, vi, :pos)[2],
+            get_prop(G, vi, :width),
+            get_prop(G, vi, :height),
+            get_prop(G, vi, :normwidth),
+            get_prop(G, vi, :normheight),
+        ) for vi in nbs
+    ]
+
+    return d
+end
+
+function edge_d_func(G::AbstractGraph, vj::Int64, testpos::T) where {T<:Point}
+    nbs = all_neighbors(G, vj)
+
+    d = [
+        edge_d_func(
+            testpos[1],
+            testpos[2],
+            get_prop(G, vj, :width),
+            get_prop(G, vj, :height),
+            get_prop(G, vj, :normwidth),
+            get_prop(G, vj, :normheight),
+            get_prop(G, vi, :pos)[1],
+            get_prop(G, vi, :pos)[2],
+            get_prop(G, vi, :width),
+            get_prop(G, vi, :height),
+            get_prop(G, vi, :normwidth),
+            get_prop(G, vi, :normheight),
+        ) for vi in nbs
+    ]
+
+    return d
+end
+
+function setpos!(G, lay)
+    for i = 1:nv(G)
+        set_prop!(G, i, :pos, lay[i])
+    end
+end
 #
+
+function occupied_grid_index(G)
+    v_idx = []
+    for i = 1:nv(G)
+        push!(v_idx, get_prop(G, i, :grididx))
+    end
+    return v_idx
+end
+
+function occupied_grid_positions(G)
+    v_idx = Point2f[]
+    for i = 1:nv(G)
+        push!(v_idx, get_prop(G, i, :pos))
+    end
+    return v_idx
+end
+
+function available_grid_positions(G)
+    op = occupied_grid_positions(G)
+    allpos = get_prop(G, :grid)
+    return setdiff(allpos, op)
+end
+
+function node2rect(pos, ht, wid)
+    x = pos[1]
+    y = pos[2] - ht #shift to bottom left
+    rt = GeometryBasics.Rect(Vec(x, y), Vec(wid, ht))
+    return rt
+end
+
+function graphBlocks(G)
+    lay = occupied_grid_positions(G) .* get_prop(G, :c)
+    blocks = [
+        node2rect(lay[i], get_prop(G, i, :height), get_prop(G, i, :width)) for
+        i = 1:nv(G)
+    ]
+    return lay, blocks
+end
+
+function edgeTuples(G)
+    return [(e.src, e.dst) for e in collect(edges(G))]
+end
+
+function available_grid_position_with_size(G, vj)
+
+    c = get_prop(G, :c)   # normalized grid spacing
+    available_pos = available_grid_positions(G)
+
+    opos = node_prop(G, :pos)        #all pos
+    owid = node_prop(G, :normwidth)
+    ohgt = node_prop(G, :normheight)
+
+    overflow_wid = findall(x -> x > c, owid)    # indices where the width > cell width
+    overflow_ht = findall(x -> x > c, ohgt)    # indices where the height is greater than cell height
+
+    all_indices = unique(union(overflow_ht, overflow_wid))
+    # nodes which spill into the cell below
+    for vremove in all_indices
+        pos = opos[vremove]
+        ht = ohgt[vremove]
+        wd = owid[vremove]
+        x = pos[1]
+        y = pos[2] - ht #shift to bottom left
+        rt = GeometryBasics.Rect(Vec(x, y), Vec(wd, ht))
+        overflow_nodes = findall(x -> x ∈ rt, available_pos) # indexin within apos
+        available_pos = setdiff(available_pos, available_pos[overflow_nodes])
+    end
+
+    hp = get_prop(G, vj, :normheight)
+    wp = get_prop(G, vj, :normwidth)
+    if hp <= 1 && wp <= 1
+        # fits in every grid
+        return available_pos
+    else
+        av_pos = deepcopy(available_pos)
+        for ap in available_pos
+            x = ap[1]
+            y = ap[2] - hp #shift to bottom left
+            rt = GeometryBasics.Rect(Vec(x, y), Vec(wp, hp))
+
+            # checking if any adjacent cells are filled 
+            overflow_nodes = findfirst(x -> x ∈ rt, opos) # indexin within apos
+            if !isempty(overflow_nodes)
+                av_pos = setdiff(av_pos, ap)
+            end
+        end
+    end
+    return av_pos
+end
+
+function update_pos!(G::AbstractGraph) where {T<:Point}
+    for vj = 1:nv(G)
+        newpos = get_prop(G, vj, :pos)
+        newidx = findfirst(x -> x == newpos, get_prop(G, :grid))
+        set_prop!(G, vj, :pos, newpos)
+        set_prop!(G, vj, :grididx, newidx)
+    end
+end
+
+function update_pos!(G::AbstractGraph, vj::Int64, newpos::T) where {T<:Point}
+    newidx = findfirst(x -> x == newpos, get_prop(G, :grid))
+    set_prop!(G, vj, :pos, newpos)
+    set_prop!(G, vj, :grididx, newidx)
+end
+
+function swap_pos!(G::AbstractGraph, vj::Int64, vi::Int64)
+    vj_pos = get_prop(G, vj, :pos)
+    vj_idx = get_prop(G, vj, :grididx)
+    set_prop!(G, vj, :pos, get_prop(G, vi, :pos))
+    set_prop!(G, vj, :grididx, get_prop(G, vi, :grididx))
+    set_prop!(G, vi, :pos, vj_pos)
+    set_prop!(G, vi, :grididx, vj_idx)
+end
+
+function swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)
+    vj_pos = get_prop(G, vj, :pos)
+    vj_edge_len = sum(edge_d_func(G, vj))
+    ocpos = occupied_grid_positions(G)
+
+    mht_dst = [manhattan_distance(vj_pos, op) for op in ocpos]
+    # node indexes for the closest nodes
+    check_idx = sortperm(mht_dst)
+
+    count = 1.0
+
+    for vi in check_idx
+        if vi == vj
+            continue
+        end
+
+        vi_edge_length = sum(edge_d_func(G, vi))
+        og_tot_length = vj_edge_len + vi_edge_length
+        new_tot_length =
+            sum(edge_d_func(G, vi, get_prop(G, vj, :pos))) +
+            sum(edge_d_func(G, vj, get_prop(G, vi, :pos)))
+
+        if new_tot_length < og_tot_length
+            swap_pos!(G, vi, vj)
+            verbose ? println("Swapped nodes $(vi) and $(vj) at iteration $(count)") :
+            nothing
+            return true
+        end
+
+        if count > maxiter
+            verbose ? println("no matches found") : nothing
+            return false
+        end
+        count = count + 1
+    end
+end
+
+function swap_adjacents_check_size(
+    G::AbstractGraph,
+    vj::Int64;
+    verbose = false,
+    maxiter = 10,
+)
+
+
+    vj_pos = get_prop(G, vj, :pos)
+    vj_edge_len = sum(edge_d_func(G, vj))
+    ocpos = occupied_grid_positions(G)
+    vj_wid = get_prop(G, vj, :normwidth)
+    vj_ht = get_prop(G, vj, :normheight)
+
+
+    mht_dst = [manhattan_distance(vj_pos, op) for op in ocpos]
+    # node indexes for the closest nodes
+    check_idx = sortperm(mht_dst)
+    count = 1.0
+
+    for vi in check_idx
+        if vi == vj
+            continue
+        end
+
+        allowable = true
+
+        vi_wid = get_prop(G, vi, :normwidth)
+        vi_ht = get_prop(G, vi, :normheight)
+        vi_pos = get_prop(G, vi, :pos)
+
+        if vi_wid != vj_wid || vi_ht != vj_ht
+            # ronfirming swap is okay
+            # postitions are swapped on purpose
+            rect_i = node2rect(vj_pos, vi_ht, vi_wd)
+            rect_j = node2rect(vi_pos, vj_ht, vj_wid)
+
+            tochech = setdiff(ocpos, [vj_pos, vi_pos])
+
+            ck = findall(x -> (x ∈ rect_i) || (x ∈ rect_j), ocp)
+
+            if !isempty(ck)
+                continue
+            end
+        end
+
+        vi_edge_length = sum(edge_d_func(G, vi))
+        og_tot_length = vj_edge_len + vi_edge_length
+        new_tot_length =
+            sum(edge_d_func(G, vi, get_prop(G, vj, :pos))) +
+            sum(edge_d_func(G, vj, get_prop(G, vi, :pos)))
+
+        if new_tot_length < og_tot_length
+            swap_pos!(G, vi, vj)
+            verbose ? println("Swapped nodes $(vi) and $(vj) at iteration $(count)") :
+            nothing
+            return true
+        end
+
+        if count > maxiter
+            verbose ? println("no matches found") : nothing
+            return false
+        end
+        count = count + 1
+    end
+end
+
+function vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)
+    ylow = y1 - h1
+    if y2 == y1
+        return true
+    elseif y2 < y1 && y2 > ylow
+        #case |
+        #     | |
+        #       |
+        return true
+    elseif (y2 - h2) > ylow && (y2 - h2) < y1
+        return true
+    elseif y2 > y1 && (y2 - h2) < ylow
+        return true
+    end
+    return false
+end
+
+function hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)
+    xhi = x1 + w1
+    if x1 == x2
+        return true
+    elseif x2 > x1 && x2 < xhi
+        #case x1-----xhi
+        #       x2---
+        return true
+    elseif (x2 + w2) > x1 && x2 < x1
+        #case x1-----xhi
+        #   x2---  
+        return true
+    elseif x2 < x1 && (x2 + w2) > xhi
+        return true
+    end
+    return false
+end
+
+function vlinecheck(srcl::Vector{Line}, dst::Line)
+    for sl in srcl
+        sldc = decompose(Point2f, sl)
+        bool = vlinecheck(
+            sl[1][2],
+            (sl[2][2] - sl[1][2]),
+            dst[1][2],
+            (dst[2][2] - dst[1][2]),
+        )
+        if bool == true
+            return true
+        end
+    end
+    return false
+end
+
+function vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)
+    yinter = findall(y -> (y <= y2) && (y >= y2 - h2), yvec)
+    if y2 > yvec[1] && (y2 + h2) <= yvec[end]
+        yinter = [1:length(xvec)...]
+    end
+    return yinter
+end
+
+function hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)
+    xinter = findall(x -> (x >= x2) && (x <= x2 + w2), xvec)
+    if x2 <= xvec[1] && xvec[end] <= (x2 + w2)
+        xinter = [1:length(xvec)...]
+    end
+    return xinter
+end
+
+function horizontal_visibility_graph(G::AbstractGraph)
+    gg = DiGraph()
+    add_vertices!(gg, nv(G))
+    npos = occupied_grid_positions(G)
+
+    xpos = [n[1] for n in npos]
+    ypos = [n[2] for n in npos]
+    hts = [get_prop(G, i, :height) for i = 1:nv(G)]
+
+    for i = 1:nv(gg)
+        node_x = xpos[i]
+        node_y = ypos[i]
+        node_h = hts[i]
+
+        # println("Node $(i) from $(node_y), $(node_h)")
+
+        src_pts = collect(LinRange(node_y - node_h, node_y, 100))
+        # xcriteria = findall(x -> (xpos[x] > node_x) , [1:nv(G)...])
+        allowable_pts = findall(
+            x ->
+                (xpos[x] > node_x) &&
+                    vlinecheck(node_y, node_h, ypos[x], hts[x]) == true,
+            [1:nv(G)...],
+        )
+        # @show allowable_pts
+        xpts = xpos[allowable_pts]
+        idx = allowable_pts[sortperm(xpts)]
+
+        for ix in idx
+            # destination line
+            # println("   node $(i) connections to $ix to $(ypos[ix]),$(hts[ix])")
+            yinter = vLineOverlap(src_pts, ypos[ix], hts[ix])
+            if !isempty(yinter)
+                # println("   Edge added $(i) => $(ix)")
+                add_edge!(gg, i, ix)
+                src_pts = setdiff(src_pts, src_pts[yinter])
+            end
+            if isempty(src_pts)
+                break
+            end
+        end
+    end
+    return gg
+end
+
+function vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)
+    gg = DiGraph()
+    add_vertices!(gg, nv(G))
+    npos = occupied_grid_positions(G)
+
+    xpos = [n[1] for n in npos]
+    ypos = [n[2] for n in npos]
+    wds = 0.1 .* ones(nv(G))
+    if accountForWidth == true
+        wds = [get_prop(G, i, :width) for i = 1:nv(G)]
+    end
+
+    for i = 1:nv(gg)
+        node_x = xpos[i]
+        node_y = ypos[i]
+        node_w = wds[i]
+
+        # println("Node $(i) from $(node_x), $(node_w)")
+        src_pts = collect(LinRange(node_x, node_x + node_w, 100))
+        allowable_pts = findall(
+            x ->
+                (ypos[x] < node_y) && (hlinecheck(node_x, node_w, xpos[x], wds[x])),
+            1:nv(G),
+        )
+
+        ypts = ypos[allowable_pts]
+        idx = allowable_pts[reverse(sortperm(ypts))]
+
+        for ix in idx
+            # destination line
+            # println("   node $(i) connections to $ix to $(xpos[ix]),$(wds[ix])")
+            xinter = hLineOverlap(src_pts, xpos[ix], wds[ix])
+            if !isempty(xinter)
+                add_edge!(gg, i, ix)
+                src_pts = setdiff(src_pts, src_pts[xinter])
+            end
+            if isempty(src_pts)
+                break
+            end
+        end
+    end
+    return gg
+end
+
+function visibility_graph(G::AbstractGraph, dir = 1)
+    if dir == 1
+        return horizontal_visibility_graph(G)
+    end
+    return vertical_visibility_graph(G)
+end
+
+function shiftlayout!(lay::Vector{T};) where {T<:Point}
+    # # full sankey
+    xlay = [xy[1] for xy in lay]
+    ylay = [xy[2] for xy in lay]
+    xoff = -minimum(xlay)
+    yoff = -minimum(ylay)
+    shft = Point2f(xoff, yoff)
+    lay = lay .+ shft
+    return lay
+end
 
 # General
 
@@ -1217,14 +1777,12 @@ function create_plot_graph(
     # copy graph for safe keeping
     G = deepcopy(GG)
     ## orignal graph = GG, G = copy of GG
-    verbose = false
     forceSameLayer = Pair{Int64,Int64}[]
 
     # Removing unnecessary comoponents FROM "G" (that don't need to be plotted)
     #   This includes all components with 1 edge only
     idx = Int[]
-    removeleafs &&
-        (idx = reverse(findall(x -> length(all_neighbors(G, x)) == 1, [1:nv(G)...])))    # components with 1 edge only
+    removeleafs && (idx = reverse(findall(x -> length(all_neighbors(G, x)) == 1, [1:nv(G)...])))    # components with 1 edge only
     idx = reverse(sort(vcat(idx, [G[flag, :name] for flag in remove_from_plot]...)))                           # reverse sort so you can remove them in a loop
     for id in idx
         verbose ? println("Removing node: $(get_prop(GG,id,:name))") : nothing
@@ -1672,7 +2230,7 @@ function layers_to_force!(
 end
 
 
-function initialize_plot_props!(gcopy, lay2node)
+function initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
     default_plot_properties =
         Dict([:normheight => 1, :normwidth => 1, :height => 1, :width => 1])
     G2 = get_prop(gcopy, :reduced_graph)
@@ -1719,7 +2277,7 @@ function initialize_plot_props!(gcopy, lay2node)
     # this is dope, I should do this all the time, create a checker function 
     checker(x) = x == 1 ? 1 : -1
     directional_value = checker.(rev_status)
-    quick_plotG(gcopy)
+    # quick_plotG(gcopy)
 end
 
 """
@@ -1811,28 +2369,28 @@ function add_plot_elments(
     end
     return gc
     #
-    # # path positions
-    # xpath = F32r.(xpnt(path_pts),3)
-    # ypath = F32r.(ypnt(path_pts),3)
+        # # path positions
+        # xpath = F32r.(xpnt(path_pts),3)
+        # ypath = F32r.(ypnt(path_pts),3)
 
-    # # Indexes with more than 2 pts (center point), applys to both x and p paths
-    # inter_pt_inx = findall(x -> length(x) > 2, xpath)
+        # # Indexes with more than 2 pts (center point), applys to both x and p paths
+        # inter_pt_inx = findall(x -> length(x) > 2, xpath)
 
-    # # Vector of unique points (counted correctly)
-    # xLayActuals = xs
-    # xLayInters  = vcat([x[2:end-1] for x in xpath[inter_pt_inx]]...)
-    # yLayInters  = vcat([y[2:end-1] for y in ypath[inter_pt_inx]]...)
-    # xLayPts     = vcat(xLayActuals,xLayInters)
-    # #y LayPts = vcat(ys,vcat(ypath[inter_pt_inx]...))
-    # # unique x points
-    # xUnqLay = sort(unique(xLayPts)) 
+        # # Vector of unique points (counted correctly)
+        # xLayActuals = xs
+        # xLayInters  = vcat([x[2:end-1] for x in xpath[inter_pt_inx]]...)
+        # yLayInters  = vcat([y[2:end-1] for y in ypath[inter_pt_inx]]...)
+        # xLayPts     = vcat(xLayActuals,xLayInters)
+        # #y LayPts = vcat(ys,vcat(ypath[inter_pt_inx]...))
+        # # unique x points
+        # xUnqLay = sort(unique(xLayPts)) 
 
-    # # count of how many points are positioned at the different unique x values
-    # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]     
-    # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]   
+        # # count of how many points are positioned at the different unique x values
+        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]     
+        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]   
 
-    # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]      
-    # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
+        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]      
+        # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
 end
 
 """
