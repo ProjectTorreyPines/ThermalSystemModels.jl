@@ -1707,8 +1707,6 @@ function shiftlayout!(lay::Vector{T};) where {T<:Point}
     return lay
 end
 
-# General
-
 """
     find_common_name(stringvec::Vector{String}; verbose = false)
     returns the string shared by all members of a vector
@@ -1760,7 +1758,6 @@ ck(x) = collect(keys(x))
 ce(x) = collect(edges(x))
 F32r(x, n) = Float32.(round.(x, digits = n))
 
-
 function create_plot_graph(
     GG;
     verbose = false,
@@ -1771,18 +1768,18 @@ function create_plot_graph(
 
 
     #   removeleafs : remove all nodes with only 1 edge connected ?
-    #   
-    #
     # copy graph for safe keeping
     G = deepcopy(GG)
     ## orignal graph = GG, G = copy of GG
-    forceSameLayer = Pair{Int64,Int64}[]
 
     # Removing unnecessary comoponents FROM "G" (that don't need to be plotted)
     #   This includes all components with 1 edge only
     idx = Int[]
-    removeleafs && (idx = reverse(findall(x -> length(all_neighbors(G, x)) == 1, [1:nv(G)...])))    # components with 1 edge only
+    
+    removeleafs && (idx = reverse(findall(x -> length(all_neighbors(G, x)) == 1, [1:nv(G)...])))                # components with 1 edge only
+    
     idx = reverse(sort(vcat(idx, [G[flag, :name] for flag in remove_from_plot]...)))                           # reverse sort so you can remove them in a loop
+    
     for id in idx
         verbose ? println("Removing node: $(get_prop(GG,id,:name))") : nothing
         rem_vertex!(G, id)
