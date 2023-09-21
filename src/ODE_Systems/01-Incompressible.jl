@@ -1,47 +1,51 @@
 # module ThermoIncompressible
-using ModelingToolkit, Plots, DifferentialEquations, Revise, CoolProp, Symbolics, Logging
+using ModelingToolkit, Plots, DifferentialEquations, Revise, Symbolics, Logging #CoolProp,
 using NonlinearSolve, Printf
 using Plots
 @variables t
 Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
 # data from [2]
-cppb(x)     = (0.195 - 9.116e-6 .* x) .* 1000  # J/kgK
-vpb(x)      = 1 / (10520.35 - 1.19051 .* x)      # m³/kg
-spb(x)      = 0.195*1e3*log(x) - 9.11e-6*1000*x - 1210.316002277804
-hpb(x,y)      = cppb(x)*x +  vpb(x) * y * 1e5 
+cppb(x) = (0.195 - 9.116e-6 .* x) .* 1000  # J/kgK
+vpb(x) = 1 / (10520.35 - 1.19051 .* x)      # m³/kg
+spb(x) = 0.195 * 1e3 * log(x) - 9.11e-6 * 1000 * x - 1210.316002277804
+hpb(x, y) = cppb(x) * x + vpb(x) * y * 1e5
 
 Lcpfunc(x) = cppb(x)
 Lvfunc(x) = vpb(x)
 Lsfunc(x) = spb(x)
-Lhfunc(x,y) = hpb(x,y)
+Lhfunc(x, y) = hpb(x, y)
 
 @variables x
 @register_symbolic Lcpfunc(x)
 @register_symbolic Lvfunc(x)
 @register_symbolic Lsfunc(x)
-@register_symbolic Lhfunc(x,y)
-propDict = Dict(Lcpfunc => cppb, 
-            Lvfunc => vpb,
-            Lsfunc => spb,
-            Lhfunc => hpb)
+@register_symbolic Lhfunc(x, y)
+propDict = Dict(Lcpfunc => cppb, Lvfunc => vpb, Lsfunc => spb, Lhfunc => hpb)
 
 
 @connector function IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
-    across_var  = @variables  P(t)=Pdef T(t)=Tdef s(t)=1.0 cp(t)=187 v(t)=.001
-    thru_var    = @variables  ṁ(t)=ṁdef Φ(t)=1.0                     # mass flow and energy flow
+    across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001
+    thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow
 
     eq = [
         cp ~ Lcpfunc(T)
         v ~ Lvfunc(T)
         s ~ Lsfunc(T)
     ]
-    sts = [T, P, ṁ, cp,s,v, Φ]
-    ODESystem(eq, t, sts, []; name = name, defaults = [P => Pdef,T=>Tdef, ṁ =>ṁdef, Φ => 0.0])
+    sts = [T, P, ṁ, cp, s, v, Φ]
+    ODESystem(
+        eq,
+        t,
+        sts,
+        [];
+        name = name,
+        defaults = [P => Pdef, T => Tdef, ṁ => ṁdef, Φ => 0.0],
+    )
 end
 
 @connector function WorkPin(; name)
-    sts = @variables Ẇ(t) = 0.0 
+    sts = @variables Ẇ(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name)
 end
 
@@ -51,44 +55,44 @@ end
 end
 
 @connector function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
-    sts = @variables Q̇(t)=Qin 
+    sts = @variables Q̇(t) = Qin
     ps = @parameters Qin = Qin
-    eqs=[Q̇ ~ Qin]
-    ODESystem(eqs,t, sts, ps; name = name, defaults = [Q̇ => Qin])
+    eqs = [Q̇ ~ Qin]
+    ODESystem(eqs, t, sts, ps; name = name, defaults = [Q̇ => Qin])
 end
 
 @component function IncompressibleOnePort(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
 
-    sts=@variables LHS(t) ΔP(t)=0.0 ΔT(t)=0.0
+    sts = @variables LHS(t) ΔP(t) = 0.0 ΔT(t) = 0.0
 
-    eqs =[
+    eqs = [
         LHS ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ               # mass flow 
         ΔP ~ n.P - p.P
         ΔT ~ n.T - p.T
     ]
-    ODESystem(eqs,t, sts, []; name = name, systems = [p,n])
+    ODESystem(eqs, t, sts, []; name = name, systems = [p, n])
 end
 
-@component function SetPressure(;name, P = 0.1)
+@component function SetPressure(; name, P = 0.1)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
-    ps = @parameters P = P 
+    ps = @parameters P = P
     eqs = [
         LHS ~ 0
         ΔT ~ 0
         ΔP ~ 0
-        p.P ~  P
-        ]
-        extend(ODESystem(eqs,t,[],ps; name = name), oneport)
+        p.P ~ P
+    ]
+    extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
-@component function SetPressure2(;name, P = 0.1)
+@component function SetPressure2(; name, P = 0.1)
     @named p = IncompressiblePin(Pdef = P)
     @named n = IncompressiblePin(Pdef = P)
-    ps = @parameters P = P 
+    ps = @parameters P = P
     eqs = [
         p.P ~ P
         n.P ~ p.P
@@ -96,20 +100,20 @@ end
         0 ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [p,n])
+    ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
-@component function SetTemperature(;name, T = 300)
+@component function SetTemperature(; name, T = 300)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
-    ps = @parameters T = T 
+    ps = @parameters T = T
     eqs = [
         p.T ~ T
         ΔT ~ 0
         ΔP ~ 0
         LHS ~ 0
     ]
-    extend(ODESystem(eqs,t,[],ps; name = name), oneport)
+    extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
 @component function IncompressibleFlowValve(; name)
@@ -121,10 +125,10 @@ end
         0 ~ p.Φ + n.Φ   # conservation of energy
         0 ~ p.ṁ + n.ṁ
         p.ṁ ~ ṁ
-        p.T ~ n.T 
+        p.T ~ n.T
         n.P ~ p.P
-    ] 
-    ODESystem(eqs,t,sts,[]; name = name,systems = [p,n],defaults = [ṁ => 1.0])
+    ]
+    ODESystem(eqs, t, sts, []; name = name, systems = [p, n], defaults = [ṁ => 1.0])
 end
 
 @component function IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
@@ -136,23 +140,24 @@ end
         0 ~ p.Φ + n.Φ   # conservation of energy
         0 ~ p.ṁ + n.ṁ
         p.ṁ ~ Ṁ
-        p.T ~ n.T 
+        p.T ~ n.T
         n.P ~ p.P
-    ] 
-    ODESystem(eqs,t,[],ps; name = name,systems = [p,n])
+    ]
+    ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
 @component function PassiveIncompressiblePump(; name, η = 0.9)
     @named oneport = IncompressibleOnePort()
     @named w = WorkPin()
-    @unpack ΔP, LHS, p,n = oneport
+    @unpack ΔP, LHS, p, n = oneport
     ps = @parameters η = η
 
-    eqs = [LHS ~ w.Ẇ
-            w.Ẇ ~ p.ṁ * p.v * ΔP * 1e5 / η
-            n.T  ~ p.T + (w.Ẇ - p.v*ΔP)/p.cp # work, multiply by 100 to get to kPa
-            ] 
-    extend(ODESystem(eqs,t,[],ps;systems = [w], name = name), oneport)
+    eqs = [
+        LHS ~ w.Ẇ
+        w.Ẇ ~ p.ṁ * p.v * ΔP * 1e5 / η
+        n.T ~ p.T + (w.Ẇ - p.v * ΔP) / p.cp # work, multiply by 100 to get to kPa
+    ]
+    extend(ODESystem(eqs, t, [], ps; systems = [w], name = name), oneport)
 end
 
 @component function PassiveIncompressiblePump2(; name, η = 1.0)
@@ -166,9 +171,9 @@ end
         0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
         w.Ẇ ~ p.ṁ * p.v * (n.P - p.P) * 1e5 / η
         w.Ẇ ~ p.Φ + n.Φ
-        n.T  ~ p.T + (p.v * (n.P - p.P) * 1e5 / η - p.v*(n.P - p.P)*1e5)/p.cp
+        n.T ~ p.T + (p.v * (n.P - p.P) * 1e5 / η - p.v * (n.P - p.P) * 1e5) / p.cp
     ]
-    ODESystem(eqs,t,[],ps; name = name, systems = [p,n,w])
+    ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
 
@@ -178,17 +183,25 @@ end
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
 
-    st = @variables Q̇(t)=0.0 C(t)=187
+    st = @variables Q̇(t) = 0.0 C(t) = 187
 
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
         q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
         C ~ p.ṁ * p.cp          # duty
-        0 ~ q.Q̇ - Q̇ 
-        n.T ~ p.T + q.Q̇/C
+        0 ~ q.Q̇ - Q̇
+        n.T ~ p.T + q.Q̇ / C
         n.P ~ p.P
     ]
-    ODESystem(eqs,t,[Q̇,C],[]; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0, C => 187])
+    ODESystem(
+        eqs,
+        t,
+        [Q̇, C],
+        [];
+        name = name,
+        systems = [p, n, q],
+        defaults = [Q̇ => 0.0, C => 187],
+    )
 end
 
 @component function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
@@ -196,57 +209,72 @@ end
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
 
-    st = @variables Q̇(t)=0.0 C(t)=187 ṁ(t)=1.0
+    st = @variables Q̇(t) = 0.0 C(t) = 187 ṁ(t) = 1.0
     ps = @parameters ΔP = ΔP Tout = Tout
     eqs = [
         n.T ~ Tout
-        ṁ ~ q.Q̇ /((n.T - p.T)*p.cp)           # q = mcp*ΔT
+        ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)           # q = mcp*ΔT
         p.ṁ ~ ṁ
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
         q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
         C ~ ṁ * p.cp          # duty
-        0 ~ q.Q̇ - Q̇ 
+        0 ~ q.Q̇ - Q̇
         n.P ~ p.P - ΔP
     ]
-    ODESystem(eqs,t,[Q̇,C,ṁ],ps; name = name, systems = [p,n,q], defaults = [Q̇ => 0.0, C => 187])
+    ODESystem(
+        eqs,
+        t,
+        [Q̇, C, ṁ],
+        ps;
+        name = name,
+        systems = [p, n, q],
+        defaults = [Q̇ => 0.0, C => 187],
+    )
 end
 
-@component function SinglePortReservoir(;name, P = 0.1, T = 300)
+@component function SinglePortReservoir(; name, P = 0.1, T = 300)
     @named n = IncompressiblePin(Pdef = P, Tdef = T)
-    ps = @parameters P=P T=T
+    ps = @parameters P = P T = T
     eqs = [
         n.P ~ P
         n.T ~ T
         n.Φ ~ 0
     ]
-    ODESystem(eqs, t,[], ps; name = name, systems = [n])
+    ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function TwoPortReservoir(;name, P = 0.1, T = 300)
+@component function TwoPortReservoir(; name, P = 0.1, T = 300)
     @named oneport = IncompressibleOnePort()
-    @unpack ΔT, ΔP, LHS, n,p = oneport
-    ps=@parameters T=T P=P
-    eqs = [LHS ~ 0
+    @unpack ΔT, ΔP, LHS, n, p = oneport
+    ps = @parameters T = T P = P
+    eqs = [
+        LHS ~ 0
         n.Φ ~ 0
         p.T ~ T
         p.P ~ P
         ΔP ~ 0
-        ΔT ~ 0]
+        ΔT ~ 0
+    ]
 
-    extend(ODESystem(eqs,t,[],ps; name = name, defaults = [T => 300.0, P => 10]), oneport)
+    extend(
+        ODESystem(eqs, t, [], ps; name = name, defaults = [T => 300.0, P => 10]),
+        oneport,
+    )
 end
 
 @component function throttle(; name)
     @named oneport = IncompressibleOnePort()
-    @unpack LHS,p,ΔT,n = oneport
-    sts=@variables Ė_loss(t)=0.0
-    eqs = [LHS ~ p.Φ
-            ΔT ~ 0
-            Ė_loss ~ p.Φ + n.Φ]
-    extend(ODESystem(eqs,t,sts,[]; name = name, defaults = [Ė_loss => 0.0]), oneport)
+    @unpack LHS, p, ΔT, n = oneport
+    sts = @variables Ė_loss(t) = 0.0
+    eqs = [
+        LHS ~ p.Φ
+        ΔT ~ 0
+        Ė_loss ~ p.Φ + n.Φ
+    ]
+    extend(ODESystem(eqs, t, sts, []; name = name, defaults = [Ė_loss => 0.0]), oneport)
 end
 
-@component function IdealCooler(;name)
+@component function IdealCooler(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
@@ -255,14 +283,14 @@ end
     eqs = [
         q.Q̇ ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ
-        n.P  ~  p.P                 # no pressure   
+        n.P ~ p.P                 # no pressure   
         q.Q̇ ~ p.ṁ * p.cp * (n.T - p.T)
         Q̇ ~ q.Q̇
-        ]
-    ODESystem(eqs, t, sts, []; name = name, systems = [p,n,q], defaults = [Q̇ => 0])
+    ]
+    ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0])
 end
 
-@component function ReliefElement(;name)
+@component function ReliefElement(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
@@ -270,8 +298,8 @@ end
     eqs = [
         n.ṁ + p.ṁ ~ 0           # has to be negative
         q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
-        ]
-    ODESystem(eqs, t,[], []; name = name, systems = [p,n,q])
+    ]
+    ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
 """
@@ -287,34 +315,34 @@ function incompressible_connect(pins...)
 
     for pin in pins[2:end]
         push!(eqs, pins[1].P ~ pin.P)   # p_1 = p_2, p_1 = p_3,...
-        push!(eqs, pins[1].T~ pin.T)   # p_1 = p_2, p_1 = p_3,...
+        push!(eqs, pins[1].T ~ pin.T)   # p_1 = p_2, p_1 = p_3,...
     end
     return eqs
 end
 
-function showsol(c,sol)
+function showsol(c, sol)
     for cel in c
         cvec = []
-        if hasproperty(cel,:p)
-            push!(cvec,cel.p)
+        if hasproperty(cel, :p)
+            push!(cvec, cel.p)
         end
-        if hasproperty(cel,:n)
-            push!(cvec,cel.n)
+        if hasproperty(cel, :n)
+            push!(cvec, cel.n)
         end
         for n in cvec
 
             @printf "\t %s ṁ = %.2f \t P = % .2f \t T = %.2f " n.name sol[n.ṁ][end] sol[n.P][end] sol[n.T][end]
 
-            if hasproperty(cel,:Q̇)
-                @printf " Q̇ = %.2e " sol[cel.Q̇][end] 
-            elseif hasproperty(cel,:q)
-                @printf " Q̇ = %.2e " sol[cel.q.Q̇][end] 
+            if hasproperty(cel, :Q̇)
+                @printf " Q̇ = %.2e " sol[cel.Q̇][end]
+            elseif hasproperty(cel, :q)
+                @printf " Q̇ = %.2e " sol[cel.q.Q̇][end]
             end
-            if hasproperty(cel,:C)
-                @printf " C = %.2e " sol[cel.C][end] 
+            if hasproperty(cel, :C)
+                @printf " C = %.2e " sol[cel.C][end]
             end
-            if hasproperty(cel,:w)
-                @printf " Ẇ = %.2e " sol[cel.w.Ẇ][end] 
+            if hasproperty(cel, :w)
+                @printf " Ẇ = %.2e " sol[cel.w.Ẇ][end]
             end
             @printf "\n"
         end
