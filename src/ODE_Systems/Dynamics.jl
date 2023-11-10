@@ -8,7 +8,7 @@ using ThermalSystem_Models, ModelingToolkit, Logging, Revise, Printf, OrdinaryDi
 using Statistics, GeometryBasics
 using LayeredLayouts, MetaGraphs, Graphs, Plots
 ModelingToolkit.@variables t
-Logging.disable_logging(Logging.Warn)
+# Logging.disable_logging(Logging.Warn)
 include("03-MTK_UTILS.jl")
 module Gas
 include("01-ThermoGas.jl")
@@ -180,409 +180,6 @@ end
     end
 end
 
-# @component function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
-#     # Control elements
-#     @named gnd = Steam.ContinuityReservoir()
-#     @named valve = Steam.SteamFlowValve()
-#     @named pumpA = Steam.AdiabaticPump(Pout = Pmid, setpressure = false)
-#     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
-
-#     #Boiler
-#     # @named boil         = IdealBoiler(Tout = 600+273)
-#     @named boil = Steam.SteamHeatTransfer()
-#     @named turbn =
-#         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
-
-#     @named cndnsr = Steam.IdealCondensor()
-#     @named openfw = Steam.OpenFeedwaterHeater()
-
-#     @named WorkRes = Steam.WorkPin()
-#     @named ColdUtil = Steam.HeatTransferPin()
-#     @named HotUtil = Steam.HeatTransferPin()
-
-#     connections = vcat(
-#         Steam.hydro_connect(openfw.n, valve.p),
-#         Steam.hydro_connect(valve.n, pumpB.p),          # pump -> boilder
-#         Steam.hydro_connect(pumpB.n, gnd.p),
-#         Steam.hydro_connect(gnd.n, boil.p),
-#         Steam.hydro_connect(boil.n, turbn.p),             # boiler -> turbine
-#         Steam.hydro_connect(turbn.hp.n, openfw.p1),        # turbine -> openfw y
-#         Steam.hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
-#         Steam.hydro_connect(cndnsr.n, pumpA.p),
-#         Steam.hydro_connect(pumpA.n, openfw.p2),
-#         work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
-#         heat_connect(ColdUtil, cndnsr.q),
-#         heat_connect(HotUtil, boil.q),
-#     )
-
-#     systems =
-#         [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
-
-#     ODESystem(connections, t; name = name, systems = systems)
-# end
-
-# @component function FwRankine3(; name)
-#     Pmax = 150
-#     Pmid2 = 40
-#     Pmid1 = 5
-#     Pmin = 0.1
-#     Tmax = 600 + 273.15
-#     @variables t
-#     @named ElectricUtil = Steam.WorkPin()
-#     @named ElectricGen = Steam.WorkPin()
-#     @named ColdUtil = Steam.HeatTransferPin()
-#     @named HotUtil = Steam.HeatTransferPin()
-
-#     @named reservoir = Steam.ContinuityReservoir()
-#     @named valve = Steam.SteamFlowValve()
-#     @named openfw = Steam.OpenFeedwaterHeater()
-#     @named closedfw = Steam.ClosedFeedwaterHeater()
-#     @named mixer = Steam.MixingChamber()
-
-#     @named pump1 = Steam.AdiabaticPump(Pout = Pmid1, setpressure = false, η = 1.0)
-#     @named pump2 = Steam.AdiabaticPump(Pout = Pmax, setpressure = false, η = 1.0)
-#     @named pump3 =
-#         Steam.AdiabaticPump(Pout = Pmax, setpressure = true, η = 1.0, controlinlet = true)
-
-#     @named turbine1 = Steam.AdiabaticTurbine(setpressure = true, Pout = Pmid2)
-#     @named turbine2 =
-#         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid1, Pzin = Pmin, ηin = 1.0)
-
-#     @named boiler = Steam.SteamHeatTransfer()
-#     @named reheat = Steam.SteamHeatTransfer()
-#     @named condensor = Steam.IdealCondensor()
-
-
-#     connections = vcat(
-#         Steam.hydro_connect(reservoir.n, valve.p),
-#         Steam.hydro_connect(valve.n, boiler.p),
-#         Steam.hydro_connect(boiler.n, turbine1.p),
-#         Steam.hydro_connect(turbine1.n, reheat.p, closedfw.p1),
-#         Steam.hydro_connect(reheat.n, turbine2.p),
-#         Steam.hydro_connect(turbine2.hp.n, openfw.p1),
-#         Steam.hydro_connect(turbine2.lp.n, condensor.p),
-#         Steam.hydro_connect(condensor.n, pump1.p),
-#         Steam.hydro_connect(pump1.n, openfw.p2),
-#         Steam.hydro_connect(openfw.n, pump2.p),
-#         Steam.hydro_connect(pump2.n, closedfw.p2),
-#         Steam.hydro_connect(closedfw.n1, pump3.p),
-#         Steam.hydro_connect(pump3.n, mixer.p1),
-#         Steam.hydro_connect(closedfw.n2, mixer.p2),
-#         Steam.hydro_connect(mixer.n, reservoir.p),
-#         work_connect(ElectricGen, turbine1.w, turbine2.hp.w, turbine2.lp.w),
-#         work_connect(ElectricUtil, pump1.w, pump2.w, pump3.w),
-#         heat_connect(ColdUtil, condensor.q),
-#     )
-
-
-#     systems = [
-#         reservoir,
-#         valve,
-#         openfw,
-#         closedfw,
-#         mixer,
-#         pump1,
-#         pump2,
-#         pump3,
-#         turbine1,
-#         turbine2,
-#         boiler,
-#         reheat,
-#         condensor,
-#         ElectricGen,
-#         ElectricUtil,
-#         ColdUtil,
-#     ]
-#     ODESystem(connections, t; name = name, systems = systems)
-# end
-
-# # @component function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
-# #     @named iores = Steam.ioReservoir(P = Pmin, fixboth = false)
-# #     @named valve = Steam.SteamFlowValve()
-# #     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
-# #     @named boil = Steam.SteamHeatTransfer()
-# #     @named turbine =
-# #         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
-# #     @named pumpA = Steam.AdiabaticPump(Pout = 10, setpressure = true)
-# #     @named condensor = Steam.IdealCondensor()
-# #     @named openfw = Steam.OpenFeedwaterHeater()
-
-# #     @named WorkRes = Steam.WorkPin()
-# #     @named ColdUtil = Steam.HeatTransferPin()
-# #     @named HotUtil = Steam.HeatTransferPin()
-
-# #     connections = vcat(
-# #         Steam.hydro_connect(pumpB.n, valve.p),
-# #         Steam.hydro_connect(valve.n, boil.p),
-# #         Steam.hydro_connect(boil.n, turbine.p),
-# #         Steam.hydro_connect(turbine.hp.n, openfw.p1),
-# #         Steam.hydro_connect(turbine.lp.n, condensor.p),
-# #         Steam.hydro_connect(condensor.n, iores.p),
-# #         Steam.hydro_connect(iores.n, pumpA.p),
-# #         Steam.hydro_connect(pumpA.n, openfw.p2),
-# #         Steam.hydro_connect(openfw.n, pumpB.p),
-# #         work_connect(WorkRes, turbine.lp.w, turbine.hp.w, pumpA.w, pumpB.w),
-# #         heat_connect(ColdUtil, condensor.q),
-# #         heat_connect(HotUtil, boil.q),
-# #     )
-
-# #     systems = [
-# #         valve,
-# #         boil,
-# #         turbine,
-# #         pumpB,
-# #         iores,
-# #         pumpA,
-# #         condensor,
-# #         openfw,
-# #         WorkRes,
-# #         ColdUtil,
-# #         HotUtil,
-# #     ]
-# #     ODESystem(connections, t; name = name, systems = systems)
-# # end
-
-# @component function ComplexBraytonRegen(; name)
-#     TminCycle = 300
-#     PminCycle = 15
-#     @named WorkRes = Steam.WorkPin()
-#     @named ColdUtil = Steam.HeatTransferPin()
-#     @named HotUtil = Steam.HeatTransferPin()
-#     @named res = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
-#     @named valve = Gas.GasFlowValve()
-#     @named comp1 = Gas.ActiveThermoCompressor(rp = 1.7, η = 0.9)
-#     @named ic1 = Gas.Intercooler(Tout = TminCycle)
-#     @named comp2 = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
-#     @named ic2 = Gas.Intercooler(Tout = TminCycle)
-#     @named comp3 = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
-#     @named regen = Gas.Regenerator()
-#     @named HeatIn = Gas.ThermoHeatTransfer()
-#     @named turbine = Gas.PassiveThermoTurbine()
-#     @named cool = Gas.IdealCooler()
-
-#     connections = vcat(
-#         Gas.gas_connect(res.n, valve.p),
-#         Gas.gas_connect(valve.n, comp1.p),
-#         Gas.gas_connect(comp1.n, ic1.p),
-#         Gas.gas_connect(ic1.n, comp2.p),
-#         Gas.gas_connect(comp2.n, ic2.p),
-#         Gas.gas_connect(ic2.n, comp3.p),
-#         Gas.hx_connect(regen, comp3, HeatIn, turbine, cool),
-#         Gas.gas_connect(HeatIn.n, turbine.p),
-#         Gas.gas_connect(cool.n, res.p),
-#         work_connect(WorkRes, turbine.w, comp1.w, comp2.w, comp3.w),
-#         heat_connect(ColdUtil, cool.q, ic2, ic1),
-#         heat_connect(HotUtil, HeatIn.q),
-#     )
-
-
-#     systemNames = [
-#         res,
-#         valve,
-#         comp1,
-#         ic1,
-#         comp2,
-#         ic2,
-#         comp3,
-#         regen,
-#         HeatIn,
-#         turbine,
-#         cool,
-#         WorkRes,
-#         ColdUtil,
-#         HotUtil,
-#     ]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
-# @component function Water_loop(; name, Pmin = 32, Pmax = 40)
-#     @named WorkRes = Steam.WorkPin()
-#     @named ColdUtil = Steam.HeatTransferPin()
-
-#     @named res = Steam.ioReservoir(P = Pmin, fixboth = true)
-#     @named valve = Steam.SteamFlowValve()
-#     @named pump = Steam.AdiabaticPump(η = 0.9, setpressure = true, Pout = Pmax)
-#     @named pset = Steam.SetPressure(P = Pmin)
-#     @named HeatIn = Steam.SteamHeatTransfer()
-#     @named HeatTx = Steam.SteamHeatTransfer()
-#     @named HeatRej = Steam.IdealCondensor()
-#     @named throttle = Steam.throttle()
-
-#     connections = vcat(
-#         Steam.hydro_connect(res.n, valve.p),
-#         Steam.hydro_connect(valve.n, pump.p),
-#         Steam.hydro_connect(pump.n, HeatIn.p),
-#         Steam.hydro_connect(HeatIn.n, HeatTx.p),
-#         Steam.hydro_connect(HeatTx.n, throttle.p),
-#         Steam.hydro_connect(throttle.n, HeatRej.p),
-#         Steam.hydro_connect(HeatRej.n, res.p),
-#         work_connect(WorkRes, pump.w),
-#         heat_connect(ColdUtil, HeatRej.q),
-#     )
-
-#     systemNames = [res, valve, pump, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
-# @component function He_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
-#     @named WorkRes = Gas.WorkPin()
-#     @named ColdUtil = Gas.HeatTransferPin()
-
-#     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
-#     @named valve = Gas.GasFlowValve()
-#     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
-#     @named pset = Gas.SetPressure(P = Pmax)
-#     @named HeatIn = Gas.ThermoHeatTransfer()
-#     @named HeatTx = Gas.ThermoHeatTransfer()
-#     @named HeatRej = Gas.ThermoHeatTransfer()
-#     @named throttle = Gas.throttle()
-
-#     connections = vcat(
-#         Gas.gas_connect(res.n, valve.p),
-#         Gas.gas_connect(valve.n, circulator.p),
-#         Gas.gas_connect(circulator.n, pset.p),
-#         Gas.gas_connect(pset.n, HeatIn.p),
-#         Gas.gas_connect(HeatIn.n, HeatTx.p),
-#         Gas.gas_connect(HeatTx.n, HeatRej.p),
-#         Gas.gas_connect(HeatRej.n, throttle.p),
-#         Gas.gas_connect(throttle.n, res.p),
-#         work_connect(WorkRes, circulator.w),
-#         heat_connect(ColdUtil, HeatRej.q),
-#     )
-
-#     systemNames =
-#         [res, valve, circulator, pset, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
-# @component function He_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
-#     @named WorkRes = Gas.WorkPin()
-#     @named ColdUtil = Gas.HeatTransferPin()
-#     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
-#     @named valve = Gas.GasFlowValve()
-#     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
-#     @named pset = Gas.SetPressure(P = Pmax)
-#     @named HeatInA = Gas.ThermoHeatTransfer(ΔP = 0.1)
-#     @named HeatInB = Gas.ThermoHeatTransfer(ΔP = 0.1)
-#     @named HeatInC = Gas.ThermoHeatTransfer(ΔP = 0.0)
-#     @named HeatTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
-#     @named HeatRej = Gas.ThermoHeatTransfer()
-#     @named throttle = Gas.throttle()
-
-#     connections = vcat(
-#         Gas.gas_connect(res.n, valve.p),
-#         Gas.gas_connect(valve.n, circulator.p),
-#         Gas.gas_connect(circulator.n, pset.p),
-#         Gas.gas_connect(pset.n, HeatInA.p),
-#         Gas.gas_connect(HeatInA.n, HeatInB.p),
-#         Gas.gas_connect(HeatInB.n, HeatInC.p),
-#         Gas.gas_connect(HeatInC.n, HeatTx.p),
-#         Gas.gas_connect(HeatTx.n, HeatRej.p),
-#         Gas.gas_connect(HeatRej.n, throttle.p),
-#         Gas.gas_connect(throttle.n, res.p),
-#         heat_connect(ColdUtil, HeatRej.q),
-#         work_connect(WorkRes, circulator.w),
-#     )
-
-#     systemNames = [
-#         res,
-#         valve,
-#         circulator,
-#         pset,
-#         HeatInA,
-#         HeatInB,
-#         HeatInC,
-#         HeatTx,
-#         HeatRej,
-#         throttle,
-#         WorkRes,
-#         ColdUtil,
-#     ]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
-# @component function He_quad_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
-#     @named WorkRes = Gas.WorkPin()
-#     @named ColdUtil = Gas.HeatTransferPin()
-#     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
-#     @named valve = Gas.GasFlowValve()
-#     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
-#     @named pset = Gas.SetPressure(P = Pmax)
-#     @named HeatInA = Gas.ThermoHeatTransfer(ΔP = 0.1)
-#     @named HeatInB = Gas.ThermoHeatTransfer(ΔP = 0.1)
-#     @named HeatInC = Gas.ThermoHeatTransfer(ΔP = 0.0)
-#     @named boilTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
-#     @named reheatTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
-#     @named HeatRej = Gas.ThermoHeatTransfer()
-#     @named throttle = Gas.throttle()
-
-#     connections = vcat(
-#         Gas.gas_connect(res.n, valve.p),
-#         Gas.gas_connect(valve.n, circulator.p),
-#         Gas.gas_connect(circulator.n, pset.p),
-#         Gas.gas_connect(pset.n, HeatInA.p),
-#         Gas.gas_connect(HeatInA.n, HeatInB.p),
-#         Gas.gas_connect(HeatInB.n, HeatInC.p),
-#         Gas.gas_connect(HeatInC.n, boilTx.p),
-#         Gas.gas_connect(boilTx.n, reheatTx.p),
-#         Gas.gas_connect(reheatTx.n, HeatRej.p),
-#         Gas.gas_connect(HeatRej.n, throttle.p),
-#         Gas.gas_connect(throttle.n, res.p),
-#         heat_connect(ColdUtil, HeatRej.q),
-#         work_connect(WorkRes, circulator.w),
-#     )
-
-#     systemNames = [
-#         res,
-#         valve,
-#         circulator,
-#         pset,
-#         HeatInA,
-#         HeatInB,
-#         HeatInC,
-#         boilTx,
-#         reheatTx,
-#         HeatRej,
-#         throttle,
-#         WorkRes,
-#         ColdUtil,
-#     ]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
-# @component function breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)
-#     @named WorkRes = Gas.WorkPin()
-#     @named ColdUtil = Gas.HeatTransferPin()
-#     @named res = Liq.TwoPortReservoir(P = Pmin, T = Tmin)
-#     @named valve = Liq.IncompressibleFlowValve()
-#     @named pump = Liq.PassiveIncompressiblePump()
-#     @named pset = Liq.SetPressure(P = Pmax)
-#     @named HeatIn = Liq.IncompressibleHeatTransfer()
-#     @named HeatTx = Liq.IncompressibleHeatTransfer()
-#     @named HeatRej = Liq.IdealCooler()
-#     @named throttle = Liq.throttle()
-
-
-#     connections = vcat(
-#         Liq.incompressible_connect(res.n, valve.p),
-#         Liq.incompressible_connect(valve.n, pump.p),
-#         Liq.incompressible_connect(pump.n, pset.p),
-#         Liq.incompressible_connect(pset.n, HeatIn.p),
-#         Liq.incompressible_connect(HeatIn.n, HeatTx.p),
-#         Liq.incompressible_connect(HeatTx.n, HeatRej.p),
-#         Liq.incompressible_connect(HeatRej.n, throttle.p),
-#         Liq.incompressible_connect(throttle.n, res.p),
-#         heat_connect(ColdUtil, HeatRej.q),
-#         work_connect(WorkRes, pump.w),
-#     )
-
-
-
-#     systemNames =
-#         [res, valve, pump, pset, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
-#     ODESystem(connections, t; name = name, systems = systemNames)
-# end
-
 ModelingToolkit.@variables t
 function default_energy_sys()
     sts = ModelingToolkit.@variables η_cycle(t) = 0.5 η_bop(t) = 0.5
@@ -596,16 +193,46 @@ function default_energy_sys()
     return energy_sys, sts, sysdict
 end
 
+
+# function helium_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
+#     params = @parameters Qwall = load
+#     pressure_max_wall   = max_pressure;  # bar
+#     pressure_drop_wall  = pressrue_drop;
+#     pressure_min_wall   = pressure_max_wall-pressure_drop_wall;
+#     Tmin_wall = Tmin;
+#     Tmax_wall = Tmax;
+    
+#     @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
+#     @named wall_circulator      = Gas.PassiveThermoCompressor(η = 0.9);
+#     @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
+#     @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
+#     @named wall_hx              = Gas.ThermoHeatTransfer() ; 
+#     @named wall_relief          = Gas.ReliefElement();
+    
+#     wall_sys = [wall_supply,wall_circulator,wall_const_pressure,wall_heat,wall_hx,wall_relief];
+
+#     sysdict = sys2dict(wall_sys)
+
+#     wall_connections = vcat(Gas.gas_connect(wall_supply.n,wall_circulator.p,wall_relief.n),
+#                             Gas.gas_connect(wall_circulator.n,wall_const_pressure.p),
+#                             Gas.gas_connect(wall_const_pressure.n,wall_heat.p),
+#                             Gas.gas_connect(wall_heat.n,wall_hx.p),
+#                             Gas.gas_connect(wall_hx.n,wall_relief.p),
+#                             wall_heat.Q̇ ~ Qwall);
+#     return wall_sys, wall_connections, params, sysdict
+# end
+
+
 function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
     params = @parameters Qwall = load
     pressure_max_wall   = max_pressure;  # bar
     pressure_drop_wall  = pressrue_drop;
-    pressure_min_wall = pressure_max_wall-pressure_drop_wall;
+    pressure_min_wall   = pressure_max_wall-pressure_drop_wall;
     Tmin_wall = Tmin;
     Tmax_wall = Tmax;
     
     @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
-    @named wall_circulator      = Gas.PassiveThermoCompressor2(η = 0.9);
+    @named wall_circulator      = Gas.PassiveThermoCompressor(η = 0.9);
     @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
     @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
     @named wall_hx              = Gas.ThermoHeatTransfer() ; 
@@ -623,6 +250,7 @@ function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15
                             wall_heat.Q̇ ~ Qwall);
     return wall_sys, wall_connections, params, sysdict
 end
+
 function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
     params = @parameters Qdivertor = load
     pressure_max_divertor = max_pressure;  # bar
@@ -632,7 +260,7 @@ function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +27
     Tmax_divertor = Tmax;
 
     @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
-    @named divertor_circulator      = Gas.PassiveThermoCompressor2(η = 0.9)
+    @named divertor_circulator      = Gas.PassiveThermoCompressor(η = 0.9)
     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
     @named divertor_hx              = Gas.ThermoHeatTransfer()  
@@ -681,6 +309,8 @@ function feedwater_rankine(;
     max_pressure = 150,
     mid_pressure = 25,
     min_pressure = 0.1,
+    ηpump = 1.0,
+    ηturbine = 1.0,
     flowrate = 50,
 )
     params = @parameters steam_ṁ = flowrate
@@ -689,16 +319,16 @@ function feedwater_rankine(;
     steam_pmax = max_pressure
     @named steam_supply = Steam.ContinuityReservoir()
     @named steam_hp_pump =
-        Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
+        Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η =ηpump)
     @named steam_boiler = Steam.SteamHeatTransfer()
     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
         setpressure = true,
         Pyin = steam_pmid,
         Pzin = steam_pmin,
-        ηin = 1.0,
+        ηin = ηturbine,
     )
     @named steam_lp_pump =
-        Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
+        Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = ηpump)
     @named steam_condensor = Steam.IdealCondensor()
     @named steam_openfw = Steam.OpenFeedwaterHeater()
 
@@ -737,7 +367,7 @@ function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, 
     pdrop_per = pressure_drop_loop / Nhx
 
     @named inter_loop_supply            = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop);
-    @named inter_loop_circulator        = Gas.PassiveThermoCompressor2(η = 0.9);
+    @named inter_loop_circulator        = Gas.PassiveThermoCompressor(η = 0.9);
     @named inter_loop_const_pressure    = Gas.SetPressure(P=pressure_max_loop);
     @named inter_loop_hx1		    	= Gas.ThermoHeatTransfer(ΔP = pdrop_per) ;
     @named inter_loop_relief          	= Gas.ReliefElement();
@@ -758,263 +388,666 @@ function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, 
     sysdict = sys2dict(inter_loop_sys)
     return inter_loop_sys, inter_loop_connections, params, sysdict
 end
-# function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
-#     params = @parameters Qdivertor = load
-#     pressure_max_divertor = max_pressure;  # bar
-#     pressure_drop_divertor = pressrue_drop;
-#     pressure_min_divertor = pressure_max_divertor-pressure_drop_divertor;
-#     Tmin_divertor = Tmin;
-#     Tmax_divertor = Tmax;
-
-#     @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
-#     @named divertor_circulator      = Gas.PassiveThermoCompressor2(η = 0.9)
-#     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
-#     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
-#     @named divertor_hx              = Gas.ThermoHeatTransfer()  
-#     @named divertor_relief          = Gas.ReliefElement()
-#     divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
-#     sysdict = sys2dict(divertor_sys)
-#     divertor_connections = vcat(Gas.gas_connect(divertor_supply.n,divertor_circulator.p,divertor_relief.n),
-#                             Gas.gas_connect(divertor_circulator.n,divertor_const_pressure.p),
-#                             Gas.gas_connect(divertor_const_pressure.n,divertor_heat.p),
-#                             Gas.gas_connect(divertor_heat.n,divertor_hx.p),
-#                             Gas.gas_connect(divertor_hx.n,divertor_relief.p),
-#                             divertor_heat.Q̇ ~ Qdivertor)
-
-#     return divertor_sys, divertor_connections, params, sysdict
-# end
-
-# function breeder_circuit(;
-#     max_pressure = 40,
-#     pressrue_drop = 8,
-#     Tmin = 750 + 273.15,
-#     Tmax = 900 + 273.15,
-# )
-#     params = @parameters Qbreeder = 100e6
-#     pressure_max_breeder = max_pressure  # bar
-#     pressure_drop_breeder = pressrue_drop
-#     pressure_min_breeder = pressure_max_breeder - pressure_drop_breeder
-#     Tmin_breeder = Tmin
-#     Tmax_breeder = Tmax
-
-#     @named breeder_supply =
-#         Liq.SinglePortReservoir(P = pressure_min_breeder, T = Tmin_breeder)
-#     @named breeder_circulator = Liq.PassiveIncompressiblePump2(η = 0.9)
-#     @named breeder_const_pressure = Liq.SetPressure2(P = pressure_max_breeder)
-#     @named breeder_heat = Liq.FlowControlIncompressibleHeatTransfer(
-#         ΔP = pressure_drop_breeder,
-#         Tout = Tmax_breeder,
-#     )
-#     @named breeder_hx = Liq.IncompressibleHeatTransfer()
-#     @named breeder_relief = Liq.ReliefElement()
-
-#     breeder_sys = [
-#         breeder_supply,
-#         breeder_circulator,
-#         breeder_const_pressure,
-#         breeder_heat,
-#         breeder_hx,
-#         breeder_relief,
-#     ]
-#     sysdict = sys2dict(breeder_sys)
-#     breeder_connections = vcat(
-#         Liq.incompressible_connect(
-#             breeder_supply.n,
-#             breeder_circulator.p,
-#             breeder_relief.n,
-#         ),
-#         Liq.incompressible_connect(breeder_circulator.n, breeder_const_pressure.p),
-#         Liq.incompressible_connect(breeder_const_pressure.n, breeder_heat.p),
-#         Liq.incompressible_connect(breeder_heat.n, breeder_hx.p),
-#         Liq.incompressible_connect(breeder_hx.n, breeder_relief.p),
-#         breeder_heat.Q̇ ~ Qbreeder,
-#     )
 
 
-#     return breeder_sys, breeder_connections, params, sysdict
-# end
+# @component function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+#     # Control elements
+        #     @named gnd = Steam.ContinuityReservoir()
+        #     @named valve = Steam.SteamFlowValve()
+        #     @named pumpA = Steam.AdiabaticPump(Pout = Pmid, setpressure = false)
+        #     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
 
-# function feedwater_rankine(;
-#     max_pressure = 150,
-#     mid_pressure = 25,
-#     min_pressure = 0.1,
-#     flowrate = 50,
-# )
-#     params = @parameters steam_ṁ = flowrate
-#     steam_pmid = mid_pressure
-#     steam_pmin = min_pressure
-#     steam_pmax = max_pressure
-#     @named steam_supply = Steam.ContinuityReservoir()
-#     @named steam_hp_pump =
-#         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
-#     @named steam_boiler = Steam.SteamHeatTransfer()
-#     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
-#         setpressure = true,
-#         Pyin = steam_pmid,
-#         Pzin = steam_pmin,
-#         ηin = 1.0,
-#     )
-#     @named steam_lp_pump =
-#         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
-#     @named steam_condensor = Steam.IdealCondensor()
-#     @named steam_openfw = Steam.OpenFeedwaterHeater()
+        #     #Boiler
+        #     # @named boil         = IdealBoiler(Tout = 600+273)
+        #     @named boil = Steam.SteamHeatTransfer()
+        #     @named turbn =
+        #         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
 
-#     steam_connections = vcat(
-#         Steam.hydro_connect(steam_supply.n, steam_boiler.p),
-#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-#         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
-#         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
-#         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
-#         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
-#         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
-#         Steam.hydro_connect(steam_hp_pump.n, steam_supply.p),
-#         steam_boiler.p.ṁ ~ steam_ṁ,
-#     )
+        #     @named cndnsr = Steam.IdealCondensor()
+        #     @named openfw = Steam.OpenFeedwaterHeater()
 
-#     steam_systems = [
-#         steam_boiler,
-#         steam_turbine,
-#         steam_lp_pump,
-#         steam_condensor,
-#         steam_openfw,
-#         steam_hp_pump,
-#         steam_supply,
-#     ]
-#     sysdict = sys2dict(steam_systems)
-#     return steam_systems, steam_connections, params, sysdict
-# end
+        #     @named WorkRes = Steam.WorkPin()
+        #     @named ColdUtil = Steam.HeatTransferPin()
+        #     @named HotUtil = Steam.HeatTransferPin()
 
-# function feedwater_rankine2(;
-#     max_pressure = 150,
-#     mid_pressure = 10,
-#     min_pressure = 0.1,
-#     flowrate = 50,
-# )
-#     params = @parameters steam_ṁ = flowrate
-#     steam_pmid = mid_pressure
-#     steam_pmin = min_pressure
-#     steam_pmax = max_pressure
-#     # @named steam_supply         = Steam.Reservoir(P = steam_pmin) #Steam.ContinuityReservoir()
-#     # @named steam_valve          = Steam.SteamFlowSource(ṁ = flowrate)
-#     @named steam_hp_pump =
-#         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
-#     @named steam_boiler = Steam.SteamHeatTransfer()
-#     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
-#         setpressure = true,
-#         Pyin = steam_pmid,
-#         Pzin = steam_pmin,
-#         ηin = 1.0,
-#     )
-#     @named steam_lp_pump =
-#         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
-#     @named steam_condensor = Steam.IdealCondensor()
-#     @named steam_openfw = Steam.OpenFeedwaterHeater()
+        #     connections = vcat(
+        #         Steam.hydro_connect(openfw.n, valve.p),
+        #         Steam.hydro_connect(valve.n, pumpB.p),          # pump -> boilder
+        #         Steam.hydro_connect(pumpB.n, gnd.p),
+        #         Steam.hydro_connect(gnd.n, boil.p),
+        #         Steam.hydro_connect(boil.n, turbn.p),             # boiler -> turbine
+        #         Steam.hydro_connect(turbn.hp.n, openfw.p1),        # turbine -> openfw y
+        #         Steam.hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
+        #         Steam.hydro_connect(cndnsr.n, pumpA.p),
+        #         Steam.hydro_connect(pumpA.n, openfw.p2),
+        #         work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
+        #         heat_connect(ColdUtil, cndnsr.q),
+        #         heat_connect(HotUtil, boil.q),
+        #     )
 
-#     steam_connections = vcat(
-#         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
-#         Steam.hydro_connect(steam_hp_pump.n, steam_boiler.p),
-#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-#         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
-#         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
-#         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
-#         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
-#         steam_hp_pump.p.ṁ ~ steam_ṁ,
-#     )
+        #     systems =
+        #         [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
 
-#     steam_systems = [
-#         steam_boiler,
-#         steam_turbine,
-#         steam_lp_pump,
-#         steam_condensor,
-#         steam_openfw,
-#         steam_hp_pump,
-#     ]
-#     sysdict = sys2dict(steam_systems)
-#     return steam_systems, steam_connections, params, sysdict
-# end
+        #     ODESystem(connections, t; name = name, systems = systems)
+        # end
 
-# function rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
-#     #presssure units in bar
-#     params = @parameters steam_ṁ = flowrate
-#     @named steam_supply = Steam.Reservoir(P = steam_pmin)
-#     @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
-#     @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
-#     @named steam_boiler = Steam.SteamHeatTransfer()
-#     @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
-#     @named steam_condensor = Steam.ReliefElement()
-#     steam_sys = [
-#         steam_supply,
-#         steam_valve,
-#         steam_pump,
-#         steam_boiler,
-#         steam_turbine,
-#         steam_condensor,
-#     ]
-#     steam_connections = vcat(
-#         Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
-#         Steam.hydro_connect(steam_valve.n, steam_pump.p),
-#         Steam.hydro_connect(steam_pump.n, steam_boiler.p),
-#         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-#         Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
-#     )
+        # @component function FwRankine3(; name)
+        #     Pmax = 150
+        #     Pmid2 = 40
+        #     Pmid1 = 5
+        #     Pmin = 0.1
+        #     Tmax = 600 + 273.15
+        #     @variables t
+        #     @named ElectricUtil = Steam.WorkPin()
+        #     @named ElectricGen = Steam.WorkPin()
+        #     @named ColdUtil = Steam.HeatTransferPin()
+        #     @named HotUtil = Steam.HeatTransferPin()
 
-#     sysdict = sys2dict(steam_sys)
-#     return steam_sys, steam_connections, params, sysdict
-# # end
+        #     @named reservoir = Steam.ContinuityReservoir()
+        #     @named valve = Steam.SteamFlowValve()
+        #     @named openfw = Steam.OpenFeedwaterHeater()
+        #     @named closedfw = Steam.ClosedFeedwaterHeater()
+        #     @named mixer = Steam.MixingChamber()
 
-# function intermediate_loop(;
-#     Pmax = 40,
-#     Pmin = 32,
-#     Nhx = 3,
-#     Tmin = 350 + 273.15,
-#     flowrate = 50,
-# )
-#     params = @parameters inter_loop_ṁ = flowrate
-#     pressure_max_loop = 40  # bar
-#     pressure_drop_loop = 8
-#     pressure_min_loop = pressure_max_loop - pressure_drop_loop
-#     Tmin_loop = 350 + 273.15
+        #     @named pump1 = Steam.AdiabaticPump(Pout = Pmid1, setpressure = false, η = 1.0)
+        #     @named pump2 = Steam.AdiabaticPump(Pout = Pmax, setpressure = false, η = 1.0)
+        #     @named pump3 =
+        #         Steam.AdiabaticPump(Pout = Pmax, setpressure = true, η = 1.0, controlinlet = true)
 
-#     pdrop_per = pressure_drop_loop / Nhx
+        #     @named turbine1 = Steam.AdiabaticTurbine(setpressure = true, Pout = Pmid2)
+        #     @named turbine2 =
+        #         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid1, Pzin = Pmin, ηin = 1.0)
 
-#     @named inter_loop_supply = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop)
-#     @named inter_loop_circulator = Gas.PassiveThermoCompressor2(η = 0.9)
-#     @named inter_loop_const_pressure = Gas.SetPressure(P = pressure_max_loop)
-#     @named inter_loop_hx1 = Gas.ThermoHeatTransfer(ΔP = pdrop_per)
-#     @named inter_loop_relief = Gas.ReliefElement()
+        #     @named boiler = Steam.SteamHeatTransfer()
+        #     @named reheat = Steam.SteamHeatTransfer()
+        #     @named condensor = Steam.IdealCondensor()
 
-#     inter_loop_sys = [
-#         inter_loop_supply,
-#         inter_loop_relief,
-#         inter_loop_circulator,
-#         inter_loop_const_pressure,
-#         inter_loop_hx1,
-#     ]
 
-#     inter_loop_connections = vcat(
-#         Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p, inter_loop_relief.n),
-#         Gas.gas_connect(inter_loop_circulator.n, inter_loop_const_pressure.p),
-#         Gas.gas_connect(inter_loop_const_pressure.n, inter_loop_hx1.p),
-#         inter_loop_circulator.p.ṁ ~ inter_loop_ṁ,
-#     )
-#     for i = 2:Nhx
-#         push!(
-#             inter_loop_sys,
-#             Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)"), ΔP = pdrop_per),
-#         )
-#         inter_loop_connections = vcat(
-#             inter_loop_connections,
-#             Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p),
-#         )
-#     end
-#     inter_loop_connections = vcat(
-#         inter_loop_connections,
-#         Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p),
-#     )
+        #     connections = vcat(
+        #         Steam.hydro_connect(reservoir.n, valve.p),
+        #         Steam.hydro_connect(valve.n, boiler.p),
+        #         Steam.hydro_connect(boiler.n, turbine1.p),
+        #         Steam.hydro_connect(turbine1.n, reheat.p, closedfw.p1),
+        #         Steam.hydro_connect(reheat.n, turbine2.p),
+        #         Steam.hydro_connect(turbine2.hp.n, openfw.p1),
+        #         Steam.hydro_connect(turbine2.lp.n, condensor.p),
+        #         Steam.hydro_connect(condensor.n, pump1.p),
+        #         Steam.hydro_connect(pump1.n, openfw.p2),
+        #         Steam.hydro_connect(openfw.n, pump2.p),
+        #         Steam.hydro_connect(pump2.n, closedfw.p2),
+        #         Steam.hydro_connect(closedfw.n1, pump3.p),
+        #         Steam.hydro_connect(pump3.n, mixer.p1),
+        #         Steam.hydro_connect(closedfw.n2, mixer.p2),
+        #         Steam.hydro_connect(mixer.n, reservoir.p),
+        #         work_connect(ElectricGen, turbine1.w, turbine2.hp.w, turbine2.lp.w),
+        #         work_connect(ElectricUtil, pump1.w, pump2.w, pump3.w),
+        #         heat_connect(ColdUtil, condensor.q),
+        #     )
 
-#     sysdict = sys2dict(inter_loop_sys)
-#     return inter_loop_sys, inter_loop_connections, params, sysdict
-# end
+
+        #     systems = [
+        #         reservoir,
+        #         valve,
+        #         openfw,
+        #         closedfw,
+        #         mixer,
+        #         pump1,
+        #         pump2,
+        #         pump3,
+        #         turbine1,
+        #         turbine2,
+        #         boiler,
+        #         reheat,
+        #         condensor,
+        #         ElectricGen,
+        #         ElectricUtil,
+        #         ColdUtil,
+        #     ]
+        #     ODESystem(connections, t; name = name, systems = systems)
+        # end
+
+        # # @component function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+        # #     @named iores = Steam.ioReservoir(P = Pmin, fixboth = false)
+        # #     @named valve = Steam.SteamFlowValve()
+        # #     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
+        # #     @named boil = Steam.SteamHeatTransfer()
+        # #     @named turbine =
+        # #         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
+        # #     @named pumpA = Steam.AdiabaticPump(Pout = 10, setpressure = true)
+        # #     @named condensor = Steam.IdealCondensor()
+        # #     @named openfw = Steam.OpenFeedwaterHeater()
+
+        # #     @named WorkRes = Steam.WorkPin()
+        # #     @named ColdUtil = Steam.HeatTransferPin()
+        # #     @named HotUtil = Steam.HeatTransferPin()
+
+        # #     connections = vcat(
+        # #         Steam.hydro_connect(pumpB.n, valve.p),
+        # #         Steam.hydro_connect(valve.n, boil.p),
+        # #         Steam.hydro_connect(boil.n, turbine.p),
+        # #         Steam.hydro_connect(turbine.hp.n, openfw.p1),
+        # #         Steam.hydro_connect(turbine.lp.n, condensor.p),
+        # #         Steam.hydro_connect(condensor.n, iores.p),
+        # #         Steam.hydro_connect(iores.n, pumpA.p),
+        # #         Steam.hydro_connect(pumpA.n, openfw.p2),
+        # #         Steam.hydro_connect(openfw.n, pumpB.p),
+        # #         work_connect(WorkRes, turbine.lp.w, turbine.hp.w, pumpA.w, pumpB.w),
+        # #         heat_connect(ColdUtil, condensor.q),
+        # #         heat_connect(HotUtil, boil.q),
+        # #     )
+
+        # #     systems = [
+        # #         valve,
+        # #         boil,
+        # #         turbine,
+        # #         pumpB,
+        # #         iores,
+        # #         pumpA,
+        # #         condensor,
+        # #         openfw,
+        # #         WorkRes,
+        # #         ColdUtil,
+        # #         HotUtil,
+        # #     ]
+        # #     ODESystem(connections, t; name = name, systems = systems)
+        # # end
+
+        # @component function ComplexBraytonRegen(; name)
+        #     TminCycle = 300
+        #     PminCycle = 15
+        #     @named WorkRes = Steam.WorkPin()
+        #     @named ColdUtil = Steam.HeatTransferPin()
+        #     @named HotUtil = Steam.HeatTransferPin()
+        #     @named res = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
+        #     @named valve = Gas.GasFlowValve()
+        #     @named comp1 = Gas.ActiveThermoCompressor(rp = 1.7, η = 0.9)
+        #     @named ic1 = Gas.Intercooler(Tout = TminCycle)
+        #     @named comp2 = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
+        #     @named ic2 = Gas.Intercooler(Tout = TminCycle)
+        #     @named comp3 = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
+        #     @named regen = Gas.Regenerator()
+        #     @named HeatIn = Gas.ThermoHeatTransfer()
+        #     @named turbine = Gas.PassiveThermoTurbine()
+        #     @named cool = Gas.IdealCooler()
+
+        #     connections = vcat(
+        #         Gas.gas_connect(res.n, valve.p),
+        #         Gas.gas_connect(valve.n, comp1.p),
+        #         Gas.gas_connect(comp1.n, ic1.p),
+        #         Gas.gas_connect(ic1.n, comp2.p),
+        #         Gas.gas_connect(comp2.n, ic2.p),
+        #         Gas.gas_connect(ic2.n, comp3.p),
+        #         Gas.hx_connect(regen, comp3, HeatIn, turbine, cool),
+        #         Gas.gas_connect(HeatIn.n, turbine.p),
+        #         Gas.gas_connect(cool.n, res.p),
+        #         work_connect(WorkRes, turbine.w, comp1.w, comp2.w, comp3.w),
+        #         heat_connect(ColdUtil, cool.q, ic2, ic1),
+        #         heat_connect(HotUtil, HeatIn.q),
+        #     )
+
+
+        #     systemNames = [
+        #         res,
+        #         valve,
+        #         comp1,
+        #         ic1,
+        #         comp2,
+        #         ic2,
+        #         comp3,
+        #         regen,
+        #         HeatIn,
+        #         turbine,
+        #         cool,
+        #         WorkRes,
+        #         ColdUtil,
+        #         HotUtil,
+        #     ]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # @component function Water_loop(; name, Pmin = 32, Pmax = 40)
+        #     @named WorkRes = Steam.WorkPin()
+        #     @named ColdUtil = Steam.HeatTransferPin()
+
+        #     @named res = Steam.ioReservoir(P = Pmin, fixboth = true)
+        #     @named valve = Steam.SteamFlowValve()
+        #     @named pump = Steam.AdiabaticPump(η = 0.9, setpressure = true, Pout = Pmax)
+        #     @named pset = Steam.SetPressure(P = Pmin)
+        #     @named HeatIn = Steam.SteamHeatTransfer()
+        #     @named HeatTx = Steam.SteamHeatTransfer()
+        #     @named HeatRej = Steam.IdealCondensor()
+        #     @named throttle = Steam.throttle()
+
+        #     connections = vcat(
+        #         Steam.hydro_connect(res.n, valve.p),
+        #         Steam.hydro_connect(valve.n, pump.p),
+        #         Steam.hydro_connect(pump.n, HeatIn.p),
+        #         Steam.hydro_connect(HeatIn.n, HeatTx.p),
+        #         Steam.hydro_connect(HeatTx.n, throttle.p),
+        #         Steam.hydro_connect(throttle.n, HeatRej.p),
+        #         Steam.hydro_connect(HeatRej.n, res.p),
+        #         work_connect(WorkRes, pump.w),
+        #         heat_connect(ColdUtil, HeatRej.q),
+        #     )
+
+        #     systemNames = [res, valve, pump, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # @component function He_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
+        #     @named WorkRes = Gas.WorkPin()
+        #     @named ColdUtil = Gas.HeatTransferPin()
+
+        #     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
+        #     @named valve = Gas.GasFlowValve()
+        #     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
+        #     @named pset = Gas.SetPressure(P = Pmax)
+        #     @named HeatIn = Gas.ThermoHeatTransfer()
+        #     @named HeatTx = Gas.ThermoHeatTransfer()
+        #     @named HeatRej = Gas.ThermoHeatTransfer()
+        #     @named throttle = Gas.throttle()
+
+        #     connections = vcat(
+        #         Gas.gas_connect(res.n, valve.p),
+        #         Gas.gas_connect(valve.n, circulator.p),
+        #         Gas.gas_connect(circulator.n, pset.p),
+        #         Gas.gas_connect(pset.n, HeatIn.p),
+        #         Gas.gas_connect(HeatIn.n, HeatTx.p),
+        #         Gas.gas_connect(HeatTx.n, HeatRej.p),
+        #         Gas.gas_connect(HeatRej.n, throttle.p),
+        #         Gas.gas_connect(throttle.n, res.p),
+        #         work_connect(WorkRes, circulator.w),
+        #         heat_connect(ColdUtil, HeatRej.q),
+        #     )
+
+        #     systemNames =
+        #         [res, valve, circulator, pset, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # @component function He_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
+        #     @named WorkRes = Gas.WorkPin()
+        #     @named ColdUtil = Gas.HeatTransferPin()
+        #     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
+        #     @named valve = Gas.GasFlowValve()
+        #     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
+        #     @named pset = Gas.SetPressure(P = Pmax)
+        #     @named HeatInA = Gas.ThermoHeatTransfer(ΔP = 0.1)
+        #     @named HeatInB = Gas.ThermoHeatTransfer(ΔP = 0.1)
+        #     @named HeatInC = Gas.ThermoHeatTransfer(ΔP = 0.0)
+        #     @named HeatTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
+        #     @named HeatRej = Gas.ThermoHeatTransfer()
+        #     @named throttle = Gas.throttle()
+
+        #     connections = vcat(
+        #         Gas.gas_connect(res.n, valve.p),
+        #         Gas.gas_connect(valve.n, circulator.p),
+        #         Gas.gas_connect(circulator.n, pset.p),
+        #         Gas.gas_connect(pset.n, HeatInA.p),
+        #         Gas.gas_connect(HeatInA.n, HeatInB.p),
+        #         Gas.gas_connect(HeatInB.n, HeatInC.p),
+        #         Gas.gas_connect(HeatInC.n, HeatTx.p),
+        #         Gas.gas_connect(HeatTx.n, HeatRej.p),
+        #         Gas.gas_connect(HeatRej.n, throttle.p),
+        #         Gas.gas_connect(throttle.n, res.p),
+        #         heat_connect(ColdUtil, HeatRej.q),
+        #         work_connect(WorkRes, circulator.w),
+        #     )
+
+        #     systemNames = [
+        #         res,
+        #         valve,
+        #         circulator,
+        #         pset,
+        #         HeatInA,
+        #         HeatInB,
+        #         HeatInC,
+        #         HeatTx,
+        #         HeatRej,
+        #         throttle,
+        #         WorkRes,
+        #         ColdUtil,
+        #     ]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # @component function He_quad_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
+        #     @named WorkRes = Gas.WorkPin()
+        #     @named ColdUtil = Gas.HeatTransferPin()
+        #     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
+        #     @named valve = Gas.GasFlowValve()
+        #     @named circulator = Gas.PassiveThermoCompressor(η = 0.9)
+        #     @named pset = Gas.SetPressure(P = Pmax)
+        #     @named HeatInA = Gas.ThermoHeatTransfer(ΔP = 0.1)
+        #     @named HeatInB = Gas.ThermoHeatTransfer(ΔP = 0.1)
+        #     @named HeatInC = Gas.ThermoHeatTransfer(ΔP = 0.0)
+        #     @named boilTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
+        #     @named reheatTx = Gas.ThermoHeatTransfer(ΔP = 0.0)
+        #     @named HeatRej = Gas.ThermoHeatTransfer()
+        #     @named throttle = Gas.throttle()
+
+        #     connections = vcat(
+        #         Gas.gas_connect(res.n, valve.p),
+        #         Gas.gas_connect(valve.n, circulator.p),
+        #         Gas.gas_connect(circulator.n, pset.p),
+        #         Gas.gas_connect(pset.n, HeatInA.p),
+        #         Gas.gas_connect(HeatInA.n, HeatInB.p),
+        #         Gas.gas_connect(HeatInB.n, HeatInC.p),
+        #         Gas.gas_connect(HeatInC.n, boilTx.p),
+        #         Gas.gas_connect(boilTx.n, reheatTx.p),
+        #         Gas.gas_connect(reheatTx.n, HeatRej.p),
+        #         Gas.gas_connect(HeatRej.n, throttle.p),
+        #         Gas.gas_connect(throttle.n, res.p),
+        #         heat_connect(ColdUtil, HeatRej.q),
+        #         work_connect(WorkRes, circulator.w),
+        #     )
+
+        #     systemNames = [
+        #         res,
+        #         valve,
+        #         circulator,
+        #         pset,
+        #         HeatInA,
+        #         HeatInB,
+        #         HeatInC,
+        #         boilTx,
+        #         reheatTx,
+        #         HeatRej,
+        #         throttle,
+        #         WorkRes,
+        #         ColdUtil,
+        #     ]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # @component function breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)
+        #     @named WorkRes = Gas.WorkPin()
+        #     @named ColdUtil = Gas.HeatTransferPin()
+        #     @named res = Liq.TwoPortReservoir(P = Pmin, T = Tmin)
+        #     @named valve = Liq.IncompressibleFlowValve()
+        #     @named pump = Liq.PassiveIncompressiblePump()
+        #     @named pset = Liq.SetPressure(P = Pmax)
+        #     @named HeatIn = Liq.IncompressibleHeatTransfer()
+        #     @named HeatTx = Liq.IncompressibleHeatTransfer()
+        #     @named HeatRej = Liq.IdealCooler()
+        #     @named throttle = Liq.throttle()
+
+
+        #     connections = vcat(
+        #         Liq.incompressible_connect(res.n, valve.p),
+        #         Liq.incompressible_connect(valve.n, pump.p),
+        #         Liq.incompressible_connect(pump.n, pset.p),
+        #         Liq.incompressible_connect(pset.n, HeatIn.p),
+        #         Liq.incompressible_connect(HeatIn.n, HeatTx.p),
+        #         Liq.incompressible_connect(HeatTx.n, HeatRej.p),
+        #         Liq.incompressible_connect(HeatRej.n, throttle.p),
+        #         Liq.incompressible_connect(throttle.n, res.p),
+        #         heat_connect(ColdUtil, HeatRej.q),
+        #         work_connect(WorkRes, pump.w),
+        #     )
+
+        #     systemNames =
+        #         [res, valve, pump, pset, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
+        #     ODESystem(connections, t; name = name, systems = systemNames)
+        # end
+
+        # function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
+        #     params = @parameters Qdivertor = load
+        #     pressure_max_divertor = max_pressure;  # bar
+        #     pressure_drop_divertor = pressrue_drop;
+        #     pressure_min_divertor = pressure_max_divertor-pressure_drop_divertor;
+        #     Tmin_divertor = Tmin;
+        #     Tmax_divertor = Tmax;
+
+        #     @named divertor_supply          = Gas.SinglePortReservoir(P = pressure_min_divertor, T = Tmin_divertor)
+        #     @named divertor_circulator      = Gas.PassiveThermoCompressor(η = 0.9)
+        #     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
+        #     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
+        #     @named divertor_hx              = Gas.ThermoHeatTransfer()  
+        #     @named divertor_relief          = Gas.ReliefElement()
+        #     divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
+        #     sysdict = sys2dict(divertor_sys)
+        #     divertor_connections = vcat(Gas.gas_connect(divertor_supply.n,divertor_circulator.p,divertor_relief.n),
+        #                             Gas.gas_connect(divertor_circulator.n,divertor_const_pressure.p),
+        #                             Gas.gas_connect(divertor_const_pressure.n,divertor_heat.p),
+        #                             Gas.gas_connect(divertor_heat.n,divertor_hx.p),
+        #                             Gas.gas_connect(divertor_hx.n,divertor_relief.p),
+        #                             divertor_heat.Q̇ ~ Qdivertor)
+
+        #     return divertor_sys, divertor_connections, params, sysdict
+        # end
+
+        # function breeder_circuit(;
+        #     max_pressure = 40,
+        #     pressrue_drop = 8,
+        #     Tmin = 750 + 273.15,
+        #     Tmax = 900 + 273.15,
+        # )
+        #     params = @parameters Qbreeder = 100e6
+        #     pressure_max_breeder = max_pressure  # bar
+        #     pressure_drop_breeder = pressrue_drop
+        #     pressure_min_breeder = pressure_max_breeder - pressure_drop_breeder
+        #     Tmin_breeder = Tmin
+        #     Tmax_breeder = Tmax
+
+        #     @named breeder_supply =
+        #         Liq.SinglePortReservoir(P = pressure_min_breeder, T = Tmin_breeder)
+        #     @named breeder_circulator = Liq.PassiveIncompressiblePump2(η = 0.9)
+        #     @named breeder_const_pressure = Liq.SetPressure2(P = pressure_max_breeder)
+        #     @named breeder_heat = Liq.FlowControlIncompressibleHeatTransfer(
+        #         ΔP = pressure_drop_breeder,
+        #         Tout = Tmax_breeder,
+        #     )
+        #     @named breeder_hx = Liq.IncompressibleHeatTransfer()
+        #     @named breeder_relief = Liq.ReliefElement()
+
+        #     breeder_sys = [
+        #         breeder_supply,
+        #         breeder_circulator,
+        #         breeder_const_pressure,
+        #         breeder_heat,
+        #         breeder_hx,
+        #         breeder_relief,
+        #     ]
+        #     sysdict = sys2dict(breeder_sys)
+        #     breeder_connections = vcat(
+        #         Liq.incompressible_connect(
+        #             breeder_supply.n,
+        #             breeder_circulator.p,
+        #             breeder_relief.n,
+        #         ),
+        #         Liq.incompressible_connect(breeder_circulator.n, breeder_const_pressure.p),
+        #         Liq.incompressible_connect(breeder_const_pressure.n, breeder_heat.p),
+        #         Liq.incompressible_connect(breeder_heat.n, breeder_hx.p),
+        #         Liq.incompressible_connect(breeder_hx.n, breeder_relief.p),
+        #         breeder_heat.Q̇ ~ Qbreeder,
+        #     )
+
+
+        #     return breeder_sys, breeder_connections, params, sysdict
+        # end
+
+        # function feedwater_rankine(;
+        #     max_pressure = 150,
+        #     mid_pressure = 25,
+        #     min_pressure = 0.1,
+        #     flowrate = 50,
+        # )
+        #     params = @parameters steam_ṁ = flowrate
+        #     steam_pmid = mid_pressure
+        #     steam_pmin = min_pressure
+        #     steam_pmax = max_pressure
+        #     @named steam_supply = Steam.ContinuityReservoir()
+        #     @named steam_hp_pump =
+        #         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
+        #     @named steam_boiler = Steam.SteamHeatTransfer()
+        #     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
+        #         setpressure = true,
+        #         Pyin = steam_pmid,
+        #         Pzin = steam_pmin,
+        #         ηin = 1.0,
+        #     )
+        #     @named steam_lp_pump =
+        #         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
+        #     @named steam_condensor = Steam.IdealCondensor()
+        #     @named steam_openfw = Steam.OpenFeedwaterHeater()
+
+        #     steam_connections = vcat(
+        #         Steam.hydro_connect(steam_supply.n, steam_boiler.p),
+        #         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+        #         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
+        #         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
+        #         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
+        #         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
+        #         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
+        #         Steam.hydro_connect(steam_hp_pump.n, steam_supply.p),
+        #         steam_boiler.p.ṁ ~ steam_ṁ,
+        #     )
+
+        #     steam_systems = [
+        #         steam_boiler,
+        #         steam_turbine,
+        #         steam_lp_pump,
+        #         steam_condensor,
+        #         steam_openfw,
+        #         steam_hp_pump,
+        #         steam_supply,
+        #     ]
+        #     sysdict = sys2dict(steam_systems)
+        #     return steam_systems, steam_connections, params, sysdict
+        # end
+
+        # function feedwater_rankine2(;
+        #     max_pressure = 150,
+        #     mid_pressure = 10,
+        #     min_pressure = 0.1,
+        #     flowrate = 50,
+        # )
+        #     params = @parameters steam_ṁ = flowrate
+        #     steam_pmid = mid_pressure
+        #     steam_pmin = min_pressure
+        #     steam_pmax = max_pressure
+        #     # @named steam_supply         = Steam.Reservoir(P = steam_pmin) #Steam.ContinuityReservoir()
+        #     # @named steam_valve          = Steam.SteamFlowSource(ṁ = flowrate)
+        #     @named steam_hp_pump =
+        #         Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = 1.0)
+        #     @named steam_boiler = Steam.SteamHeatTransfer()
+        #     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
+        #         setpressure = true,
+        #         Pyin = steam_pmid,
+        #         Pzin = steam_pmin,
+        #         ηin = 1.0,
+        #     )
+        #     @named steam_lp_pump =
+        #         Steam.AdiabaticPump(Pout = steam_pmid, setpressure = false, η = 1.0)
+        #     @named steam_condensor = Steam.IdealCondensor()
+        #     @named steam_openfw = Steam.OpenFeedwaterHeater()
+
+        #     steam_connections = vcat(
+        #         Steam.hydro_connect(steam_openfw.n, steam_hp_pump.p),
+        #         Steam.hydro_connect(steam_hp_pump.n, steam_boiler.p),
+        #         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+        #         Steam.hydro_connect(steam_turbine.hp.n, steam_openfw.p1),
+        #         Steam.hydro_connect(steam_turbine.lp.n, steam_condensor.p),
+        #         Steam.hydro_connect(steam_condensor.n, steam_lp_pump.p),
+        #         Steam.hydro_connect(steam_lp_pump.n, steam_openfw.p2),
+        #         steam_hp_pump.p.ṁ ~ steam_ṁ,
+        #     )
+
+        #     steam_systems = [
+        #         steam_boiler,
+        #         steam_turbine,
+        #         steam_lp_pump,
+        #         steam_condensor,
+        #         steam_openfw,
+        #         steam_hp_pump,
+        #     ]
+        #     sysdict = sys2dict(steam_systems)
+        #     return steam_systems, steam_connections, params, sysdict
+        # end
+
+        # function rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
+        #     #presssure units in bar
+        #     params = @parameters steam_ṁ = flowrate
+        #     @named steam_supply = Steam.Reservoir(P = steam_pmin)
+        #     @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
+        #     @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
+        #     @named steam_boiler = Steam.SteamHeatTransfer()
+        #     @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
+        #     @named steam_condensor = Steam.ReliefElement()
+        #     steam_sys = [
+        #         steam_supply,
+        #         steam_valve,
+        #         steam_pump,
+        #         steam_boiler,
+        #         steam_turbine,
+        #         steam_condensor,
+        #     ]
+        #     steam_connections = vcat(
+        #         Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
+        #         Steam.hydro_connect(steam_valve.n, steam_pump.p),
+        #         Steam.hydro_connect(steam_pump.n, steam_boiler.p),
+        #         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+        #         Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
+        #     )
+
+        #     sysdict = sys2dict(steam_sys)
+        #     return steam_sys, steam_connections, params, sysdict
+        # # end
+
+        # function intermediate_loop(;
+        #     Pmax = 40,
+        #     Pmin = 32,
+        #     Nhx = 3,
+        #     Tmin = 350 + 273.15,
+        #     flowrate = 50,
+        # )
+        #     params = @parameters inter_loop_ṁ = flowrate
+        #     pressure_max_loop = 40  # bar
+        #     pressure_drop_loop = 8
+        #     pressure_min_loop = pressure_max_loop - pressure_drop_loop
+        #     Tmin_loop = 350 + 273.15
+
+        #     pdrop_per = pressure_drop_loop / Nhx
+
+        #     @named inter_loop_supply = Gas.SinglePortReservoir(P = pressure_min_loop, T = Tmin_loop)
+        #     @named inter_loop_circulator = Gas.PassiveThermoCompressor(η = 0.9)
+        #     @named inter_loop_const_pressure = Gas.SetPressure(P = pressure_max_loop)
+        #     @named inter_loop_hx1 = Gas.ThermoHeatTransfer(ΔP = pdrop_per)
+        #     @named inter_loop_relief = Gas.ReliefElement()
+
+        #     inter_loop_sys = [
+        #         inter_loop_supply,
+        #         inter_loop_relief,
+        #         inter_loop_circulator,
+        #         inter_loop_const_pressure,
+        #         inter_loop_hx1,
+        #     ]
+
+        #     inter_loop_connections = vcat(
+        #         Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p, inter_loop_relief.n),
+        #         Gas.gas_connect(inter_loop_circulator.n, inter_loop_const_pressure.p),
+        #         Gas.gas_connect(inter_loop_const_pressure.n, inter_loop_hx1.p),
+        #         inter_loop_circulator.p.ṁ ~ inter_loop_ṁ,
+        #     )
+        #     for i = 2:Nhx
+        #         push!(
+        #             inter_loop_sys,
+        #             Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)"), ΔP = pdrop_per),
+        #         )
+        #         inter_loop_connections = vcat(
+        #             inter_loop_connections,
+        #             Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p),
+        #         )
+        #     end
+        #     inter_loop_connections = vcat(
+        #         inter_loop_connections,
+        #         Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p),
+        #     )
+
+        #     sysdict = sys2dict(inter_loop_sys)
+        #     return inter_loop_sys, inter_loop_connections, params, sysdict
+        # end
 
 function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
     TminCycle = 300
@@ -1405,7 +1438,7 @@ function available_grid_position_with_size(G, vj)
     return av_pos
 end
 
-function update_pos!(G::AbstractGraph) where {T<:Point}
+function update_pos!(G::AbstractGraph)
     for vj = 1:nv(G)
         newpos = get_prop(G, vj, :pos)
         newidx = findfirst(x -> x == newpos, get_prop(G, :grid))
@@ -2365,6 +2398,115 @@ function add_plot_elments(
         end
     end
     return gc
+    #
+        # # path positions
+        # xpath = F32r.(xpnt(path_pts),3)
+        # ypath = F32r.(ypnt(path_pts),3)
+
+        # # Indexes with more than 2 pts (center point), applys to both x and p paths
+        # inter_pt_inx = findall(x -> length(x) > 2, xpath)
+
+        # # Vector of unique points (counted correctly)
+        # xLayActuals = xs
+        # xLayInters  = vcat([x[2:end-1] for x in xpath[inter_pt_inx]]...)
+        # yLayInters  = vcat([y[2:end-1] for y in ypath[inter_pt_inx]]...)
+        # xLayPts     = vcat(xLayActuals,xLayInters)
+        # #y LayPts = vcat(ys,vcat(ypath[inter_pt_inx]...))
+        # # unique x points
+        # xUnqLay = sort(unique(xLayPts)) 
+
+        # # count of how many points are positioned at the different unique x values
+        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]     
+        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]   
+
+        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]      
+        # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
+end
+
+function add_plot_elments!(
+    gcopy;
+    verbose = false,
+    default_plot_properties = Dict([
+        :displayName => "",
+        :normheight => 1,
+        :normwidth => 1,
+        :height => 1,
+        :width => 1,
+        :nodeType => :fake,
+    ]),
+)
+    xs, ys, paths = solve_positions(Zarate(), gcopy)#force_layer=[3=>14], force_order =[10=>6, 7=>3, 3=>2],
+    # quick_plot(gcopy,xs,ys,paths)
+    path_pts = collect(values(paths))
+    # node positions
+    xs = F32r(xs, 3)
+    ys = F32r(ys, 3)
+    lay = [Point2f(xs[i], ys[i]) for i = 1:nv(gcopy)]
+    setpos!(gcopy, lay)
+    set_default_edge_prop!(gcopy, :sectionId, 1)
+    set_default_edge_prop!(gcopy, :nSections, 1)
+    set_default_node_prop!(gcopy, :nodeType, :real)
+    default_plot_properties = Dict()
+    default_plot_properties = Dict([
+        :displayName => "",
+        :normheight => 1,
+        :normwidth => 1,
+        :height => 1,
+        :width => 1,
+        :nodeType => :fake,
+    ])
+    countt = 1
+    for e in collect(edges(gcopy))
+        eprops = props(gcopy, e)
+        epathx, epathy = paths[e]
+        refnode_props = props(gcopy, e.src)
+        refnode_keys = collect(keys(refnode_props))
+        if length(epathx) > 2 #removing edge and replacing with fake nodes
+            nsections = length(epathx) - 1
+            nnodes = nsections - 1
+            startnode = e.src
+            for i = 1:nnodes
+                add_vertex!(gcopy)
+                set_props!(
+                    gcopy,
+                    nv(gcopy),
+                    Dict([
+                        :normheight => 1,
+                        :normwidth => 1,
+                        :height => 1,
+                        :width => 1,
+                        :nodeType => :fake,
+                        :name => Symbol("plotnode" * "$countt"),
+                        :displayName => "",
+                    ]),
+                )
+                set_prop!(gcopy, nv(gcopy), :pos, Point2f(epathx[i+1], epathy[i+1]))
+                for rpk in refnode_keys
+                    if has_prop(gcopy, nv(gcopy), rpk) == false
+                        verbose ? println("$rpk") : nothing
+                        set_prop!(gcopy, nv(gcopy), rpk, refnode_props[rpk])
+                    end
+                end
+                add_edge!(gcopy, startnode, nv(gcopy))
+                set_single_edge_props!(gcopy, Edge(startnode, nv(gcopy)), eprops)
+                set_single_edge_props!(
+                    gcopy,
+                    Edge(startnode, nv(gcopy)),
+                    Dict([:sectionId => i, :nSections => nsections]),
+                )
+                startnode = nv(gcopy)
+                countt = countt + 1
+            end
+            add_edge!(gcopy, nv(gcopy), e.dst)
+            set_single_edge_props!(gcopy, Edge(nv(gcopy), e.dst), eprops)
+            set_single_edge_props!(
+                gcopy,
+                Edge(nv(gcopy), e.dst),
+                Dict([:sectionId => nsections, :nSections => nsections]),
+            )
+            rem_edge!(gcopy, e.src, e.dst)
+        end
+    end
     #
         # # path positions
         # xpath = F32r.(xpnt(path_pts),3)

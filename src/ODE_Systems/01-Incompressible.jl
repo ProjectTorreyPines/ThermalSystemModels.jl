@@ -3,7 +3,7 @@ using ModelingToolkit, Plots, DifferentialEquations, Revise, Symbolics, Logging 
 using NonlinearSolve, Printf
 using Plots
 @variables t
-Logging.disable_logging(Logging.Warn)
+# Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
 # data from [2]
 cppb(x) = (0.195 - 9.116e-6 .* x) .* 1000  # J/kgK
@@ -24,7 +24,7 @@ Lhfunc(x, y) = hpb(x, y)
 propDict = Dict(Lcpfunc => cppb, Lvfunc => vpb, Lsfunc => spb, Lhfunc => hpb)
 
 
-@connector function IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
+function IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
     across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001
     thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow
 
@@ -44,17 +44,17 @@ propDict = Dict(Lcpfunc => cppb, Lvfunc => vpb, Lsfunc => spb, Lhfunc => hpb)
     )
 end
 
-@connector function WorkPin(; name)
+function WorkPin(; name)
     sts = @variables Ẇ(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name)
 end
 
-@connector function HeatTransferPin(; name)  #input in W
+function HeatTransferPin(; name)  #input in W
     sts = @variables Q̇(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name, defaults = [Q̇ => 0.0])
 end
 
-@connector function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
+function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
     sts = @variables Q̇(t) = Qin
     ps = @parameters Qin = Qin
     eqs = [Q̇ ~ Qin]

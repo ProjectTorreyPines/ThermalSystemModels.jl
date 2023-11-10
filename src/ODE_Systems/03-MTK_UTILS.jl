@@ -46,10 +46,13 @@ function showsol(c, sol::ODESolution)
             push!(estorage, cel)
         end
         for n in cvec
-            @printf "%-13s  P[bar]= %-8.1f T[K]= %-8.1f ṁ[kg/s]= %+-7.2f Φ=%+-7.2f" n.name sol[n.P][end] sol[n.T][end] sol[n.ṁ][end] sol[n.Φ][end] /
+            @printf "%-13s  P[bar]= %-8.1f T[C]= %-8.1f ṁ[kg/s]= %+-7.2f Φ=%+-7.2f" n.name sol[n.P][end] sol[n.T][end]-273.15 sol[n.ṁ][end] sol[n.Φ][end] /
                                                                                                                                        10^6
             if hasproperty(n, :h)
                 @printf "h[kJ/kg]= %-8.1f" sol[n.h][end] / 1e3
+            end
+            if hasproperty(n, :s)
+                @printf "s[kJ/kg]= %-8.1f" sol[n.s][end] / 1e3
             end
             if hasproperty(n, :x)
                 @printf "x= %-5.2f" sol[n.x][end]
@@ -94,6 +97,7 @@ function showsol(c, sol::ODESolution)
     @printf "\n"
     @printf "Sum of Energy Storage: [kW] = %.2f\n" sumE / 10^3
 end
+
 function variable2symbol(var)
     sm = Symbol[]
     for i = 1:length(var)
@@ -130,11 +134,12 @@ function showsol(c, prob::ODEProblem; prob_attr = nothing)
             end
             push!(evars, n.Φ)
             push!(evars, n.ṁ)
-            @printf "%-13s  P[bar]= %-8.1f T[K]= %-8.1f ṁ[kg/s]= %+-7.2f Φ=%+-8.2f" sname sol(
-                n.P,
-            ) sol(n.T) sol(n.ṁ) sol(n.Φ) / 10^6
+            @printf "%-13s  P[bar]= %-8.1f T[C]= %-8.1f ṁ[kg/s]= %+-7.2f Φ=%+-8.2f" sname sol(n.P) sol(n.T)-273.15 sol(n.ṁ) sol(n.Φ) / 10^6
             if hasproperty(n, :h)
                 @printf "h[kJ/kg]= %-8.1f" sol(n.h) / 1e3
+            end
+            if hasproperty(n, :s)
+                @printf "s[kJ/kg]= %-8.1f" sol(n.s) / 1e3
             end
             if hasproperty(n, :x)
                 @printf "x= %-5.2f" sol(n.x)
@@ -311,7 +316,6 @@ end
 mass_flow_vars(x) = find_flow_vars(x; tofind = :ṁ)
 work_flow_vars(x) = find_flow_vars(x; tofind = :Ẇ)
 heat_flow_vars(x) = find_flow_vars(x; tofind = "̇") # this is odd, took forever to figure this out
-
 
 
 """
@@ -1037,5 +1041,62 @@ function system2metagraph(
         end
     end
     return G
+end
+
+"""
+    convert_pressure(val::Real,from_unit::Symbol,to_unit::Symbol)
+
+    convert pressure units, optional to specify to_unit, default = bar because that is what XSTeam uses
+"""
+function convert_pressure(val::Real, from_unit::Symbol, to_unit::Symbol)
+    # default = SI
+    # converting to lowercase to avoid errors
+    from_unit = Symbol(lowercase(string(from_unit)))
+    to_unit = Symbol(lowercase(string(to_unit)))
+
+    # unit vector (pun)
+    units = (
+        pa = 1.0,
+        kpa = 1.0e3,
+        mpa = 1.0e6,
+        gpa = 1.0e9,
+        psi = 6.8947572932e3,
+        ksi = 6.8947572932e3 * 1000,
+        bar = 100000.0,
+        atm = 101325.0,
+        inh2o = 249.082,
+    )
+
+    inUnit = units[from_unit]
+    outUnit = units[to_unit]
+    return val / (outUnit / inUnit)
+end
+
+function convert_pressure(val::Real, from_unit::Symbol)
+    # default = SI
+    # converting to lowercase to avoid errors
+    from_unit = Symbol(lowercase(string(from_unit)))
+    to_unit = :bar
+
+    # unit vector (pun)
+    units = (
+        pa = 1.0,
+        kpa = 1.0e3,
+        mpa = 1.0e6,
+        gpa = 1.0e9,
+        psi = 6.8947572932e3,
+        ksi = 6.8947572932e3 * 1000,
+        bar = 100000.0,
+        atm = 101325.0,
+        inh2o = 249.082,
+    )
+
+    inUnit = units[from_unit]
+    outUnit = units[to_unit]
+    return val / (outUnit / inUnit)
+end
+
+function enforce_lowercase(x = insym)
+    return x = Symbol(lowercase(String(x)))
 end
 

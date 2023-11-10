@@ -2,7 +2,7 @@
 using ModelingToolkit, Revise, Unitful, Symbolics, Logging, Printf, XSteam # Unitful
 using DifferentialEquations
 @variables t
-Logging.disable_logging(Logging.Warn)
+# Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
 ##
 #       Need todo: Coolprops, validation
@@ -150,7 +150,7 @@ hydro_prop_dict = Dict(
     Self computes T,s,x,V
     Must have methods for ṁ,Φ,P,h
 """
-@connector function BasicSteamPin(; name, Pdef = 0.1)
+function BasicSteamPin(; name, Pdef = 0.1)
     across_var =
         @variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001
     thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow
@@ -171,17 +171,17 @@ hydro_prop_dict = Dict(
     )
 end
 
-@connector function WorkPin(; name)
+function WorkPin(; name)
     sts = @variables Ẇ(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name)
 end
 
-@connector function HeatTransferPin(; name)  #input in W
+function HeatTransferPin(; name)  #input in W
     sts = @variables Q̇(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name, defaults = [Q̇ => 0.0])
 end
 
-@connector function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
+function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
     sts = @variables Q̇(t) = Qin
     ps = @parameters Qin = Qin
     eqs = [Q̇ ~ Qin]
@@ -478,7 +478,7 @@ end
         ps;
         name = name,
         systems = [p, n, w],
-        defaults = [η => 1.0, P => Pout, Ẇ => 0],
+        defaults = [P => Pout, Ẇ => 0],
     )
 end
 

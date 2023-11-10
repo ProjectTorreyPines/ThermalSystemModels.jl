@@ -3,12 +3,6 @@ using ModelingToolkit, DifferentialEquations
 using Test
 using MetaGraphs
 using Plots
-TSM = ThermalSystem_Models
-TSMD = TSM.Dynamics
-MTK = ModelingToolkit
-Steam = TSMD.Steam
-Gas = TSMD.Gas
-Liq = TSMD.Liq
 
 
 @testset "ThermalSystem_Models.jl" begin
@@ -25,17 +19,17 @@ Liq = TSMD.Liq
     ##########################
     ModelingToolkit.@variables t
 
-    energy_sys, sts, edict = TSMD.default_energy_sys()
+    energy_sys, sts, edict = TSMD.default_energy_sys();
     wall_sys, wall_connections, wparams, wdict =
-        TSMD.wall_circuit(; load = 100e6, Tmin = 250 + 273.15, Tmax = 450 + 273.15)
+        TSMD.wall_circuit(; load = 100e6, Tmin = 250 + 273.15, Tmax = 450 + 273.15);
     divertor_sys, divertor_connections, dparams, ddict =
-        TSMD.divertor_circuit(; load = 150e6, Tmin = 300 + 273.15, Tmax = 650 + 273.15)
+        TSMD.divertor_circuit(; load = 150e6, Tmin = 300 + 273.15, Tmax = 650 + 273.15);
     breeder_sys, breeder_connections, bparams, bdict =
-        TSMD.breeder_circuit(; load = 250e6, Tmin = 500 + 273.15, Tmax = 800 + 273.15)
+        TSMD.breeder_circuit(; load = 250e6, Tmin = 500 + 273.15, Tmax = 800 + 273.15);
     inter_loop_sys, inter_loop_connections, iparams, idict =
-        TSMD.intermediate_loop(; Nhx = 4, flowrate = 200, Tmin = 220 + 273.15)
+        TSMD.intermediate_loop(; Nhx = 4, flowrate = 200, Tmin = 220 + 273.15);
     steam_systems, steam_connections, sparams, sdict = TSMD.feedwater_rankine(; flowrate = 550)
-    η_cycle, η_bop = sts
+    η_cycle, η_bop = sts;
 
     energy_con = vcat(
         TSMD.work_connect(
@@ -65,9 +59,9 @@ Liq = TSMD.Liq
         ),
         η_cycle ~ 1 - abs(sdict[:steam_condensor].q.Q̇ / sdict[:steam_boiler].q.Q̇),
         η_bop ~ 1 - abs(edict[:ColdUtility].Q̇ / edict[:HotUtility].Q̇),
-    )
+    );
 
-    params = vcat(wparams, dparams, bparams, iparams, sparams)
+    params = vcat(wparams, dparams, bparams, iparams, sparams);
     connections = vcat(
         steam_connections,
         inter_loop_connections,

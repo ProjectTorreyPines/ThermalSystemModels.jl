@@ -17,7 +17,7 @@ using ModelingToolkit, Plots, DifferentialEquations, Revise,  Logging, Printf
 # using NonlinearSolve, Printf
 # Unitful, CoolProp,
 Revise.retry()
-Logging.disable_logging(Logging.Warn)
+# Logging.disable_logging(Logging.Warn)
 @variables t
 # include("03-MTK_UTILS.jl")
 # begin
@@ -41,7 +41,7 @@ propDict = Dict(gcpfunc => cphe, gkfunc => khe)
 
 # PINS AND CONNECTORS
 # display(methods(cpfunc))
-@connector function ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
+function ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
     @variables P(t) = Pdef              #[unit = u"bar"] 
     @variables ṁ(t) = ṁdef              #[unit = u"kg/s"] 
     @variables T(t) = Tdef             #[unit = u"K"] 
@@ -63,20 +63,20 @@ propDict = Dict(gcpfunc => cphe, gkfunc => khe)
     )
 end
 
-@connector function WorkPin(; name)
+function WorkPin(; name)
     sts = @variables Ẇ(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name)
 end
 
 # convention = +Q = Qin
-@connector function FixedHeatFlowPin(; name, Qin = 1e6)  #input in W
+function FixedHeatFlowPin(; name, Qin = 1e6)  #input in W
     sts = @variables Q̇(t) = Qin
     ps = @parameters Qin = Qin
     eqs = [Q̇ ~ Qin]
     ODESystem(eqs, t, sts, ps; name = name, defaults = [Q̇ => Qin])
 end
 
-@connector function HeatTransferPin(; name)  #input in W
+function HeatTransferPin(; name)  #input in W
     @variables Q̇(t) = 0.0
     ODESystem(Equation[], t, [Q̇], []; name = name, defaults = [Q̇ => 0.0])
 end
@@ -352,7 +352,7 @@ end
 #     ODESystem(eqs,t,sts,ps; name = name, systems = [p,n,w], defaults = [rp => 3.5])
 # end
 
-@component function PassiveThermoCompressor2(; name, η = 1.0)
+@component function PassiveThermoCompressor(; name, η = 1.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named w = WorkPin()
