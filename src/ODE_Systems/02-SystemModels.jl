@@ -20,7 +20,7 @@ end
 
 # Heat Exchangers
 # Liquid to gas
-@component function L2G_HeatExchanger(;
+function L2G_HeatExchanger(;
     name,
     ϵ = 0.95,
     A = Liq.IncompressibleHeaatTransfer(),
@@ -40,7 +40,7 @@ end
 end
 
 #   Steam to Gas
-@component function S2G_HeatExchanger(;
+function S2G_HeatExchanger(;
     name,
     ϵ = 0.95,
     A = Steam.SteamHeatTransfer(),
@@ -60,7 +60,7 @@ end
 end
 
 #   Liquid To Steam
-@component function L2S_HeatExchanger(;
+function L2S_HeatExchanger(;
     name,
     ϵ = 0.95,
     A = Liq.IncompressibleHeaatTransfer(),
@@ -79,7 +79,7 @@ end
     ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A, B], defaults = [ϵ => 0.95])
 end
 
-@component function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
+function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
 
     ps = @parameters ϵ = ϵ
 
@@ -94,7 +94,7 @@ end
     end
 end
 
-@component function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
     # Control elements
     @named gnd = Steam.ContinuityReservoir()
     @named valve = Steam.SteamFlowValve()
@@ -135,7 +135,7 @@ end
     ODESystem(connections, t; name = name, systems = systems)
 end
 
-@component function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
     @named iores = Steam.ioReservoir(P = Pmin, fixboth = false)
     @named valve = Steam.SteamFlowValve()
     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
@@ -181,7 +181,7 @@ end
     ODESystem(connections, t; name = name, systems = systems)
 end
 
-@component function ComplexBraytonRegen(; name)
+function ComplexBraytonRegen(; name)
     TminCycle = 300
     PminCycle = 15
     @named WorkRes = Steam.WorkPin()
@@ -234,7 +234,7 @@ end
     ODESystem(connections, t; name = name, systems = systemNames)
 end
 
-@component function Water_loop(; name, Pmin = 32, Pmax = 40)
+function Water_loop(; name, Pmin = 32, Pmax = 40)
     @named WorkRes = Steam.WorkPin()
     @named ColdUtil = Steam.HeatTransferPin()
 
@@ -263,7 +263,7 @@ end
     ODESystem(connections, t; name = name, systems = systemNames)
 end
 
-@component function He_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
+function He_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
     @named WorkRes = Gas.WorkPin()
     @named ColdUtil = Gas.HeatTransferPin()
 
@@ -294,7 +294,7 @@ end
     ODESystem(connections, t; name = name, systems = systemNames)
 end
 
-@component function He_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
+function He_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)
     @named WorkRes = Gas.WorkPin()
     @named ColdUtil = Gas.HeatTransferPin()
     @named res = Gas.TwoPortReservoir(P = Pmin, T = Tmin)
@@ -340,7 +340,7 @@ end
     ODESystem(connections, t; name = name, systems = systemNames)
 end
 
-@component function breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)
+function breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)
     @named WorkRes = Gas.WorkPin()
     @named ColdUtil = Gas.HeatTransferPin()
     @named res = Liq.TwoPortReservoir(P = Pmin, T = Tmin)

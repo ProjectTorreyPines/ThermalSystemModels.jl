@@ -144,7 +144,11 @@ function hx_connect(hx, compAin, compAout, compBin, compBout)
 end
 
 ## RESERVOIRs - TEMPERATURE SETTERS
-@component function SetPressure(; name, P = 0.1)
+"""
+    function SetPressure(; name, P = 0.1)
+
+"""
+function SetPressure(; name, P = 0.1)
     @named p = ThermoPin(Pdef = P)
     @named n = ThermoPin(Pdef = P)
     ps = @parameters P = P
@@ -158,7 +162,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
-@component function SetTemperature(; name, T = 300)
+function SetTemperature(; name, T = 300)
     @named p = ThermoPin(Tdef = T)
     @named n = ThermoPin(Tdef = T)
     ps = @parameters T = T
@@ -173,7 +177,7 @@ end
 end
 
 #   HELIUM COMPONENTS
-@component function SinglePortReservoir(; name, P = 0.1, T = 300)
+function SinglePortReservoir(; name, P = 0.1, T = 300)
     @named n = ThermoPin(Pdef = P, Tdef = T)
     ps = @parameters P = P T = T
     eqs = [
@@ -184,7 +188,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function TwoPortReservoir(; name, P = 0.1, T = 300)
+function TwoPortReservoir(; name, P = 0.1, T = 300)
     @named p = ThermoPin(Pdef = P, Tdef = T)
     @named n = ThermoPin(Pdef = P, Tdef = T)
     ps = @parameters P = P T = T
@@ -201,7 +205,7 @@ end
     ODESystem(eqs, t, sts, ps; name = name, systems = [p, n], defaults = [ΔΦ => 0.0])
 end
 
-@component function GasFlowSource(; name, Ṁ = 1.0)
+function GasFlowSource(; name, Ṁ = 1.0)
     @named n = ThermoPin(ṁdef = -Ṁ)
     @named p = ThermoPin(ṁdef = Ṁ)
 
@@ -216,7 +220,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
-@component function GasFlowValve(; name)
+function GasFlowValve(; name)
     @named n = ThermoPin()
     @named p = ThermoPin()
 
@@ -231,7 +235,7 @@ end
     ODESystem(eqs, t, ps, []; name = name, systems = [n, p], defaults = [Ṁ => 1.0])
 end
 
-@component function ThermoHeatSource(; name, Qin = 1e6)
+function ThermoHeatSource(; name, Qin = 1e6)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = FixedHeatFlowPin(Qin = Qin)
@@ -246,7 +250,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
-@component function ThermoHeatTransfer(; name, ΔP = 0.0)
+function ThermoHeatTransfer(; name, ΔP = 0.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = HeatTransferPin()
@@ -275,7 +279,7 @@ end
     FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)
     Ability to change mass flow rate to achieve desired outlet temperature
 """
-@component function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
+function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = HeatTransferPin()
@@ -301,7 +305,7 @@ end
     )
 end
 
-@component function FixedThermoHeatTransfer(; name, Qin = 1e6)
+function FixedThermoHeatTransfer(; name, Qin = 1e6)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = HeatTransferPin()
@@ -318,7 +322,7 @@ end
     ODESystem(eqs, t, [C], [Q̇]; name = name, systems = [p, n, q], defaults = [C => 5192])
 end
 
-@component function ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
+function ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named w = WorkPin()
@@ -334,25 +338,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
-# @component function PassiveThermoCompressor(; name, η = 1.0)
-#     @named p = ThermoPin()
-#     @named n = ThermoPin()
-#     @named w = WorkPin()
-
-#     ps = @parameters η = η
-#     sts = @variables rp(t) = 3.5
-
-#     eqs = [
-#         0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
-#         n.P ~ p.P * rp
-#         n.T ~ p.T * ((1.0 - η - (rp^((p.k-1)/p.k))) / (-η))
-#         w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
-#         w.Ẇ ~ p.Φ + n.Φ
-#     ]
-#     ODESystem(eqs,t,sts,ps; name = name, systems = [p,n,w], defaults = [rp => 3.5])
-# end
-
-@component function PassiveThermoCompressor(; name, η = 1.0)
+function PassiveThermoCompressor(; name, η = 1.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named w = WorkPin()
@@ -368,7 +354,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
-@component function ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
+function ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
     @named p = ThermoPin(Pdef = 80, Tdef = 800)
     @named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
     @named w = WorkPin()
@@ -385,7 +371,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
-@component function PassiveThermoTurbine(; name, η = 1.0)
+function PassiveThermoTurbine(; name, η = 1.0)
     @named p = ThermoPin(Pdef = 80, Tdef = 800)
     @named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
     @named w = WorkPin()
@@ -403,7 +389,7 @@ end
     ODESystem(eqs, t, sts, ps; name = name, systems = [p, n, w], defaults = [rp => 3.5])
 end
 
-@component function IdealCooler(; name)
+function IdealCooler(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = HeatTransferPin()
@@ -419,7 +405,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0])
 end
 
-@component function PassiveElement(; name)
+function PassiveElement(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
     sts = @variables Q̇(t) = 0.0 ΔP(t) = 0.0 ΔT(t) = 0.0 Δṁ(t) = 0.0
@@ -442,7 +428,7 @@ end
     )
 end
 
-@component function ReliefElement(; name)
+function ReliefElement(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
     @named q = HeatTransferPin()
@@ -454,7 +440,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
-@component function throttle(; name)
+function throttle(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
     sts = @variables ΔP(t) = 0.0 ΔΦ(t) = 0.0
@@ -468,7 +454,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n], defaults = [ΔP => 0, ΔΦ => 0])
 end
 
-@component function Regenerator(; name, ϵ = 0.95)
+function Regenerator(; name, ϵ = 0.95)
     @named A = ThermoHeatTransfer()
     @named B = ThermoHeatTransfer()
     ps = @parameters ϵ = ϵ
@@ -482,7 +468,7 @@ end
 end
 
 ## compound components
-@component function Intercooler(; name, Tout = 300)
+function Intercooler(; name, Tout = 300)
     @named p = ThermoPin()
     @named n = ThermoPin()
 
@@ -715,7 +701,7 @@ function simpleBraytonRegen()
 
 end
 
-@component function GasReference(; name, Pref = 10, T_ref = 500)
+function GasReference(; name, Pref = 10, T_ref = 500)
     # ground pin, Pref in Bar, Tref in K
     p = ThermoPin()
     eqs = [
@@ -726,73 +712,3 @@ end
     ]
 
 end
-
-# function twoConeTBraytonRegen()
-#     TminCycle = 300
-#     PminCycle = 15
-#     @named res     = TwoPortReservoir(P = PminCycle, T = TminCycle)
-#     @named valve   = GasFlowValve()
-#     @named comp1   = ActiveThermoCompressor(rp = 1.7, η = 0.9)
-#     @named ic1     = Intercooler(Tout = TminCycle)
-#     @named comp2   = ActiveThermoCompressor(rp = 1.5, η = 0.95)
-#     @named ic2     = Intercooler(Tout = TminCycle)
-#     @named comp3   = ActiveThermoCompressor(rp = 1.5, η = 0.95)
-#     @named regen   = Regenerator()
-#     @named heat    = ThermoHeatTransfer()
-#     @named turbine = PassiveThermoTurbine()
-#     @named cool    = IdealCooler()
-#        
-#     connections = vcat(gas_connect(res.n,valve.p),
-#             gas_connect(valve.n,comp1.p),
-#             gas_connect(comp1.n,ic1.p),
-#             gas_connect(ic1.n,comp2.p),
-#             gas_connect(comp2.n,ic2.p),
-#             gas_connect(ic2.n,comp3.p),
-#             hx_connect(regen,comp3,heat,turbine,cool),
-#             gas_connect(heat.n,turbine.p),
-#             gas_connect(cool.n,res.p));
-#   
-#     mass_flow_fcn(t) = t < 5 ? 100 : 75
-#     Q̇in_fcn(t) = 100e6 + 35e6 *sin(t * .1)  
-#   
-#     @register_symbolic mass_flow_fcn(t)
-#    
-#     controlled_eqs = [valve.p.ṁ ~ mass_flow_fcn(t),
-#                         heat.Q̇ ~ Q̇in_fcn(t)]
-#    
-#     @named aux_sys = ODESystem(controlled_eqs,t)
-#    
-#
-#     # systemNams = [coolres, valve, comp, heat, turbine, cool, outres]
-#     systemNames = [res,valve,comp1,ic1,comp2,ic2,comp3,regen,heat,turbine,cool];
-#     @named odemodel = ODESystem(connections,t; systems = systemNames);
-#    
-#     @named odemodel = extend(aux_sys,odemodel)
-#    
-#     smodel = substitute(odemodel,propDict);
-#
-#     simple_sys = structural_simplify(smodel)
-#
-#     tspan = (0.0,10.0)
-#    
-#     u0 = [valve.p.ṁ => 100
-#         turbine.p.T => 1000
-#         heat.p.cp   => 5192
-#         turbine.rp  => 3.5]
-#
-#     prob = ODEProblem(simple_sys,u0,tspan,)
-#     sol   = solve(prob, Rodas4(); kwargs...);
-#
-#     # c   = [res,valve,comp1,reg.A,heat,turbine,reg.B,cool];
-#     # p1 = plot(sol,vars = [valve.p.ṁ], title = "Cycle Flow Rate")
-#     # p2 = plot(sol, vars = [ heat.Q̇], title = "Heat Loading")
-#     # p3 = plot(sol,vars = [heat.n.T, reg.B.n.T, reg.B.p.T, heat.p.T,heat.n.T])
-#
-#     # p=plot(p1,p2,p3,layout = (3,1))
-#
-#     # display(p)
-#     # showsol(c,sol)
-#     return sol, prob, simple_sys, systemNames
-#   end
-# end
-

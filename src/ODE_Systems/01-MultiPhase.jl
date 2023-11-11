@@ -241,7 +241,7 @@ function extenda(odevec::Vector{ODESystem})
     end
 end
 
-@component function HeatTransferPort(; name)
+function HeatTransferPort(; name)
     @named p = HeatTransferPin()
     @named n = HeatTransferPin()
     eqs = [0 ~p.Q̇ + n.Q̇]
@@ -249,7 +249,7 @@ end
     ODESystem(Equation[], t, [Q̇], []; name = name, systems = [p, n])
 end
 
-@component function Reservoir(; name, P = 0.1)
+function Reservoir(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
     eqs = [
@@ -260,7 +260,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function MultiPhaseGnd(; name, P = 0.1)
+function MultiPhaseGnd(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
     eqs = [
@@ -270,7 +270,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function SuperHeatedReservoir(; name, P = 150, T = 600)
+function SuperHeatedReservoir(; name, P = 150, T = 600)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P T = T
     eqs = [
@@ -281,7 +281,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function ioReservoir(; name, P = 0.1, fixboth = false)
+function ioReservoir(; name, P = 0.1, fixboth = false)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
@@ -298,7 +298,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
-@component function TwoPortReservoir(; name, P = 0.1)
+function TwoPortReservoir(; name, P = 0.1)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
@@ -314,7 +314,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
-@component function ContinuityReservoir2(; name)
+function ContinuityReservoir2(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     eqs = [
@@ -327,7 +327,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [n, p])
 end
 
-@component function ContinuityReservoir(; name)
+function ContinuityReservoir(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     sts = @variables ΔΦ(t) = 0.0
@@ -341,7 +341,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [n, p], defaults = [ΔΦ => 0.1])
 end
 
-@component function SetPressure(; name, P = 0.1)
+function SetPressure(; name, P = 0.1)
     @named p = BasicSteamPin(Pdef = P)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
@@ -355,7 +355,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n], defaults = [P => 0.1])
 end
 
-@component function SteamFlowSource(; name, ṁ = 1.0)
+function SteamFlowSource(; name, ṁ = 1.0)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     ps = @parameters Ṁ = ṁ
@@ -370,7 +370,7 @@ end
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
-@component function SteamFlowValve(; name)
+function SteamFlowValve(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     sts = @variables Ṁ(t)
@@ -385,7 +385,7 @@ end
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
-@component function TunableSteamFlowValve(; name, ṁ = 1.0)
+function TunableSteamFlowValve(; name, ṁ = 1.0)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     ps = @parameters ṁ = ṁ [tunable = true]
@@ -400,7 +400,7 @@ end
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
-@component function AdiabaticPump(;
+function AdiabaticPump(;
     name,
     η = 1.0,
     setpressure = false,
@@ -431,7 +431,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
-@component function Splitter(; name)
+function Splitter(; name)
     @named p = BasicSteamPin()
     @named n1 = BasicSteamPin()
     @named n2 = BasicSteamPin()
@@ -449,7 +449,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [p, n1, n2])
 end
 
-@component function AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
+function AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
     #Pout in bar
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -482,7 +482,7 @@ end
     )
 end
 
-@component function SIMOAdiabaticTurbine(;
+function SIMOAdiabaticTurbine(;
     name,
     ηin = 1.0,
     setpressure = false,
@@ -519,7 +519,7 @@ end
     # extend(ODESystem(eqs, t,sts, ps; name = name, systems = [hp,lp], defaults = [η => 1.0 Py => 10 Pz => 0.1]),split)
 end
 
-@component function SteamHeatTransfer(; name)
+function SteamHeatTransfer(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     @named q = HeatTransferPin()
@@ -535,7 +535,7 @@ end
     ODESystem(eqs, t, [Q̇, C], []; name = name, systems = [p, n, q])
 end
 
-@component function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
+function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     @named q = HeatTransferPin()
@@ -552,7 +552,7 @@ end
     ODESystem(eqs, t, [C], ps; name = name, systems = [p, n, q], defaults = [C => 400])
 end
 
-@component function IdealBoiler(; name, Tout = 350)
+function IdealBoiler(; name, Tout = 350)
     #Pout in bar
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -570,7 +570,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, q], defaults = [T => Tout])
 end
 
-@component function IdealCondensor(; name)
+function IdealCondensor(; name)
     #Pout in bar
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -589,7 +589,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0.0])
 end
 
-@component function PassiveCondensor(; name)
+function PassiveCondensor(; name)
     #Pout in bar
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -605,7 +605,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0.0])
 end
 
-@component function ReliefElement(; name, pressurecontrol = false)
+function ReliefElement(; name, pressurecontrol = false)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
     @named q = HeatTransferPin()
@@ -620,7 +620,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
-@component function OpenFeedwaterHeater(; name)
+function OpenFeedwaterHeater(; name)
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
     @named p2 = BasicSteamPin()
@@ -645,7 +645,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p1, p2, n])
 end
 
-@component function MixingChamber(; name)
+function MixingChamber(; name)
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
     @named p2 = BasicSteamPin()
@@ -661,7 +661,7 @@ end
     ODESystem(eqs, t, [], []; name = name, systems = [n, p1, p2])
 end
 
-@component function ClosedFeedwaterHeater(; name)
+function ClosedFeedwaterHeater(; name)
 
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
@@ -710,7 +710,7 @@ end
 end
 
 # end
-@component function throttle(; name)
+function throttle(; name)
     # flows x and y are the inlets
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -755,7 +755,7 @@ function plotmod(smodel)
 
 end
 
-@component function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
     # Control elements
     @named gnd = Steam.ContinuityReservoir()
     @named valve = Steam.SteamFlowValve()
@@ -795,7 +795,7 @@ end
     ODESystem(connections, t; name = name, systems = systems)
 end
 
-@component function TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+function TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
     # Control elements
     @named gnd = ContinuityReservoir()
     @named valve = TunableSteamFlowValve(ṁ = 1.0)
@@ -835,7 +835,7 @@ end
     ODESystem(connections, t; name = name, systems = systems)
 end
 
-@component function Water_loop(; name, Pmin = 32, Pmax = 40)
+function Water_loop(; name, Pmin = 32, Pmax = 40)
     @named WorkRes = WorkPin()
     @named ColdUtil = HeatTransferPin()
     @named res = ioReservoir(P = Pmin, fixboth = true)

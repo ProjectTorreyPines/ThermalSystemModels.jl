@@ -11,10 +11,10 @@ vpb(x) = 1 / (10520.35 - 1.19051 .* x)      # m³/kg
 spb(x) = 0.195 * 1e3 * log(x) - 9.11e-6 * 1000 * x - 1210.316002277804
 hpb(x, y) = cppb(x) * x + vpb(x) * y * 1e5
 
-Lcpfunc(x) = cppb(x)
-Lvfunc(x) = vpb(x)
-Lsfunc(x) = spb(x)
-Lhfunc(x, y) = hpb(x, y)
+Lcpfunc(x)      = cppb(x)
+Lvfunc(x)       = vpb(x)
+Lsfunc(x)       = spb(x)
+Lhfunc(x, y)    = hpb(x, y)
 
 @variables x
 @register_symbolic Lcpfunc(x)
@@ -61,7 +61,7 @@ function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
     ODESystem(eqs, t, sts, ps; name = name, defaults = [Q̇ => Qin])
 end
 
-@component function IncompressibleOnePort(; name)
+function IncompressibleOnePort(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
 
@@ -76,7 +76,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n])
 end
 
-@component function SetPressure(; name, P = 0.1)
+function SetPressure(; name, P = 0.1)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
     ps = @parameters P = P
@@ -89,7 +89,7 @@ end
     extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
-@component function SetPressure2(; name, P = 0.1)
+function SetPressure2(; name, P = 0.1)
     @named p = IncompressiblePin(Pdef = P)
     @named n = IncompressiblePin(Pdef = P)
     ps = @parameters P = P
@@ -103,7 +103,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
-@component function SetTemperature(; name, T = 300)
+function SetTemperature(; name, T = 300)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
     ps = @parameters T = T
@@ -116,7 +116,7 @@ end
     extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
-@component function IncompressibleFlowValve(; name)
+function IncompressibleFlowValve(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
 
@@ -131,7 +131,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n], defaults = [ṁ => 1.0])
 end
 
-@component function IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
+function IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
 
@@ -146,7 +146,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
-@component function PassiveIncompressiblePump(; name, η = 0.9)
+function PassiveIncompressiblePump(; name, η = 0.9)
     @named oneport = IncompressibleOnePort()
     @named w = WorkPin()
     @unpack ΔP, LHS, p, n = oneport
@@ -160,7 +160,7 @@ end
     extend(ODESystem(eqs, t, [], ps; systems = [w], name = name), oneport)
 end
 
-@component function PassiveIncompressiblePump2(; name, η = 1.0)
+function PassiveIncompressiblePump2(; name, η = 1.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named w = WorkPin()
@@ -178,7 +178,7 @@ end
 
 
 
-@component function IncompressibleHeatTransfer(; name)
+function IncompressibleHeatTransfer(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
@@ -204,7 +204,7 @@ end
     )
 end
 
-@component function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
+function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
@@ -232,7 +232,7 @@ end
     )
 end
 
-@component function SinglePortReservoir(; name, P = 0.1, T = 300)
+function SinglePortReservoir(; name, P = 0.1, T = 300)
     @named n = IncompressiblePin(Pdef = P, Tdef = T)
     ps = @parameters P = P T = T
     eqs = [
@@ -243,7 +243,7 @@ end
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
-@component function TwoPortReservoir(; name, P = 0.1, T = 300)
+function TwoPortReservoir(; name, P = 0.1, T = 300)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, n, p = oneport
     ps = @parameters T = T P = P
@@ -262,7 +262,7 @@ end
     )
 end
 
-@component function throttle(; name)
+function throttle(; name)
     @named oneport = IncompressibleOnePort()
     @unpack LHS, p, ΔT, n = oneport
     sts = @variables Ė_loss(t) = 0.0
@@ -274,7 +274,7 @@ end
     extend(ODESystem(eqs, t, sts, []; name = name, defaults = [Ė_loss => 0.0]), oneport)
 end
 
-@component function IdealCooler(; name)
+function IdealCooler(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
@@ -290,7 +290,7 @@ end
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0])
 end
 
-@component function ReliefElement(; name)
+function ReliefElement(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named q = HeatTransferPin()
