@@ -22,8 +22,8 @@
 
         main {
             display: flex;
-            justify-content: center;
-            align-items: center;
+            justify-content: left;
+            align-items: left;
             flex-wrap: wrap;
             padding: 2em;
         }
@@ -31,20 +31,41 @@
         section {
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin: 1em;
+            margin: auto;
             padding: 2em;
-            width: 250px; /* Set the fixed width */
-            text-align: center;
+            width: 25%; /* Set the fixed width */
+            height: 350px;
+            text-align: left;
+            flex-wrap: wrap;
             border-radius: 8px;
+            align-items: center;
         }
 
         h2 {
+            text-align: left;
             color: #2c3e50;
+            height: 40px;
         }
 
         p {
             color: #555;
             line-height: 1.6;
+        }
+
+        a{
+            color: rgba(9, 35, 229, 0.631)
+        }
+
+
+        nav {
+            background-color: #555;
+            padding: 0.5em;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1em;
         }
     </style>
 </head>
@@ -53,37 +74,50 @@
 <header>
     <h1>ThermalSystem_Models.jl Block Library</h1>
 </header>
-
+<nav>
+    <p><a href="index.html">Home</a>
+    <a href="blocklibrary.html">Blocks</a>
+    <a href="fastbrayton.html">Fast Brayton</a>
+    <a href="resources.html">Resources</a>
+    <a href="underCon.html">Examples</a>
+    <a href="underCon.html">Tutorial</a>
+    <a href="underCon.html">Full API</a>
+    </p>
+    <!-- Add more navigation links as needed -->
+</nav>
 <main>
     <section>
-        <h2>Multi-Phase Fluids</h2>
+        <h2>Multi-Phase Library</h2>
+        <a href="multiphase.html">Read Documentation</a>
         <p>
-            Discover the powerful features of our Block Modeling Library and start creating stunning block-based models.
+            Documentation for the Steam Library, providing components and features for modeling water systems.
+        </p>
+        <p>
+            These components are evaluated with thermodaynamic property tables.
         </p>
     </section>
 
     <section>
-        <h2>Vapors and Ideal Gas</h2>
+        <h2>Incompressible Liquid Library</h2>
+        <a href="incompressible.html">Read Documentation</a>
         <p>
-            Follow our easy-to-understand documentation to quickly integrate the library into your projects.
+            Explore the Incompressible liquid Library documentation, tailored for modeling systems where the only phase present is saturated liquid. Including liquid metal, oil-based systems. 
+        </p>
+        <p>
+            These componets are evaluated analytically through the incompressible fluid relations. 
         </p>
     </section>
 
     <section>
-        <h2>API Reference</h2>
+        <h2>Gas Library</h2>
+        <a href="gaseous.html">Read Documentation</a>
         <p>
-            Explore the comprehensive API documentation for detailed information on every aspect of the library.
+            The Gas Library documentation covers components and functionalities for modeling gas systems.
         </p>
-    </section>
-
-    <section>
-        <h2>Examples</h2>
         <p>
-            Check out our example gallery to see the Block Modeling Library in action and get inspired.
+            These componets are evaluated analytically through the ideal gas relations.
         </p>
-    </section>
-
+    </section>  
 </main>
-
 </body>
 </html>

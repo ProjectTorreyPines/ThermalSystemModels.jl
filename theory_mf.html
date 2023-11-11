@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluid Library Theory</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 2em;
+        }
+
+        main {
+            max-width: 1000px;
+            margin: 2em auto;
+            padding: 1em;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        header h1 {
+                color: hsl(204, 13%, 92%);
+                font-size: 30px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 25px;
+        }
+
+        h2, h3 {
+            color: #2c3e50;
+        }
+
+        p, pre {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 1em;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        nav {
+            background-color: #555;
+            padding: 0.5em;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1em;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathJax Example</title>
+    <!-- Include MathJax script -->
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>Multiphase Component Analysis</h1>
+</header>
+<nav>
+    <p><a href="index.html">Home</a>
+    <a href="blocklibrary.html">Blocks</a>
+    <a href="fastbrayton.html">Fast Brayton</a>
+    <a href="resources.html">Resources</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="underCon.html">Examples</a>
+    <a href="underCon.html">Tutorial</a>
+    <a href="underCon.html">Full API</a>
+    </p>
+    <!-- Add more navigation links as needed -->
+</nav>
+<main>
+    <section>	This section demonstrates how to evaluate several thermodyamic components for a Rankine Cycle. We assume components operate as steady-flow devices, meaning there is no time-rate of change in the intrinsic properties of the device. \\
+        The properties of substances in and around the dome shown in fig \ref{rankineTS} are not as easily calculated as those of an ideal gas. Instead, we rely on empirical data to evaluate these components. 
+        Thermodynamic property tables contain the specific volume ($v$), energy ($u$), enthalpy ($h$), and entropy ($s$) as a function of pressure and temperature. Typically, there are 3 tables for a given substance: saturation properties (in the dome), compressed properties (above and left of the dome), and superheated properties (above and right). 
+        Within the saturation tables, each property has 2 data points, one with the subscript f (fluid) and with subscript v (vapor). These are the bounds of saturation at that temperature.
+    <figure>   <img src="assets/RankineTS.png" alt="Generic TS Diagram" style = "width:20%;margin:auto"></figure>
+            Pumps, similair to compressors, are components which convert external work into flow work 
+            by increasing the pressure and of the working fluid. However, the fluid at the pump inlet must be entirely fluid, x = 0. These components are also quantified by isentropic effeciencies, which 
+            are of the same form as Eq \ref{isenEff}. Again, It is standard to assume $$\dot{Q}=\dot{q}=\Delta ke = \Delta pe = 0$$ for said components. 
+            For pumps, there is no output component for work, so $$\dot{W}_{net} = -\dot{W}_{in}$$. Equation \ref{ebalance} then reduces to:
+            \[
+            \begin{aligned}
+                \dot{W}_{in} &= \sum_{out}\dot{m}\theta-\sum_{in}\dot{m}\theta\\
+                &= \dot{m}(h_{2}-h_{1})\\
+                \dot{w}_{in} &= h_2-h_1
+            \end{aligned}
+            \]
+            Furthermore,the fluid is typicaly incompressible so we can use the relations in Eq \ref{incompRelations} to say:
+            \[
+            \begin{aligned}
+                w_s &= v\Delta P\\
+                w_a &= \frac{w_s}{\eta_p}
+                \end{aligned}
+            \]   
+            We can relate Eqs. \ref{ebal_pump},\ref{pump_work} to Eqs. \ref{incompRelations}, \ref{dh_incomp} which results in: 
+            \[
+                    \begin{aligned}
+                        % c\Delta T &= \Delta h - v\Delta P\\
+                        % c(T_2 - T_1) &= w_{a} - v(P_2-P_1)\\
+                        T_{2s} &= \frac{w_a-w_s}{c}+T_1\\
+                        h_{2s} &= w_{in}+h_1\\
+                        \Delta s  &=c \cdot ln\left(\frac{T_{2s}}{T_1}\right)
+        \label{pump_relation}
+                    \end{aligned}
+                \]     
+		However, the buck stops here. There are no simple analytical solutions to perform the above calculations for a turbine. As such, for turbine analysis we turn to the property tables. If the inlet conditions \(T_1,P_1,h_1,s_1\)  and outlet pressure \(P_2\) are known, the process is as follows:
+
+        <h3>            Finding isentropic process (\(s_{2s}=s_1\))</h3>    
+
+        <ol>
+			<li>Use the property tables to find the row containing properties of saturation at \(P_2\)</li>
+            <li>If \(s_1\) is within the bounds of \(s_f(P_2)\) and \(s_v(P_2)\), interpolate to find the quality factor \(x = \frac{s_1-s_f}{s_v-s_s}\). IF \(s_1 > s_v(P_2)\), use the superheated tables to find \(h(P_2)\) and skip the next step .</li>
+            <li>With the \(x$\) calculated, using the same formula with \(h\) 4replacing \(s\) to find \(h_{2s}\)</li>
+        </ol>
+        <h3> Calculating work and actual process</h3>   
+        <ol> 
+        <li>Calculate the isentropic work with \(w_s = h_{2s}-h_1\) and actual work \(w_a = w_s\cdot \eta_T\)</li>
+        <li>Caclulate the actual \(h_2\) with \(h_{2a} = h_{1}-\eta_T\cdot w_a\)</li>
+        </ol>
+</section>
+</main>
+
+</body>
+</html>

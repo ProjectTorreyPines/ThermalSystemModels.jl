@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fast Computation of the Brayton Cycle</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 2em;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 2em auto;
+            padding: 1em;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2, h3 {
+            color: #2c3e50;
+        }
+
+        p, pre {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        pre {
+            background-color: #f4f4f4;
+            padding: 1em;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        nav {
+            background-color: #555;
+            padding: 0.5em;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 1em;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathJax Example</title>
+    <!-- Include MathJax script -->
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+
+<header>
+    <h1>A New Approach to Computation of the Brayton Cycle</h1>
+</header>
+<nav>
+    <p><a href="index.html">Home</a>
+    <a href="blocklibrary.html">Blocks</a>
+    <a href="fastbrayton.html">Fast Brayton</a>
+    <a href="resources.html">Resources</a>
+    <a href="underCon.html">Examples</a>
+    <a href="underCon.html">Tutorial</a>
+    <a href="underCon.html">Full API</a>
+    </p>
+    <!-- Add more navigation links as needed -->
+</nav>
+<main>
+
+    <h2>NOVEL COMPUTATION OF THE BRAYTON CYCLE</h2>
+
+    <p>The following subsections consider a Brayton cycle with a constant specific heat working fluid and an OCR defined by \(r_p\).
+        The cycle includes \(N_t\) and \(N_c\) turbine and compression stages with isentropic efficiencies \(\eta_t\) and \(\eta_c\)
+        (The associated \(N-1\) intercooling and reheating stages are implied). The cycle also includes a regenerator with effectiveness \(\epsilon\).
+        Since \(r_p\) is known and \(P_{H} = r_pP_{L}\), we need only specify either \(P_{H}\) or \(P_{L}\).
+        Finally, the max and min fluid temperatures are defined as \(T_{H}\) and \(T_{L}\).
+        The individual compression ratios for compressors (\(r_{pc}\)) and turbines (\(r_{pt}\)) in a cycle can be found by:</p>
+    
+    <ul>
+        <li>\(r_{pc} = r_p^{(\frac{1}{N_c})}\)</li>
+        <li>\(r_{pt} = r_p^{(\frac{1}{N_t})}\)</li>
+    </ul>
+    
+    <ol>
+        <li><strong>STATE VARIABLES</strong><a name="stateVars"></a></li>
+    </ol>
+    
+    <p><a href="thermotheory.html">Previously</a>, we showed that for both compressors and turbines:</p>
+    
+    \[
+    \exists a_1 \in \mathbb{R} : T_2 = a_1T_1
+    \]
+    
+    \[
+    \exists a_2 \in \mathbb{R} : P_2 = a_2P_2
+    \]
+    
+    <p>Where subscripts 1 and 2 correspond to their designation in section [braytonSection].
+        Similarly, in the case of multistaged cycles, we can say that:</p>
+    
+    \[
+    \begin{array}{l}
+        \exists b_1 \in \mathbb{R} : b_1 = \frac{1}{a_1} \to T_3 = b_1T_2 \iff b_1a_1T_1 \\
+        \exists b_2 \in \mathbb{R} : b_2 = 1 \to P_3 = b_2P_2 \iff b_2a_2P_1
+    \end{array}
+    \]
+    
+    <p>For reasons shown in the following paragraphs, we will convert these vectors as diagonal matrices of the form:</p>
+    
+    \[
+    \begin{align*}
+        \mathbf{A} &\equiv \text{diag}([a_1, a_2]) \\
+        \mathbf{B} &\equiv \text{diag}([b_1, b_2])
+    \end{align*}
+    \]
+    
+    <p>Next, let us define a general state vector for cycle index i:</p>
+    
+    \[
+    \theta_i \in \mathbb{R}^2 : \theta_i = \left[ {\begin{array}{c} T_{i} \\ P_i \end{array} } \right]
+    \]
+    
+    <p>We can then write the high and low temperature and pressure points in vector form, corresponding too:</p>
+    
+    \[
+    \begin{array}{ll}
+        \theta_L = \left[ {\begin{array}{c} T_{L} \\ P_{L} \end{array} } \right] & \theta_H = \left[ {\begin{array}{c} T_{H} \\ P_{H} \end{array} } \right]
+    \end{array}
+    \]
+    
+    <p>Then we can say that there is a linear transfer matrix relating the outlet state of an \(N\) stage compressor or turbine circuit to the inlet state vector:</p>
+    
+    \[
+    \theta_{\text{out}} = (\mathbf{AB})^{N-1}\mathbf{A}\theta_{\text{in}}
+    \]
+    
+    <p>For the compressor stages, \(\theta_{\text{in}} = \theta_L\) and for turbine stages \(\theta_{\text{in}} = \theta_H\).
+        Furthermore, the outlet state vectors from the compressor and turbine side correspond to the inlet conditions \(T_{ci}\) and \(T_{hi}\) in section [regen].
+        Alternatively, we can phrase the equation in index form. For an \(N\) stage cycle, there are a total of \(2N-1\) individual states after the initial state 1.
+        Therefore, for state \(i\), where \(i \geq 2\):</p>
+    
+    \[
+    \theta_{i} =
+    \begin{cases}
+        (\mathbf{AB})^{\frac{i}{2}-1}\mathbf{A}\theta_{1} & \text{i is even, after turbine or compressor} \\
+        (\mathbf{BA})^{\frac{i-1}{2}}\theta_{1} & \text{i is odd, after reheat or intercool}
+    \end{cases}
+    \]
+    
+    <p>Equations [aInit] - [transform] can be used to find the hot and cold inlets \(T_{ci}, T_{ti}\) of the regenerator.
+        Here, we elect to use subscripts c and t for compressor and turbine side. Then, from equation [simpEff] and some simple algebra, we can say:</p>
+    
+    \[
+    \begin{align}
+        \left[ {\begin{array}{c} T_{co} \\ T_{to} \end{array} } \right] =
+        \left[ {\begin{array}{cc} (1-\epsilon) & \epsilon \\ \epsilon & (1-\epsilon) \end{array} } \right]
+        \left[ {\begin{array}{cc} T_{ci}\\ T_{ti} \end{array} } \right]
+    \end{align}
+    \]
+    <ol start="2">
+        <li><strong>PROCESSES</strong><a name="proc"></a></li>
+    </ol>
+    
+    <p>In a quasi-ideal Brayton cycle with steady flow processes, we can compute the regular and specific energy transfer rate with:</p>
+    
+    \[
+    \dot{E} = \dot{m}c_p(T_{f} - T_i)
+    \]
+    
+    \[
+    \dot{e} = c_p(T_{f} - T_i)
+    \]
+    
+    <p>Where subscripts \(i\) and \(f\) correspond to initial and final. \(\dot{E}\) and \(\dot{e}\) are in units W and \(kJ/kg\) respectively.
+        In a power cycle, we only need to know the outlet temperature of a single compression and turbine stage to calculate all of the work of the system.
+        Remembering that for a single stage we can say \(T_f = a_1T_i\), we can re-write equation [edot] as:</p>
+    
+    \[
+    \begin{aligned}
+        \dot{e} &= c_p(a_1T_i - T_i) \\
+        &= c_p(a_1 - 1)(T_i)
+    \end{aligned}
+    \]
+    
+    <p>For the turbine and compressor (T\&C) circuits, let \(\mathbf{A_t}\) and \(\mathbf{A_c}\) correspond to their respective \(\mathbf{A}\) matrix from the previous section.
+        Additionally, we identify \(a_{1t} \in \mathbf{A_t}\) and \(a_{1c} \in \mathbf{A_c}\) as the (1,1) elements in either matrix. We can then form a set of equations:</p>
+    
+    \[
+    \begin{aligned}
+        \dot{e_c} &= c_p(a_{1c} - 1)(T_{L}) \\
+        \dot{e_t} &= c_p(a_{1t} - 1)(T_{H})
+    \end{aligned}
+    \]
+    
+    <p>We can then calculate the total specific work and heat loads for any compressor and turbine circuit with an arbitrary number of stages:</p>
+    
+    \[
+    \begin{aligned}
+        \dot{w_c} &= N_c\dot{e_c} \\
+        \dot{q_c} &= -(N_c-1)\dot{e_c} \\
+        \dot{w_t} &= N_t\dot{e_t} \\
+        \dot{q_t} &= -(N_t-1)\dot{e_t}
+    \end{aligned}
+    \]
+    
+    <p>To simplify the above statements, we write:</p>
+    
+    \[
+    \begin{aligned}
+        \phi &\equiv \left[ {\begin{array}{c} T_{L} \\ T_{H} \end{array} } \right] \\
+        \mathbf{C} &\equiv \left[ {\begin{array}{cc} c_p(a_{1c}-1) & 0 \\ 0 & c_p(a_{1t}-1) \end{array} } \right] \\
+        \mathbf{N} &\equiv \left[ {\begin{array}{cc} N_c & 0 \\ (1-N_c) & 0 \\  0 & N_t \\ 0 & (1-N_t) \end{array} } \right]
+    \end{aligned}
+    \]
+    
+    <p>Now, it can easily be shown that the specific net work and heat transfer are calculated by:</p>
+    
+    \[
+    \left[ {\begin{array}{c} \dot{w_c} \\ \dot{q_c} \\ \dot{w_t} \\ \dot{q_t} \end{array}} \right] = \mathbf{N}\mathbf{C}\phi
+    \]
+    
+    <p>Finally, we calculate the thermal heat accepted and rejected from the cycle. Using variables defined in [regenEq]:</p>
+    
+    \[
+    \left[ {\begin{array}{c} \dot{q}_{primary} \\ \dot{q}_{rejected} \end{array}} \right] = \left[ {\begin{array}{c} T_{H} - T_{co} \\ T_{L} - T_{to} \end{array}} \right]c_p
+    \]
+    
+</main>
+
+</body>
+</html>
