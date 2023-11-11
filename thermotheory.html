@@ -95,13 +95,39 @@
     (11/18/2022)
     <section>
         <h2><strong>INTRODUCTION</strong></h2>
-        <p>In thermodynamics, a heat engine is a device that can exchange heat energy and work. Thermodynamic Power Cycles (TPC) are the form of heat engine which convert heat energy to usable mechanical work (typically by a rotating turbine shaft). A Working Fluid, which can transmit heat and work by nature, facilitates the energy exchange. All heat engine systems operate using the same core principles.</p>
+        <p>In thermodynamics, a heat engine is a device that can exchange heat energy and work. 
+            Thermodynamic Power Cycles (TPC) are the form of heat engine which convert heat energy to usable 
+            mechanical work (typically by rotating a turbine shaft). A Working Fluid, which can transmit 
+            heat and work by nature, facilitates the energy exchange. All heat engine systems operate using the 
+            same core principles. However this complicates things from an analysis standpoint since we 
+            now have 2 intercoupled degrees of freedom.
+            The two mechanisms by which energy exchange \(dU\) can occur:
+            
+            \[dU_{therm} = Tds\] 
+            \[dU_{flow} = Pdv \]
+            \[dU = Tds+Pdv\]
+
+        Kinetic \(KE\) and potential \(PE\) also have effects but to less a degree. 
+        In reality this means for a slight amount of work Pdv (fluid) energy we can transport large
+        amounts of Tds (entropy driven heat) between thermal reservoirs (between a heat source and heat sink)- however 
+        what a power cycle also does is siphon Pdv work off of that Tds as it innevitbaly 
+        deteriates into the void entropic relief. 
+
+         All heat engines operate as follows: 
+        </p>
+        From ground state (A)
         <ol>
-            <li>Heat is transferred into the system from a high-temperature source</li>
-            <li>A portion of the heat gets converted to work</li>
-            <li>The remaining waste heat is rejected to a low-temperature sink (usually the environment)</li>
-            <li>The process is a cycle</li>
+            <li> The fluid is compressed \(dU_{s=constant}\) (\(Pdv\) spent)
+            <li> We increase the temperature a shit loadHeat is transferred into the system from a high-temperature source</li>
+            <li> A portion of the heat gets converted to work</li>
+            <li> The remaining waste heat is rejected to a low-temperature sink (often the surrounding environment)</li>
+            <li> The process is a cycle</li>
         </ol>
+
+        There are a few ways you can conceptualize what this means. But the basic idea is if you
+        have a fluid at ground state (A) - it turns out  
+
+
         <p>In this report, we will consider the two types of closed power cycles:</p>
         <ol>
             <li>The Brayton cycle, in which the working fluid is in a gaseous state the entire cycle.</li>
@@ -113,7 +139,9 @@
             <img src="assets/Ranking_diagram.jpg" alt="Simple Rankine Cycle" style = "width:20%;margin:auto">
             <figcaption>Figure 1: Simple Brayton Cycle</figcaption>
         </figure>
-        <p>An essential tool in power cycle analysis is the TS diagram, in which temperature is plotted as a function of specific entropy (kJ/kg). The TS diagrams for the simple Brayton and Rankine cycles are below. The enclosed area of the processes corresponds to the net work of the cycle. Thus by increasing this area, we can increase the net work of the cycle.</p>
+        <p>An essential tool in power cycle analysis is the TS diagram, in which temperature is plotted as a function of specific entropy (kJ/kg). 
+            The TS diagrams for the simple Brayton and Rankine cycles are below. The enclosed area of the processes
+             corresponds to the net work of the cycle. Thus by increasing this area, we can increase the net work of the cycle.</p>
         <figure id="braytontsF">
             <img src="assets/BraytonTS.png" alt="Simple Brayton Cycle T-s diagram" style="width:20%; margin:auto" >
             <img src="assets/RankineTS.png" alt="Simple Rankine Cycle T-s diagram" style="width:20%; margin:auto">
