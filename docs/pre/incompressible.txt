@@ -1,0 +1,608 @@
+<h1>incompressible<h1>
+
+
+<div><section><h1>COMPONENT</h1>
+	<h4>IncompressibleFlowValve(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				A flow valve object with a mass flow variable. Can be controlled with an external controller element.<br>
+			    @named p = IncompressiblePin()<br>
+			    @named n = IncompressiblePin()<br>
+			    sts = @variables ṁ(t) = 1.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ   \]
+				\[ 				    0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = ṁ\]
+				\[     p.T = n.T\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IncompressibleFixedFlowSource(; name, Ṁ = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				    A fixed flow rate source<br>
+			    @named p = IncompressiblePin()<br>
+			    @named n = IncompressiblePin()<br>
+			    ps = @parameters Ṁ = Ṁ<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Ṁ = 1.0`: mass flow rate of the fixed flow source</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ   \]
+				\[ 				    0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = Ṁ\]
+				\[     p.T = n.T\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveIncompressiblePump(; name, η = 0.9)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 0.9`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveIncompressiblePump2(; name, η = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				A passive pump component for incompressible liquids. Calculates work required based off of pressures at the p and n port<br>
+			    @named p = IncompressiblePin()<br>
+			    @named n = IncompressiblePin()<br>
+			    @named w = WorkPin()<br>
+			    ps = @parameters η = η<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic effeciency of the pump</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.ṁ + n.ṁ \]
+				\[ 				    w.Ẇ = p.ṁ * p.v * (n.P - p.P) * 1e5 / η\]
+				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[     n.T = p.T + (p.v * (n.P - p.P) * 1e5 / η - p.v * (n.P - p.P) * 1e5) / p.cp\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IncompressibleHeatTransfer(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Basic heat transfer port. Includes p,n ports for flow, and q which is a heat transfer port<br>
+			    @named p = IncompressiblePin()<br>
+			    @named n = IncompressiblePin()<br>
+			    @named q = HeatTransferPin()<br>
+			    st = @variables Q̇(t) = 0.0 C(t) = 187   , Heat rate and duty of the flow<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.ṁ + n.ṁ           \]
+				\[ 				    q.Q̇ = p.Φ + n.Φ         \]
+				\[ 				    C = p.ṁ * p.cp          \]
+				\[ 				    0 = q.Q̇ - Q̇\]
+				\[     n.T = p.T + q.Q̇ / C\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				A heat transfer element with the ability to change the flow rate to achieve a desired outlet temperature, specified by the inputs.<br>
+			    @named p = IncompressiblePin()<br>
+			    @named n = IncompressiblePin()<br>
+			    @named q = HeatTransferPin()<br>
+			    st = @variables Q̇(t) = 0.0 C(t) = 187 ṁ(t) = 1.0<br>
+			    ps = @parameters ΔP = ΔP Tout = Tout<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ΔP = 0.0`: Pressure drop across the heat transfer element (bar)</li>
+				<li>- `Tout = 1000.0`: outlet temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[         n.T = Tout\]
+				\[         ṁ = q.Q̇ / ((n.T - p.T) * p.cp)           \]
+				\[ 				        p.ṁ = ṁ\]
+				\[         0 = p.ṁ + n.ṁ           \]
+				\[ 				        q.Q̇ = p.Φ + n.Φ         \]
+				\[ 				        C = ṁ * p.cp            \]
+				\[ 				        0 = q.Q̇ - Q̇\]
+				\[         n.P = p.P - ΔP\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SinglePortReservoir(; name, P = 0.1, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				A sinlge port flow energy ground to connect with circiuts, only has n pin<br>
+			    @named n = IncompressiblePin(Pdef = P, Tdef = T)<br>
+			    ps = @parameters P = P T = T<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: Pressure, (bar)</li>
+				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n.P = P\]
+				\[     n.T = T\]
+				\[     n.Φ = 0\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TwoPortReservoir(; name, P = 0.1, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				A flow conserving ground element with 2 ports.<br>
+			    @named oneport = IncompressibleOnePort()<br>
+			    @unpack ΔT, ΔP, LHS, n, p = oneport<br>
+			    ps = @parameters T = T P = P<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: Pressure</li>
+				<li>- `T = 300`: Bar</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     LHS = 0\]
+				\[     n.Φ = 0\]
+				\[     p.T = T\]
+				\[     p.P = P\]
+				\[     ΔP = 0\]
+				\[     ΔT = 0\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>throttle(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				An enthalpy conserving throttle valve. Does not control the outlet pressure, but mimics a throttle valve when placed between 2 sources wtih a pressure differential.<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IdealCooler(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ReliefElement(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n.ṁ + p.ṁ = 0           \]
+				\[ 				    q.Q̇ = p.Φ + n.Φ         \]
+				\[ 				\]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>PIN</h1>
+	<h4>IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Incompresible Fluid pin, <br>
+			    across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001<br>
+			    thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow<br>
+			    sts = [T, P, ṁ, cp, s, v, Φ]<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Pdef = 50`:  Initial Pressure (bar)</li>
+				<li>- `Tdef = 555`: Initial Temperature (K)</li>
+				<li>- `ṁdef = 0.0`: Initial Flow Rate (kg/s)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     cp = Lcpfunc(T)\]
+				\[     v = Lvfunc(T)\]
+				\[     s = Lsfunc(T)\]
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>WorkPin(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				    Basic work pin<br>
+			    sts = @variables Ẇ(t) = 0.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>HeatTransferPin(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				sts = @variables Q̇(t) = 0.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>FixedHeatFlowPin(; name, Qin = 1000.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Component with fixed heat flow rate<br>
+			sts = @variables Q̇(t) = Qin<br>
+			ps = @parameters Qin = Qin<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Qin = 1000.0`: Heating rate, (W)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ eqs = [Q̇ = Qin]\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>PORT</h1>
+	<h4>IncompressibleOnePort(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Oneport element for connecting single port components<br>
+			    p = IncompressiblePin()<br>
+			    n = IncompressiblePin()<br>
+			    sts = @variables LHS(t) ΔP(t) = 0.0 ΔT(t) = 0.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     LHS = p.Φ + n.Φ             \]
+				\[ 				    0 = p.ṁ + n.ṁ               \]
+				\[ 				    ΔP = n.P - p.P              \]
+				\[ 				    ΔT = n.T - p.T              \]
+				\[ 				\]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>SOURCE</h1>
+	<h4>SetPressure(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Fixed pressure element<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: Pressure (bar)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SetPressure2(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				    Fixed pressure element that does not use the onport function<br>
+			    @named p = IncompressiblePin(Pdef = P)<br>
+			    @named n = IncompressiblePin(Pdef = P)<br>
+			    ps = @parameters P = P<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: Pressure (bar)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     p.P = P\]
+				\[     n.P = p.P\]
+				\[     n.T = p.T\]
+				\[     0 = p.Φ + n.Φ             \]
+				\[ 				    0 = p.ṁ + n.ṁ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SetTemperature(; name, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Fixed temperature element<br>
+			    @named oneport = IncompressibleOnePort()<br>
+			    @unpack ΔT, ΔP, LHS, p = oneport<br>
+			    ps = @parameters T = T<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     p.T = T\]
+				\[     ΔT = 0\]
+				\[     ΔP = 0\]
+				\[     LHS = 0\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>

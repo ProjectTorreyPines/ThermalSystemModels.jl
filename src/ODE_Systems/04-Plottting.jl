@@ -1,5 +1,7 @@
 using GeometryBasics
+using AutomaticDocstrings
 
+@autodoc
 function do_lines_intersect(x1, y1, x2, y2, x3, y3, x4, y4; returnpos = false)
     p1 = Point2(x1, y1)
     p2 = Point2(x2, y2)
@@ -39,20 +41,24 @@ function do_lines_intersect(x1, y1, x2, y2, x3, y3, x4, y4; returnpos = false)
     # return false
 end
 
+@autodoc
 function direction(x1, y1, x2, y2, x3, y3)
     return (x3 - x1) * (y2 - y1) - (x2 - x1) * (y3 - y1)
 end
 
+@autodoc
 function on_segment(x1, y1, x2, y2, x3, y3)
     return (min(x1, x2) <= x3 <= max(x1, x2) && min(y1, y2) <= y3 <= max(y1, y2))
 end
 
+@autodoc
 function edge_vertices(edge, layout)
     x1, y1 = layout[src(edge)]
     x2, y2 = layout[dst(edge)]
     return x1, y1, x2, y2
 end
 
+@autodoc
 function edge_cross_color(graph, layout)
     e_colors = [:black for i = 1:ne(graph)]
 

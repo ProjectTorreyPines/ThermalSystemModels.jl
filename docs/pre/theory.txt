@@ -1,0 +1,33 @@
+<h1>Fluid Library Theory</h1>
+    <section>
+        <h2>Introduction to Fluid Dynamics</h2>
+        <p>
+            Fluid dynamics is a branch of physics that studies the motion of fluids, including liquids and gases.
+            Equations governing fluid flow are crucial for understanding and predicting fluid behavior in various scenarios.
+        </p>
+    </section>
+
+    <section>
+        <h2>Navier-Stokes Equations</h2>
+        <p>
+            The Navier-Stokes equations describe the motion of incompressible fluid substances.
+            They are a set of partial differential equations that represent the conservation of momentum and mass for fluid flow.
+        </p>
+        <pre>
+            ∂𝑢/∂𝑡 + (𝑢 ⋅ ∇)𝑢 = -∇𝑝/𝜌 + 𝜈∇²𝑢 + 𝑓
+            ∇ ⋅ 𝑢 = 0
+        </pre>
+    </section>
+
+    <section>
+        <h2>Bernoulli's Equation</h2>
+        <p>
+            Bernoulli's equation describes the behavior of fluid particles along a streamline.
+            It is based on the conservation of energy for fluid flow without viscous effects.
+        </p>
+        <pre>
+            𝑃 + 1/2𝜌𝑣² + 𝜌𝑔ℎ = constant
+        </pre>
+    </section>
+
+    <!-- Add more sections for other fluid dynamics theories and equations -->

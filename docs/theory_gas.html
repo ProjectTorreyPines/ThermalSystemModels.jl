@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: white;
+            color: black;
+            padding: 0;
+        }
+
+        header {
+            background-color: #182251; /* Updated theme color to deep blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            width: 250px;
+            height: 100%;
+            background-color: #f2f2f2;
+            position: fixed;
+            font-size: 16px;
+            padding-top: 20px;
+        }
+
+        nav a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: rgb(0, 0, 0); /* Updated theme color to deep blue */
+        }
+        nav a:hover {
+            background-color: #ddd;
+        }
+
+
+        .dropdown-btn {
+            background-color: #f2f2f2; /* Updated theme color to deep blue */
+            color: black;
+            text-decoration: underline;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-weight: bold; /* Bold text for items with dropdown menus */
+        }
+
+        .dropdown-content {
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .dropdown-content a {
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            color: #182251; /* Updated theme color to deep blue */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+<h1>Ideal Gas Cycle</h1>
+</header>
+
+<nav>
+    <div><a href="index.html">Home</a></div>
+    <button class="dropdown-btn">Getting Started</button>
+    <div class="dropdown-content">
+        <div><a href="underCon.html">Overveiw</a></div>
+        <div><a href="underCon.html">Tutorial</a></div>
+        <div><a href="underCon.html">Plotting</a></div>
+    </div>
+    <button class="dropdown-btn">Libraries</button>
+    <div class="dropdown-content">
+        <div><a href="blocklibrary.html">Blocks</a></div>
+        <div><a href="multiphase.html">Multi-phase Documentation</a></div>
+        <div><a href="incompressible.html">Incompressible Library Documentation</a></div>
+        <div><a href="gaseous.html">Gas Library Documentation</a></div>
+    </div>
+    <button class="dropdown-btn">Resources</button>
+    <div class="dropdown-content">
+        <div><a href="resources.html">Resources</a></div>
+        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
+        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
+        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
+        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
+        <div><a href="underCon.html"> Heat Exchangers</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+        <div><a href="underCon.html"> Graph Represntation</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+    </div>
+    <div><a href="underCon.html">Examples</a></div>
+    <div><a href="underCon.html">Tutorial</a></div>
+    <div><a href="underCon.html">Full API</a></div>
+    <a href="#">Contact</a>
+</nav>
+
+<main>
+    <body>
+
+        <h1>BRAYTON CYCLE COMPONENTS</h1>
+    
+        <section>
+            <h2 id="braytonSection">THERMODYNAMIC COMPONENTS FOR IDEAL GAS CYCLE (BRAYTON)</h2>
+            <p>This section demonstrates how to evaluate several thermodynamic components for the ideal gas cycle (Brayton).
+                We assume components operate as steady-flow devices, meaning there is no time-rate of change in
+                the intrinsic properties of the device. Relevant to proposed Brayton cycles for FPP, the analysis can be further simplified
+                if the working fluid has constant specific heats. In the case of Helium, constant specific heats can be assumed.</p>
+        </section>
+    
+        <section>
+            <h2 id="turbineCompressors">TURBINES AND COMPRESSORS</h2>
+            <p>Turbines and compressors are components that convert energy between fluid and mechanical forms.
+                Turbines convert pressure into mechanical work, while compressors use work to increase the pressure of the working fluid.
+                In an isentropic expansion or compression of an ideal gas with constant specific heats,
+                the following relationships can be found.</p>
+    
+            \[
+                (\frac{T_2}{T_1}) = (\frac{P_2}{P_1})^{((k-1)/k)} = (\frac{v_1}{v_2})^{k}
+            \]
+    
+            <p>Where subscripts \(1\) and \(2\) correspond to the initial and final values.
+                Moreover, the parameter \((P_2/P_1)\) is known as the compression ratio, (\(r_p\)).</p>
+    
+            <p>The isentropic efficiency of a device quantifies the deviation of a real device compared to the idealized process.
+                Intuitively, for turbines, this quantity reflects the (Actual turbine work)/(Isentropic turbine work).
+                While for compressors, the quantity conveys the (Minimum work required)/(Actual work required).</p>
+    
+
+            \[  (\eta_t) = (\frac{w_{a,out}}{w_{s,out}})    \]
+            \[  (\eta_c) = (\frac{w_{s,in}}{w_{a,in}})      \]
+    
+            <p>In the above eq, and for the remainder of this report, the subscript (\(s\)) indicates an isentropic process
+                and the subscript indicates the actual process. The use of isentropic efficiency
+                in the energy balance for these components is shown below as an example.
+
+                A typical control volume energy balance can be performed on all components in a Brayton Cycle.
+                Usually, it is safe to assume \(\Delta ke = \Delta pe = 0\) (i.e. negligible change in the kinetic and potential energy of the fluid).
+                Then, the only mechanisms of energy transfer remaining are through heat (\(Q\)) and work (\(W\)).
+                For SISO control volumes, \(\dot{m}_{in} = \dot{m}_{out}\) and it is common to remove \(\dot{m}\) from the equation, leaving results in specific form with units \(kJ/kg\).
+                The specific heat and work transfer are shown by lower case letters \(\dot{q}, \dot{w}\). The specific
+                and true values are given by \(\dot{Q} = \dot{m}\dot{q}\) and \(\dot{W} = \dot{m}\dot{w}\).
+                Since there is insignificant heat transfer associated with
+                compressor and turbine components, the energy balance reduces to:
+            </pre>
+    
+            \[w_{s} = \dot{m}c_p(T_{2s}-T_{1})\]
+
+    
+            <p>Where (\(T_{2s}\)) is the outlet temperature for an isentropic process, found by (\ref{idealGas}).
+                We can also say that the actual work is of a similar form:</p>
+    
+            \[w_a = \dot{m}c_p(T_{2a}-T_1)\]
+    
+            <p>Substituting the above equations into (\ref{isenEff}), we can solve for the
+                actual outlet temperature as well as component work.</p>
+    
+            \[
+                \begin{array}{lcl}
+                \mbox{Turbine} & & \mbox{Compressor}\\ \\
+                \eta_t = (\frac{w_{a,out}}{w_{s,out}}) & & \eta_c = (\frac{w_{s,in}}{w_{a,in}}) \\ \\
+                \eta_t = (\frac{\dot{m}c_p(T_{2a}-T_1)}{\dot{m}c_p(T_{2s}-T_{1})}) & & \eta_c = (\frac{\dot{m}c_p(T_{2s}-T_{1})}{\dot{m}c_p(T_{2a}-T_1)}) \\ \\
+                T_{2a} = T_1-\eta_t(T_1-T_{2s}) & & T_{2a} = T_{1} + \frac{(T_{2s}-T_1)}{\eta_c} \\
+                \end{array}
+            \]
+        </section>
+    
+        <section>
+            <h2 id="intercoolingReheat">INTERCOOLING AND REHEAT</h2>
+            <p>In power cycles with multiple stages of compression and or turbines, there is an intermediate stage between components.
+                The working fluid is either intercooled (compressors) or reheated (turbines) before entering the next component. These processes
+                are isotropic heat removal and addition, respectively. In either case, the temperature of the working fluid is returned to its initial temperature, before compression or expansion.
+                To maintain consistency in numbering, intercooling or reheating describes the process from state 2 to state 3.
+                The state variables for state 3 and associated heat transfer are easily found by:</p>
+    
+            \[
+                \begin{align}
+                T_3 &= T_1 \\
+                P_3 &= P_2\\\
+                \dot{Q_3} &= \dot{m}c_p(T_3-T_{2a})\
+                \end{align}
+            \]
+        </section>
+    
+        <section>
+            <h2 id="regeneratorRecuperator">REGENERATOR OR RECUPERATOR</h2>
+            <p>In a Brayton cycle, a regenerator (also known as a recuperator) is simply a heat exchanger that
+                transfers excess heat from gases at the turbine circuit outlet to the colder gas at the compressor circuit outlet.
+                Effectively reducing the amount of waste heat by siphoning some back into the system. The regenerator is evaluated
+                in the same manner as a traditional heat exchanger (HX). In this section, to avoid confusion, we will drop the numbering used in the preceding sections.
+                Instead, we will let \(T_{ci}\) and \(T_{co}\) be the inlet and outlet temperatures on the cold side of the HX, and
+                \(T_{hi}\) and \(T_{ho}\) be the in and outlet temperatures on the turbine side.
+                As will be clearer in later sections, \(T_{ci}\) and \(T_{hi}\) are not initially known but can easily be calculated.</p>
+    
+            <p>Heat exchangers are characterized by a new quantity, known as the effectiveness \(\epsilon\). Similar to isentropic efficiency:</p>
+    
+            \[
+                \epsilon = q_{actual}/q_{max}
+            \]
+    
+            <p>Furthermore, we can say:</p>
+    
+            \[
+                  (\epsilon = 1) \to (T_{co} = T_{hi}) \to q_{max} = (c_p(T_{co}-T_{ci}) \iff c_p(T_{hi}-T_{ci}))
+            \]
+    
+            <p>Therefore, if the effectiveness and inlet temperatures are known, we can calculate \(q_{max}\) which can be used to calculate \(q_{actual}\).
+                In the case of constant specific heats, the equation reduces even further.</p>
+    
+            \[
+                c_p = \mbox{ constant, }\epsilon = q_{actual}/q_{max} \iff \frac{\Delta T_{max}}{\Delta T_{act}}
+            \]
+        </section>
+</main>
+
+
+<script>
+    // JavaScript to handle dropdowns
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        dropdownBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

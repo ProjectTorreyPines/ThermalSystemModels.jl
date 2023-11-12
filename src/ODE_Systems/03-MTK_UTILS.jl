@@ -2,6 +2,14 @@ using ModelingToolkit, Symbolics, Printf, Graphs, MetaGraphs
 MTK = ModelingToolkit
 
 
+"""
+    gas_connect(pins)
+
+DOCSTRING
+
+# Arguments:
+- `pins`: DESCRIPTION
+"""
 function gas_connect(pins...)
 
     eqs = [
@@ -16,13 +24,28 @@ function gas_connect(pins...)
     return eqs
 end
 
+"""
+    work_connect(pins)
+
+DOCSTRING
+
+# Arguments:
+- `pins`: DESCRIPTION
+"""
 function work_connect(pins...)
     eqs = [
         sum(pin -> pin.Ẇ, pins) ~ 0.0, # Mass
     ]
     return eqs
 end
+"""
+    heat_connect(pins)
 
+DOCSTRING
+
+# Arguments:
+- `pins`: DESCRIPTION
+"""
 function heat_connect(pins...)
     eqs = [
         sum(pin -> pin.Q̇, pins) ~ 0.0, # Mass
@@ -30,6 +53,15 @@ function heat_connect(pins...)
     return eqs
 end
 
+"""
+    showsol(c, sol::ODESolution)
+
+DOCSTRING
+
+# Arguments:
+- `c`: DESCRIPTION
+- `sol::ODESolution`: DESCRIPTION
+"""
 function showsol(c, sol::ODESolution)
     estorage = []
     for cel in c
@@ -98,6 +130,14 @@ function showsol(c, sol::ODESolution)
     @printf "Sum of Energy Storage: [kW] = %.2f\n" sumE / 10^3
 end
 
+"""
+    variable2symbol(var)
+
+DOCSTRING
+
+# Arguments:
+- `var`: DESCRIPTION
+"""
 function variable2symbol(var)
     sm = Symbol[]
     for i = 1:length(var)
@@ -106,6 +146,17 @@ function variable2symbol(var)
     return sm
 end
 
+"""
+    showsol(c, prob::ODEProblem; prob_attr = nothing)
+
+DOCSTRING
+
+# Arguments:
+- `c`: DESCRIPTION
+- `prob::ODEProblem`: DESCRIPTION
+OPTIONAL INPUTS
+- `prob_attr = nothing`: DESCRIPTION
+"""
 function showsol(c, prob::ODEProblem; prob_attr = nothing)
     estorage = []
     evars = []
@@ -203,6 +254,15 @@ function showsol(c, prob::ODEProblem; prob_attr = nothing)
     return evar_dict, evar_string_dict
 end
 
+"""
+    showSpecificSol(c, sol)
+
+DOCSTRING
+
+# Arguments:
+- `c`: DESCRIPTION
+- `sol`: DESCRIPTION
+"""
 function showSpecificSol(c, sol)
     estorage = []
     for cel in c
@@ -217,23 +277,57 @@ function showSpecificSol(c, sol)
 
 end
 
+"""
+    showsys(sys)
+
+DOCSTRING
+
+# Arguments:
+- `sys`: DESCRIPTION
+"""
 function showsys(sys)
     display([s.name for s in sys.systems])
     return [s for s in sys.systems]
 end
 
+"""
+    sys2dict(sys::Vector{ODESystem})
+
+DOCSTRING
+
+# Arguments:
+- `sys::Vector{ODESystem}`: DESCRIPTION
+"""
 function sys2dict(sys::Vector{ODESystem})
     d = Dict()
     [d[s.name] = s for s in sys]
     return d
 end
 
+"""
+    sys2dict(sys::ODESystem)
+
+DOCSTRING
+
+# Arguments:
+- `sys::ODESystem`: DESCRIPTION
+"""
 function sys2dict(sys::ODESystem)
     d = Dict()
     [d[s.name] = s for s in sys.systems]
     return d
 end
 
+"""
+    plantsys(Plant; compoenent_level = 2)
+
+DOCSTRING
+
+# Arguments:
+- `Plant`: DESCRIPTION
+OPTIONAL INPUTS
+- `compoenent_level = 2`: DESCRIPTION
+"""
 function plantsys(Plant; compoenent_level = 2)
     d = Dict()
     for s in Plant.systems
@@ -245,11 +339,28 @@ function plantsys(Plant; compoenent_level = 2)
     return d
 end
 
+"""
+    systems(p::ODESystem)
+
+DOCSTRING
+
+# Arguments:
+- `p::ODESystem`: DESCRIPTION
+"""
 function systems(p::ODESystem)
     return p.systems
 end
 
 #   returns all connection equations
+
+"""
+    connection_equations(BaseSys)
+
+DOCSTRING
+
+# Arguments:
+- `BaseSys`: DESCRIPTION
+"""
 function connection_equations(BaseSys)
     equat = equations(BaseSys)
     sysEq = Equation[]
@@ -326,6 +437,17 @@ function split_variable_sym(var)
     return split(String(Symbolics.tosymbol(var; escape = false)), "₊")
 end
 
+"""
+    join_variable_str(splitvar, num2keep::Int; joinstr = ₊)
+
+DOCSTRING
+
+# Arguments:
+- `splitvar`: DESCRIPTION
+- `num2keep::Int`: DESCRIPTION
+OPTIONAL INPUTS
+- `joinstr = ₊`: DESCRIPTION
+"""
 function join_variable_str(splitvar, num2keep::Int; joinstr = "₊")
     if num2keep > length(splitvar)
         return join(splitvar, joinstr)
@@ -334,6 +456,17 @@ function join_variable_str(splitvar, num2keep::Int; joinstr = "₊")
     end
 end
 
+"""
+    component_names(eqs; unique_only = true, num2keep = 1)
+
+DOCSTRING
+
+# Arguments:
+- `eqs`: DESCRIPTION
+OPTIONAL INPUTS
+- `unique_only = true`: DESCRIPTION
+- `num2keep = 1`: DESCRIPTION
+"""
 function component_names(eqs; unique_only = true, num2keep = 1)
     compnames = Symbol[]
     for eq in eqs
@@ -352,6 +485,17 @@ function component_names(eqs; unique_only = true, num2keep = 1)
     return compnames
 end
 
+"""
+    component_names(eqs, tofind; unique_only = true)
+
+DOCSTRING
+
+# Arguments:
+- `eqs`: DESCRIPTION
+- `tofind`: DESCRIPTION
+OPTIONAL INPUTS
+- `unique_only = true`: DESCRIPTION
+"""
 function component_names(eqs, tofind; unique_only = true)
     compnames = Symbol[]
     for eq in eqs
@@ -369,6 +513,17 @@ function component_names(eqs, tofind; unique_only = true)
     return compnames
 end
 
+"""
+    all_component_names(sys; num2keep = 1, unique_only = true)
+
+DOCSTRING
+
+# Arguments:
+- `sys`: DESCRIPTION
+OPTIONAL INPUTS
+- `num2keep = 1`: DESCRIPTION
+- `unique_only = true`: DESCRIPTION
+"""
 function all_component_names(sys; num2keep = 1, unique_only = true)
     long_names = collect(keys(sys.var_to_name))
     compnames = Symbol[]
@@ -381,6 +536,16 @@ function all_component_names(sys; num2keep = 1, unique_only = true)
     return compnames
 end
 
+"""
+    system_details(sys::ODESystem; alias_elimate = true)
+
+DOCSTRING
+
+# Arguments:
+- `sys::ODESystem`: DESCRIPTION
+OPTIONAL INPUTS
+- `alias_elimate = true`: DESCRIPTION
+"""
 function system_details(sys::ODESystem; alias_elimate = true)
     @printf "************ SYSTEM: %s ************\n" sys.name
     @printf "SYSTEM: %s \n" sys.name
@@ -396,6 +561,16 @@ function system_details(sys::ODESystem; alias_elimate = true)
     end
 end
 
+"""
+    connection_equations2(BaseSys; flagvec)
+
+DOCSTRING
+
+# Arguments:
+- `BaseSys`: DESCRIPTION
+OPTIONAL INPUTS
+- `flagvec`: DESCRIPTION
+"""
 function connection_equations2(BaseSys; flagvec = [])
     equat = equations(BaseSys)
     sysEq = Equation[]
@@ -430,6 +605,16 @@ function connection_equations2(BaseSys; flagvec = [])
     return sysEq, unique(compnames)
 end
 
+"""
+    system2graph(ODESYS::ODESystem; verbose = false)
+
+DOCSTRING
+
+# Arguments:
+- `ODESYS::ODESystem`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+"""
 function system2graph(ODESYS::ODESystem; verbose = false)
     eqs = connection_equations2(ODESYS)
     v2n, flowkeys, flowvals = mass_flow_vars(ODESYS)
@@ -503,6 +688,18 @@ function system2graph(ODESYS::ODESystem; verbose = false)
     return g, component_name_dict, num_to_name_dict, edge_power_dict
 end
 
+"""
+    system2graph2(ODESYS::ODESystem, utility_vector::Vector{Symbol}; verbose = false, soln = nothing)
+
+DOCSTRING
+
+# Arguments:
+- `ODESYS::ODESystem`: DESCRIPTION
+- `utility_vector::Vector{Symbol}`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `soln = nothing`: DESCRIPTION
+"""
 function system2graph2(
     ODESYS::ODESystem,
     utility_vector::Vector{Symbol};
@@ -687,6 +884,22 @@ function system2graph2(
     return g, component_name_dict, num_to_name_dict, edge_power_dict, num_to_sys_dict
 end
 
+"""
+    add_graph_connection!(sys, g, component_dict, vertex_dict, Component_Variable, edge_power_dict; flip_dir = false, verbose = false)
+
+DOCSTRING
+
+# Arguments:
+- `sys`: DESCRIPTION
+- `g`: DESCRIPTION
+- `component_dict`: DESCRIPTION
+- `vertex_dict`: DESCRIPTION
+- `Component_Variable`: DESCRIPTION
+- `edge_power_dict`: DESCRIPTION
+OPTIONAL INPUTS
+- `flip_dir = false`: DESCRIPTION
+- `verbose = false`: DESCRIPTION
+"""
 function add_graph_connection!(
     sys,
     g,
@@ -760,6 +973,18 @@ function add_graph_connection!(
     end
 end
 
+"""
+    system2metagraph(sys::ODESystem, utility_vector::Vector{Symbol}; verbose = false, soln = nothing)
+
+DOCSTRING
+
+# Arguments:
+- `sys::ODESystem`: DESCRIPTION
+- `utility_vector::Vector{Symbol}`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `soln = nothing`: DESCRIPTION
+"""
 function system2metagraph(
     sys::ODESystem,
     utility_vector::Vector{Symbol};
@@ -1072,6 +1297,15 @@ function convert_pressure(val::Real, from_unit::Symbol, to_unit::Symbol)
     return val / (outUnit / inUnit)
 end
 
+"""
+    convert_pressure(val::Real, from_unit::Symbol)
+
+DOCSTRING
+
+# Arguments:
+- `val::Real`: DESCRIPTION
+- `from_unit::Symbol`: DESCRIPTION
+"""
 function convert_pressure(val::Real, from_unit::Symbol)
     # default = SI
     # converting to lowercase to avoid errors
@@ -1096,6 +1330,14 @@ function convert_pressure(val::Real, from_unit::Symbol)
     return val / (outUnit / inUnit)
 end
 
+"""
+    enforce_lowercase(x = insym)
+
+DOCSTRING
+
+# Arguments:
+- `x = insym`: DESCRIPTION
+"""
 function enforce_lowercase(x = insym)
     return x = Symbol(lowercase(String(x)))
 end

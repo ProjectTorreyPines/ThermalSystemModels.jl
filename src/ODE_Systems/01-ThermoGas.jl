@@ -41,6 +41,29 @@ propDict = Dict(gcpfunc => cphe, gkfunc => khe)
 
 # PINS AND CONNECTORS
 # display(methods(cpfunc))
+
+"""
+    ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
+
+DOCSTRING
+@variables P(t) = Pdef             [unit = u"bar"] 
+@variables ṁ(t) = ṁdef             [unit = u"kg/s"] 
+@variables T(t) = Tdef             [unit = u"K"] 
+@variables Φ(t) = 1.0
+@variables cp(t) = 5192
+@variables k(t) = 1.667
+sts = [T, P, ṁ, cp, k, Φ]
+
+ELEM TYPE: PIN
+EQUATIONS:
+cp ~ gcpfunc(T)
+k ~ gkfunc(T)
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Pdef = 10.0`: DESCRIPTION
+- `Tdef = 300`: DESCRIPTION
+- `ṁdef = 0.0`: DESCRIPTION
+"""
 function ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
     @variables P(t) = Pdef              #[unit = u"bar"] 
     @variables ṁ(t) = ṁdef              #[unit = u"kg/s"] 
@@ -144,9 +167,19 @@ function hx_connect(hx, compAin, compAout, compBin, compBout)
 end
 
 ## RESERVOIRs - TEMPERATURE SETTERS
-"""
-    function SetPressure(; name, P = 0.1)
 
+"""
+    SetPressure(; name, P = 0.1)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
 """
 function SetPressure(; name, P = 0.1)
     @named p = ThermoPin(Pdef = P)
@@ -162,6 +195,19 @@ function SetPressure(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
+"""
+    SetTemperature(; name, T = 300)
+
+DOCSTRING
+Constant Pressure Source
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `T = 300`: Temperature (K)
+"""
 function SetTemperature(; name, T = 300)
     @named p = ThermoPin(Tdef = T)
     @named n = ThermoPin(Tdef = T)
@@ -177,6 +223,26 @@ function SetTemperature(; name, T = 300)
 end
 
 #   HELIUM COMPONENTS
+
+"""
+    SinglePortReservoir(; name, P = 0.1, T = 300)
+
+DOCSTRING
+Single port flow energy ground element
+@named n = ThermoPin(Pdef = P, Tdef = T)
+ps = @parameters P = P T = T
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+    n.P ~ P
+    n.T ~ T
+    n.Φ ~ 0
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+- `T = 300`: Temperature (K)
+"""
 function SinglePortReservoir(; name, P = 0.1, T = 300)
     @named n = ThermoPin(Pdef = P, Tdef = T)
     ps = @parameters P = P T = T
@@ -188,6 +254,20 @@ function SinglePortReservoir(; name, P = 0.1, T = 300)
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
+"""
+    TwoPortReservoir(; name, P = 0.1, T = 300)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+- `T = 300`: Temperature (K)
+"""
 function TwoPortReservoir(; name, P = 0.1, T = 300)
     @named p = ThermoPin(Pdef = P, Tdef = T)
     @named n = ThermoPin(Pdef = P, Tdef = T)
@@ -205,6 +285,19 @@ function TwoPortReservoir(; name, P = 0.1, T = 300)
     ODESystem(eqs, t, sts, ps; name = name, systems = [p, n], defaults = [ΔΦ => 0.0])
 end
 
+"""
+    GasFlowSource(; name, Ṁ = 1.0)
+
+DOCSTRING
+
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Ṁ = 1.0`: DESCRIPTION
+"""
 function GasFlowSource(; name, Ṁ = 1.0)
     @named n = ThermoPin(ṁdef = -Ṁ)
     @named p = ThermoPin(ṁdef = Ṁ)
@@ -220,6 +313,18 @@ function GasFlowSource(; name, Ṁ = 1.0)
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
+"""
+    GasFlowValve(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function GasFlowValve(; name)
     @named n = ThermoPin()
     @named p = ThermoPin()
@@ -235,6 +340,19 @@ function GasFlowValve(; name)
     ODESystem(eqs, t, ps, []; name = name, systems = [n, p], defaults = [Ṁ => 1.0])
 end
 
+"""
+    ThermoHeatSource(; name, Qin = 1.0e6)
+
+DOCSTRING
+
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Qin = 1.0e6`: DESCRIPTION
+"""
 function ThermoHeatSource(; name, Qin = 1e6)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -250,6 +368,28 @@ function ThermoHeatSource(; name, Qin = 1e6)
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
+"""
+    ThermoHeatTransfer(; name, ΔP = 0.0)
+
+DOCSTRING
+Thermodynamic heat transfer element
+pins
+@named p = ThermoPin()
+@named n = ThermoPin()
+@named q = HeatTransferPin()
+
+states
+st = @variables Q̇(t) = 0.0 C(t) = 5192
+parameters
+ps = @parameters ΔP = ΔP
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ΔP = 0.0`: DESCRIPTION
+"""
 function ThermoHeatTransfer(; name, ΔP = 0.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -279,6 +419,31 @@ end
     FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)
     Ability to change mass flow rate to achieve desired outlet temperature
 """
+"""
+    FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
+
+DOCSTRING
+Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature
+@named p = ThermoPin()
+@named n = ThermoPin()
+@named q = HeatTransferPin()
+st = @variables Q̇(t) = 0.0 C(t) = 5192 ṁ(t) = 1.0
+ps = @parameters ΔP = ΔP Tout = Tout
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    n.T ~ Tout
+    p.ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)         
+    0 ~ p.ṁ + n.ṁ         
+    q.Q̇ ~ p.Φ + n.Φ                 
+    C ~ p.ṁ * p.cp       
+    0 ~ q.Q̇ - Q̇
+    n.P ~ p.P - ΔP
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ΔP = 0.0`: DESCRIPTION
+- `Tout = 773.0`: DESCRIPTION
+"""
 function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -305,6 +470,27 @@ function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
     )
 end
 
+"""
+    FixedThermoHeatTransfer(; name, Qin = 1.0e6)
+
+DOCSTRING
+Heat element with constant heat rate.
+
+st = @variables C(t) = 5192
+ps = @parameters Q̇ = Qin
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+0 = p.ṁ + n.ṁ          
+q.Q̇ = p.Φ + n.Φ        
+C = p.ṁ * p.cp          
+0 = q.Q̇ - Q̇
+n.T = p.T + Q̇ / C
+n.P = p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Qin = 1.0e6`: DESCRIPTION
+"""
 function FixedThermoHeatTransfer(; name, Qin = 1e6)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -322,6 +508,28 @@ function FixedThermoHeatTransfer(; name, Qin = 1e6)
     ODESystem(eqs, t, [C], [Q̇]; name = name, systems = [p, n, q], defaults = [C => 5192])
 end
 
+"""
+    ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
+
+DOCSTRING
+Compressor element that controls the outlet port
+    @named p = ThermoPin()
+    @named n = ThermoPin()
+    @named w = WorkPin()
+    ps = @parameters rp = rp η = η
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
+    n.P ~ p.P * rp
+    n.T ~ p.T * ((1.0 - η - (rp^((p.k - 1) / p.k))) / (-η))
+    w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
+    w.Ẇ ~ p.Φ + n.Φ
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: Isentropic Effecience
+ `rp = 3\.5`: Compression Ratio
+"""
 function ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -338,6 +546,28 @@ function ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
+"""
+    PassiveThermoCompressor(; name, η = 1.0)
+
+DOCSTRING
+Compressor element that operates between externally controlled pressure nodes.
+    @named p = ThermoPin()
+    @named n = ThermoPin()
+    @named w = WorkPin()
+
+    ps = @parameters η = η
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.ṁ + n.ṁ       #p.ṁ ~ n.ṁ                               # conservation of mass
+    n.T ~ p.T * ((1.0 - η - ((n.P / p.P)^((p.k - 1) / p.k))) / (-η))
+    w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
+    w.Ẇ ~ p.Φ + n.Φ
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: Isentropic Effecience
+"""
 function PassiveThermoCompressor(; name, η = 1.0)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -354,6 +584,31 @@ function PassiveThermoCompressor(; name, η = 1.0)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
+"""
+    ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
+
+DOCSTRING
+@named p = ThermoPin(Pdef = 80, Tdef = 800)
+@named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
+@named w = WorkPin()
+ps = @parameters rp = rp η = η
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+eqs = [
+    0 ~ p.ṁ + n.ṁ                             
+    p.P ~ n.P * rp
+    n.T ~
+        p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /
+        (rp^((p.k - 1) / p.k))
+    w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
+    w.Ẇ ~ p.Φ + n.Φ
+]
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: Isentropic Effecience
+ `rp = 3.5`: Compression Ratio
+"""
 function ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
     @named p = ThermoPin(Pdef = 80, Tdef = 800)
     @named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
@@ -371,6 +626,25 @@ function ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
+"""
+    PassiveThermoTurbine(; name, η = 1.0)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.ṁ + n.ṁ                               # conservation of mass
+    p.P ~ n.P * rp
+    n.T ~
+        p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /
+        (rp^((p.k - 1) / p.k))
+    w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
+    w.Ẇ ~ p.Φ + n.Φ
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: Isentropic Effecience
+"""
 function PassiveThermoTurbine(; name, η = 1.0)
     @named p = ThermoPin(Pdef = 80, Tdef = 800)
     @named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
@@ -389,6 +663,25 @@ function PassiveThermoTurbine(; name, η = 1.0)
     ODESystem(eqs, t, sts, ps; name = name, systems = [p, n, w], defaults = [rp => 3.5])
 end
 
+"""
+    IdealCooler(; name)
+
+DOCSTRING
+@named p = ThermoPin()
+@named n = ThermoPin()
+@named q = HeatTransferPin()
+sts = @variables Q̇(t) = 0.0
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    q.Q̇ ~ p.Φ + n.Φ        
+    0 ~ p.ṁ + n.ṁ
+    n.P ~ p.P              
+    q.Q̇ ~ p.ṁ * p.cp * (n.T - p.T)
+    Q̇ ~ q.Q̇
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IdealCooler(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -405,6 +698,24 @@ function IdealCooler(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0])
 end
 
+"""
+    PassiveElement(; name)
+
+DOCSTRING
+@named p = ThermoPin()
+@named n = ThermoPin()
+sts = @variables Q̇(t) = 0.0 ΔP(t) = 0.0 ΔT(t) = 0.0 Δṁ(t) = 0.0
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    n.ṁ + p.ṁ ~ Δṁ    #has to be negative
+    ΔT ~ p.T - n.T
+    Q̇ ~ -(p.ṁ * p.cp * ΔT)
+    ΔP ~ p.P - n.P
+    Q̇ ~ p.Φ + n.Φ             # conservation of energy
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function PassiveElement(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -428,6 +739,18 @@ function PassiveElement(; name)
     )
 end
 
+"""
+    ReliefElement(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function ReliefElement(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -440,6 +763,18 @@ function ReliefElement(; name)
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
+"""
+    throttle(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function throttle(; name)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -454,6 +789,19 @@ function throttle(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n], defaults = [ΔP => 0, ΔΦ => 0])
 end
 
+"""
+    Regenerator(; name, ϵ = 0.95)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ϵ = 0.95`: DESCRIPTION
+"""
 function Regenerator(; name, ϵ = 0.95)
     @named A = ThermoHeatTransfer()
     @named B = ThermoHeatTransfer()
@@ -468,6 +816,19 @@ function Regenerator(; name, ϵ = 0.95)
 end
 
 ## compound components
+"""
+    Intercooler(; name, Tout = 300)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Tout = 300`: DESCRIPTION
+"""
 function Intercooler(; name, Tout = 300)
     @named p = ThermoPin()
     @named n = ThermoPin()
@@ -495,6 +856,15 @@ function Intercooler(; name, Tout = 300)
     )
 end
 
+"""
+    showsol(c, sol)
+
+DOCSTRING
+
+# Arguments:
+- `c`: DESCRIPTION
+- `sol`: DESCRIPTION
+"""
 function showsol(c, sol)
     for cel in c
         cvec = []
@@ -525,190 +895,190 @@ function showsol(c, sol)
 end
 
 ###################################################
-#                   TEST FUNCTIONS                
-###################################################
+# #                   TEST FUNCTIONS                
+# ###################################################
 
-function testRegen()
-    @named hotres = SinglePortReservoir(P = 100, T = 500)
-    @named hmsrc = GasFlowSource(Ṁ = 1.0)
+# function testRegen()
+#     @named hotres = SinglePortReservoir(P = 100, T = 500)
+#     @named hmsrc = GasFlowSource(Ṁ = 1.0)
 
-    @named coolres = SinglePortReservoir(P = 100, T = 400)
-    @named cmsrc = GasFlowSource(Ṁ = 2.0)
+#     @named coolres = SinglePortReservoir(P = 100, T = 400)
+#     @named cmsrc = GasFlowSource(Ṁ = 2.0)
 
-    @named reg = Regenerator()
-    connections = vcat(
-        gas_connect(hotres.n, hmsrc.p),
-        gas_connect(hmsrc.n, reg.A.p),
-        gas_connect(coolres.n, cmsrc.p),
-        gas_connect(cmsrc.n, reg.B.p),
-    )
+#     @named reg = Regenerator()
+#     connections = vcat(
+#         gas_connect(hotres.n, hmsrc.p),
+#         gas_connect(hmsrc.n, reg.A.p),
+#         gas_connect(coolres.n, cmsrc.p),
+#         gas_connect(cmsrc.n, reg.B.p),
+#     )
 
-    systemNames = [hotres, hmsrc, coolres, cmsrc, reg]
+#     systemNames = [hotres, hmsrc, coolres, cmsrc, reg]
 
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
 
-    smodel = substitute(odemodel, propDict)
-    simple_mod = structural_simplify(smodel)
-    prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
-    sol = solve(prob)
-    showsol([hotres, hmsrc, coolres, cmsrc, reg.A, reg.B], sol)
-end
+#     smodel = substitute(odemodel, propDict)
+#     simple_mod = structural_simplify(smodel)
+#     prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
+#     sol = solve(prob)
+#     showsol([hotres, hmsrc, coolres, cmsrc, reg.A, reg.B], sol)
+# end
 
-function testIntercool()
-    @named hotres = SinglePortReservoir(P = 100, T = 400)
-    @named hmsrc = GasFlowSource(Ṁ = 1.0)
-    @named IC = Intercooler(Tout = 320)
+# function testIntercool()
+#     @named hotres = SinglePortReservoir(P = 100, T = 400)
+#     @named hmsrc = GasFlowSource(Ṁ = 1.0)
+#     @named IC = Intercooler(Tout = 320)
 
-    connections = vcat(gas_connect(hotres.n, hmsrc.p), gas_connect(hmsrc.n, IC.p))
+#     connections = vcat(gas_connect(hotres.n, hmsrc.p), gas_connect(hmsrc.n, IC.p))
 
-    systemNames = [hotres, hmsrc, IC]
+#     systemNames = [hotres, hmsrc, IC]
 
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
 
-    smodel = substitute(odemodel, propDict)
-    simple_mod = structural_simplify(smodel)
-    prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
-    sol = solve(prob)
-    showsol(systemNames, sol)
-end
+#     smodel = substitute(odemodel, propDict)
+#     simple_mod = structural_simplify(smodel)
+#     prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
+#     sol = solve(prob)
+#     showsol(systemNames, sol)
+# end
 
-function testTurbine(; Tin = 1000, Pin = 50, rp = 3.0, returnmode = :sys)
-    @named hotres = SinglePortReservoir(P = Pin, T = Tin)
-    @named hmsrc = GasFlowSource(Ṁ = 1.0)
-    @named turbine = PassiveThermoTurbine(η = 0.9)
-    @named ep = SetPressure(P = Pin / rp)
+# function testTurbine(; Tin = 1000, Pin = 50, rp = 3.0, returnmode = :sys)
+#     @named hotres = SinglePortReservoir(P = Pin, T = Tin)
+#     @named hmsrc = GasFlowSource(Ṁ = 1.0)
+#     @named turbine = PassiveThermoTurbine(η = 0.9)
+#     @named ep = SetPressure(P = Pin / rp)
 
-    connections = vcat(
-        gas_connect(hotres.n, hmsrc.p),
-        gas_connect(hmsrc.n, turbine.p),
-        gas_connect(turbine.n, ep.p),
-    )
+#     connections = vcat(
+#         gas_connect(hotres.n, hmsrc.p),
+#         gas_connect(hmsrc.n, turbine.p),
+#         gas_connect(turbine.n, ep.p),
+#     )
 
-    systemNames = [hotres, hmsrc, turbine, ep]
+#     systemNames = [hotres, hmsrc, turbine, ep]
 
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
 
-    if returnmode == :sys
-        return odemodel
-    else
-        smodel = substitute(odemodel, propDict)
+#     if returnmode == :sys
+#         return odemodel
+#     else
+#         smodel = substitute(odemodel, propDict)
 
-        simple_mod = structural_simplify(smodel)
+#         simple_mod = structural_simplify(smodel)
 
-        prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
+#         prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
 
-        sol = solve(prob)
+#         sol = solve(prob)
 
-        showsol(systemNames, sol)
-        return sol
-    end
-end
+#         showsol(systemNames, sol)
+#         return sol
+#     end
+# end
 
-function testHeater(Tin = 300, Pin = 100, Qin = 15e6)
-    @named cres = SinglePortReservoir(P = Pin, T = Tin)
-    @named msrc = GasFlowSource(Ṁ = 75)
-    @named heat = FixedThermoHeatTransfer(Qin = Qin)
-    @named ep = SetPressure(P = 100)
+# function testHeater(Tin = 300, Pin = 100, Qin = 15e6)
+#     @named cres = SinglePortReservoir(P = Pin, T = Tin)
+#     @named msrc = GasFlowSource(Ṁ = 75)
+#     @named heat = FixedThermoHeatTransfer(Qin = Qin)
+#     @named ep = SetPressure(P = 100)
 
-    connections = vcat(
-        gas_connect(cres.n, msrc.p),
-        gas_connect(msrc.n, heat.p),
-        gas_connect(heat.n, ep.p),
-    )
+#     connections = vcat(
+#         gas_connect(cres.n, msrc.p),
+#         gas_connect(msrc.n, heat.p),
+#         gas_connect(heat.n, ep.p),
+#     )
 
-    systemNames = [cres, msrc, heat]
+#     systemNames = [cres, msrc, heat]
 
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
 
-    smodel = substitute(odemodel, propDict)
-    simple_mod = structural_simplify(smodel)
-    prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
-    sol = solve(prob)
-    showsol(systemNames, sol)
-end
+#     smodel = substitute(odemodel, propDict)
+#     simple_mod = structural_simplify(smodel)
+#     prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
+#     sol = solve(prob)
+#     showsol(systemNames, sol)
+# end
 
-###################################################
-#                   Cases            
-###################################################
-function simpleBrayton()
-    @named cmsrc = GasFlowSource(Ṁ = 100)
-    @named comp = ThermoCompressor()
-    @named heat = ThermoHeatSource(Qin = 100e6)
-    @named turbine = PassiveThermoTurbine()
-    @named cool = IdealCooler()
-    @named res = TwoPortReservoir(P = 10, T = 300)
+# ###################################################
+# #                   Cases            
+# ###################################################
+# function simpleBrayton()
+#     @named cmsrc = GasFlowSource(Ṁ = 100)
+#     @named comp = ThermoCompressor()
+#     @named heat = ThermoHeatSource(Qin = 100e6)
+#     @named turbine = PassiveThermoTurbine()
+#     @named cool = IdealCooler()
+#     @named res = TwoPortReservoir(P = 10, T = 300)
 
-    connections = vcat(
-        gas_connect(res.n, cmsrc.p),
-        gas_connect(cmsrc.n, comp.p),
-        gas_connect(comp.n, heat.p),
-        gas_connect(heat.n, turbine.p),
-        gas_connect(turbine.n, cool.p),
-        gas_connect(cool.n, res.p),
-    )
+#     connections = vcat(
+#         gas_connect(res.n, cmsrc.p),
+#         gas_connect(cmsrc.n, comp.p),
+#         gas_connect(comp.n, heat.p),
+#         gas_connect(heat.n, turbine.p),
+#         gas_connect(turbine.n, cool.p),
+#         gas_connect(cool.n, res.p),
+#     )
 
-    # systemNames =[coolres,cmsrc,comp,heat,turbine,cool,outres]
-    systemNames = [res, cmsrc, comp, heat, turbine, cool]
+#     # systemNames =[coolres,cmsrc,comp,heat,turbine,cool,outres]
+#     systemNames = [res, cmsrc, comp, heat, turbine, cool]
 
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
 
-    smodel = substitute(odemodel, propDict)
-    simple_mod = structural_simplify(smodel)
-    prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
-    sol = solve(prob)
-    @show Qnet = sol[cool.q.Q̇] + sol[heat.q.Q̇]
-    @show Wnet = sol[turbine.w.Ẇ] + sol[comp.w.Ẇ]
-    @show Wnet + Qnet
-    @show Wnet / sol[heat.q.Q̇]
+#     smodel = substitute(odemodel, propDict)
+#     simple_mod = structural_simplify(smodel)
+#     prob = ODAEProblem(simple_mod, Pair[], (0.0, 1.0))
+#     sol = solve(prob)
+#     @show Qnet = sol[cool.q.Q̇] + sol[heat.q.Q̇]
+#     @show Wnet = sol[turbine.w.Ẇ] + sol[comp.w.Ẇ]
+#     @show Wnet + Qnet
+#     @show Wnet / sol[heat.q.Q̇]
 
-end
+# end
 
-function simpleBraytonRegen()
-    TminCycle = 300
-    PminCycle = 15
-    Qload = 1e6
-    Mflow = 75
+# function simpleBraytonRegen()
+#     TminCycle = 300
+#     PminCycle = 15
+#     Qload = 1e6
+#     Mflow = 75
 
-    @named res = TwoPortReservoir(P = PminCycle, T = TminCycle)
-    @named valve = GasFlowSource(Ṁ = Mflow)
-    @named comp1 = ActiveThermoCompressor(rp = 3.8, η = 0.9)
-    @named ic1 = Intercooler(Tout = TminCycle)
-    @named comp2 = ActiveThermoCompressor(rp = 3.5, η = 0.95)
-    @named ic2 = Intercooler(Tout = TminCycle)
-    @named comp3 = ActiveThermoCompressor(rp = 3.5, η = 0.95)
-    @named reg = Regenerator()
-    @named heat = FixedThermoHeatTransfer(Qin = 1000e6)
-    @named turbine = PassiveThermoTurbine()
-    @named cool = IdealCooler()
+#     @named res = TwoPortReservoir(P = PminCycle, T = TminCycle)
+#     @named valve = GasFlowSource(Ṁ = Mflow)
+#     @named comp1 = ActiveThermoCompressor(rp = 3.8, η = 0.9)
+#     @named ic1 = Intercooler(Tout = TminCycle)
+#     @named comp2 = ActiveThermoCompressor(rp = 3.5, η = 0.95)
+#     @named ic2 = Intercooler(Tout = TminCycle)
+#     @named comp3 = ActiveThermoCompressor(rp = 3.5, η = 0.95)
+#     @named reg = Regenerator()
+#     @named heat = FixedThermoHeatTransfer(Qin = 1000e6)
+#     @named turbine = PassiveThermoTurbine()
+#     @named cool = IdealCooler()
 
-    connections = vcat(
-        gas_connect(res.n, valve.p),
-        gas_connect(valve.n, comp1.p),
-        gas_connect(comp1.n, ic1.p),
-        gas_connect(ic1.n, comp2.p),
-        gas_connect(comp2.n, ic2.p),
-        gas_connect(ic2.n, comp3.p),
-        hx_connect(reg, comp3, heat, turbine, cool),
-        gas_connect(heat.n, turbine.p),
-        gas_connect(cool.n, res.p),
-    )
+#     connections = vcat(
+#         gas_connect(res.n, valve.p),
+#         gas_connect(valve.n, comp1.p),
+#         gas_connect(comp1.n, ic1.p),
+#         gas_connect(ic1.n, comp2.p),
+#         gas_connect(comp2.n, ic2.p),
+#         gas_connect(ic2.n, comp3.p),
+#         hx_connect(reg, comp3, heat, turbine, cool),
+#         gas_connect(heat.n, turbine.p),
+#         gas_connect(cool.n, res.p),
+#     )
 
-    # systemNames =[coolres,valve,comp,heat,turbine,cool,outres]
-    systemNames = [res, valve, comp1, ic1, comp2, ic2, comp3, reg, heat, turbine, cool]
-    @named odemodel = ODESystem(connections, t; systems = systemNames)
-    smodel = substitute(odemodel, propDict)
-    simple_sys = structural_simplify(smodel)
+#     # systemNames =[coolres,valve,comp,heat,turbine,cool,outres]
+#     systemNames = [res, valve, comp1, ic1, comp2, ic2, comp3, reg, heat, turbine, cool]
+#     @named odemodel = ODESystem(connections, t; systems = systemNames)
+#     smodel = substitute(odemodel, propDict)
+#     simple_sys = structural_simplify(smodel)
 
-end
+# end
 
-function GasReference(; name, Pref = 10, T_ref = 500)
-    # ground pin, Pref in Bar, Tref in K
-    p = ThermoPin()
-    eqs = [
-        P.Φ ~ 0
-        p.ṁ ~ 0
-        p.P ~ Pref
-        p.T ~ Tref
-    ]
+# function GasReference(; name, Pref = 10, T_ref = 500)
+#     # ground pin, Pref in Bar, Tref in K
+#     p = ThermoPin()
+#     eqs = [
+#         P.Φ ~ 0
+#         p.ṁ ~ 0
+#         p.P ~ Pref
+#         p.T ~ Tref
+#     ]
 
-end
+# end

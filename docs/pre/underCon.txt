@@ -1,0 +1,6 @@
+<h1>This page is under construction </h1>
+<p>This is a simple webpage <a href="index.html">Go to Home Page</a> hosted on GitHub Pages.</p>
+<footer>
+<p>&copy; 2023 Jackson Harvey</p>
+<p>Contact: harveyj@fustion.gat.com</p>
+</footer>

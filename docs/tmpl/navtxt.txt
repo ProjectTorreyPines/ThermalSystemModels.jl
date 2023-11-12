@@ -1,0 +1,36 @@
+</header>
+
+<nav>
+    <div><a href="index.html">Home</a></div>
+    <button class="dropdown-btn">Getting Started</button>
+    <div class="dropdown-content">
+        <div><a href="underCon.html">Overveiw</a></div>
+        <div><a href="underCon.html">Tutorial</a></div>
+        <div><a href="underCon.html">Plotting</a></div>
+    </div>
+    <button class="dropdown-btn">Libraries</button>
+    <div class="dropdown-content">
+        <div><a href="blocklibrary.html">Blocks</a></div>
+        <div><a href="multiphase.html">Multi-phase Documentation</a></div>
+        <div><a href="incompressible.html">Incompressible Library Documentation</a></div>
+        <div><a href="gaseous.html">Gas Library Documentation</a></div>
+    </div>
+    <button class="dropdown-btn">Resources</button>
+    <div class="dropdown-content">
+        <div><a href="resources.html">Resources</a></div>
+        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
+        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
+        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
+        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
+        <div><a href="underCon.html"> Heat Exchangers</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+        <div><a href="underCon.html"> Graph Represntation</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+    </div>
+    <div><a href="underCon.html">Examples</a></div>
+    <div><a href="underCon.html">Tutorial</a></div>
+    <div><a href="underCon.html">Full API</a></div>
+    <a href="#">Contact</a>
+</nav>
+
+<main>

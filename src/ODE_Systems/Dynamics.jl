@@ -22,6 +22,18 @@ module Liq
 include("01-Incompressible.jl")
 end
 
+"""
+    L2G_HeatExchanger(; name, ϵ = 0.95, A = Liq.IncompressibleHeatTransfer(), B = Gas.ThermoHeatTransfer())
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `name`: DESCRIPTION
+- `ϵ = 0.95`: DESCRIPTION
+- `A = Liq.IncompressibleHeatTransfer()`: DESCRIPTION
+- `B = Gas.ThermoHeatTransfer()`: DESCRIPTION
+"""
 function L2G_HeatExchanger(;
     name,
     ϵ = 0.95,
@@ -42,6 +54,20 @@ function L2G_HeatExchanger(;
 end
 
 #   Steam to Gas
+
+"""
+    S2G_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer(), returnmode = :eqs)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `name`: DESCRIPTION
+- `ϵ = 0.95`: DESCRIPTION
+- `A = Steam.SteamHeatTransfer()`: DESCRIPTION
+- `B = Gas.ThermoHeatTransfer()`: DESCRIPTION
+- `returnmode = :eqs`: DESCRIPTION
+"""
 function S2G_HeatExchanger(;
     name,
     ϵ = 0.95,
@@ -102,6 +128,20 @@ function S2G_HeatExchanger(;
     end
 end
 
+
+"""
+    L2S_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Liq.IncompressibleHeatTransfer(), returnmode = :eqs)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `name`: DESCRIPTION
+- `ϵ = 0.95`: DESCRIPTION
+- `A = Steam.SteamHeatTransfer()`: DESCRIPTION
+- `B = Liq.IncompressibleHeatTransfer()`: DESCRIPTION
+- `returnmode = :eqs`: DESCRIPTION
+"""
 function L2S_HeatExchanger(;
     name,
     ϵ = 0.95,
@@ -162,6 +202,20 @@ function L2S_HeatExchanger(;
     end
 end
 
+
+"""
+    Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `name`: DESCRIPTION
+- `ϵ = 0.95`: DESCRIPTION
+- `A`: DESCRIPTION
+- `B`: DESCRIPTION
+- `returnmode = :ode`: DESCRIPTION
+"""
 function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
     if returnmode == :ode
         ps = @parameters ϵ = ϵ
@@ -181,6 +235,12 @@ function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
 end
 
 ModelingToolkit.@variables t
+"""
+    default_energy_sys()
+
+DOCSTRING
+
+"""
 function default_energy_sys()
     sts = ModelingToolkit.@variables η_cycle(t) = 0.5 η_bop(t) = 0.5
     @named Electric = Gas.WorkPin()                # Connects to all pumps, turbines, compressors
@@ -223,6 +283,19 @@ end
 # end
 
 
+"""
+    wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `max_pressure = 80`: DESCRIPTION
+- `pressrue_drop = 5`: DESCRIPTION
+- `Tmin = 450 + 273.15`: DESCRIPTION
+- `Tmax = 550 + 273.15`: DESCRIPTION
+- `load = 1.0e8`: DESCRIPTION
+"""
 function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
     params = @parameters Qwall = load
     pressure_max_wall   = max_pressure;  # bar
@@ -251,6 +324,19 @@ function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15
     return wall_sys, wall_connections, params, sysdict
 end
 
+"""
+    divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `max_pressure = 80`: DESCRIPTION
+- `pressrue_drop = 5`: DESCRIPTION
+- `Tmin = 450 + 273.15`: DESCRIPTION
+- `Tmax = 550 + 273.15`: DESCRIPTION
+- `load = 1.0e8`: DESCRIPTION
+"""
 function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
     params = @parameters Qdivertor = load
     pressure_max_divertor = max_pressure;  # bar
@@ -277,6 +363,19 @@ function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +27
     return divertor_sys, divertor_connections, params, sysdict
 end
 
+"""
+    breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 + 273.15, Tmax = 900 + 273.15, load = 1.0e8)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `max_pressure = 40`: DESCRIPTION
+- `pressrue_drop = 8`: DESCRIPTION
+- `Tmin = 750 + 273.15`: DESCRIPTION
+- `Tmax = 900 + 273.15`: DESCRIPTION
+- `load = 1.0e8`: DESCRIPTION
+"""
 function breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273.15, Tmax = 900+273.15, load = 100e6)
     params = @parameters Qbreeder = load
     pressure_max_breeder = max_pressure;  # bar
@@ -305,6 +404,20 @@ function breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273
     return breeder_sys, breeder_connections, params, sysdict
 end
 
+"""
+    feedwater_rankine(; max_pressure = 150, mid_pressure = 25, min_pressure = 0.1, ηpump = 1.0, ηturbine = 1.0, flowrate = 50)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `max_pressure = 150`: DESCRIPTION
+- `mid_pressure = 25`: DESCRIPTION
+- `min_pressure = 0.1`: DESCRIPTION
+- `ηpump = 1.0`: DESCRIPTION
+- `ηturbine = 1.0`: DESCRIPTION
+- `flowrate = 50`: DESCRIPTION
+"""
 function feedwater_rankine(;
     max_pressure = 150,
     mid_pressure = 25,
@@ -357,6 +470,19 @@ function feedwater_rankine(;
     return steam_systems, steam_connections, params, sysdict
 end
 
+"""
+    intermediate_loop(; Pmax = 40, Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `Pmax = 40`: DESCRIPTION
+- `Pmin = 32`: DESCRIPTION
+- `Nhx = 3`: DESCRIPTION
+- `Tmin = 350 + 273.15`: DESCRIPTION
+- `flowrate = 100`: DESCRIPTION
+"""
 function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)
     params = @parameters inter_loop_ṁ = flowrate
     pressure_max_loop = Pmax;  # bar
@@ -392,6 +518,7 @@ end
 
 # function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
 #     # Control elements
+
         #     @named gnd = Steam.ContinuityReservoir()
         #     @named valve = Steam.SteamFlowValve()
         #     @named pumpA = Steam.AdiabaticPump(Pout = Pmid, setpressure = false)
@@ -1115,6 +1242,15 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
     return cyclesys, connections, params, sysdict
 end
 
+"""
+    hotswap!(G, n::Int64)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `n::Int64`: DESCRIPTION
+"""
 function hotswap!(G, n::Int64)
     in_v = inneighbors(G, n)
     ou_v = outneighbors(G, n)
@@ -1219,6 +1355,15 @@ node_prop(G,prop)
 function node_prop(G,prop)
 return vector of props, in order of nodes (first element corresponds to vertex/node 1)
 """
+"""
+    node_prop(G, prop)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `prop`: DESCRIPTION
+"""
 function node_prop(G, prop)
     return [get_prop(G, i, prop) for i = 1:nv(G)]
 end
@@ -1227,15 +1372,43 @@ end
     node_propdict(G,prop)
     return prop dict
 """
+"""
+    node_propdict(G, prop)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `prop`: DESCRIPTION
+"""
 function node_propdict(G, prop)
     return Dict([i => get_prop(G, i, prop) for i = 1:nv(G)])
 end
 
+"""
+    edge_prop(G, prop)
 
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `prop`: DESCRIPTION
+"""
 function edge_prop(G, prop)
     return [get_prop(G, e, prop) for e in collect(edges(G))]
 end
 
+"""
+    edge_propdict(G, prop; edgekey = :tuple)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `prop`: DESCRIPTION
+OPTIONAL INPUTS
+- `edgekey = :tuple`: DESCRIPTION
+"""
 function edge_propdict(G, prop; edgekey = :tuple)
     if (edgekey) == :tuple
         return Dict([
@@ -1246,16 +1419,45 @@ function edge_propdict(G, prop; edgekey = :tuple)
     end
 end
 
+"""
+    set_single_edge_props!(G, e::Edge, pdict::Dict{Symbol, T})
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `e::Edge`: DESCRIPTION
+- `pdict::Dict{Symbol, T}`: DESCRIPTION
+"""
 function set_single_edge_props!(G, e::Edge, pdict::Dict{Symbol,T}) where {T<:Any}
     for k in collect(keys(pdict))
         set_prop!(G, e, k, pdict[k])
     end
 end
 
+"""
+    set_default_edge_prop!(G, propname::Symbol, propval)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `propname::Symbol`: DESCRIPTION
+- `propval`: DESCRIPTION
+"""
 function set_default_edge_prop!(G, propname::Symbol, propval)
     [set_prop!(G, e, propname, propval) for e in collect(edges(G))]
 end
 
+"""
+    set_default_edge_prop!(G, pdict::Dict{Symbol, T})
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `pdict::Dict{Symbol, T}`: DESCRIPTION
+"""
 function set_default_edge_prop!(G, pdict::Dict{Symbol,T}) where {T<:Any}
     for k in collect(keys(pdict))
         [set_prop!(G, e, pdict[k]) for e in collect(edges(G))]
@@ -1270,12 +1472,31 @@ function set_default_node_prop!(G, propname::Symbol, propval)
     [set_prop!(G, n, propname, propval) for n in collect(vertices(G))]
 end
 
+"""
+    set_default_node_prop!(G, pdict::Dict{Symbol, T})
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `pdict::Dict{Symbol, T}`: DESCRIPTION
+"""
 function set_default_node_prop!(G, pdict::Dict{Symbol,T}) where {T<:Any}
     for k in collect(keys(pdict))
         [set_prop!(G, n, k, pdict[k]) for n in collect(vertices(G))]
     end
 end
 
+"""
+    set_default_node_props!(G, propname::Vector{Symbol}, propval::Vector{Any})
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `propname::Vector{Symbol}`: DESCRIPTION
+- `propval::Vector{Any}`: DESCRIPTION
+"""
 function set_default_node_props!(G, propname::Vector{Symbol}, propval::Vector{Any})
     length(propname) == length(propval) ? nothing :
     throw(
@@ -1288,14 +1509,31 @@ function set_default_node_props!(G, propname::Vector{Symbol}, propval::Vector{An
     end
 end
 
+"""
+    init_node_prop!(g, propname, deft)
 
+DOCSTRING
 
+# Arguments:
+- `g`: DESCRIPTION
+- `propname`: DESCRIPTION
+- `deft`: DESCRIPTION
+"""
 function init_node_prop!(g, propname, deft)
     for i = 1:nv(g)
         set_prop!(g, i, propname, deft)
     end
 end
 # returns vector with all edge lengths for node vj
+"""
+    edge_d_func(G::AbstractGraph, vj::Int64)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+"""
 function edge_d_func(G::AbstractGraph, vj::Int64)
     nbs = all_neighbors(G, vj)
 
@@ -1319,6 +1557,16 @@ function edge_d_func(G::AbstractGraph, vj::Int64)
     return d
 end
 
+"""
+    edge_d_func(G::AbstractGraph, vj::Int64, testpos::T)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+- `testpos::T`: DESCRIPTION
+"""
 function edge_d_func(G::AbstractGraph, vj::Int64, testpos::T) where {T<:Point}
     nbs = all_neighbors(G, vj)
 
@@ -1342,13 +1590,29 @@ function edge_d_func(G::AbstractGraph, vj::Int64, testpos::T) where {T<:Point}
     return d
 end
 
+"""
+    setpos!(G, lay)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `lay`: DESCRIPTION
+"""
 function setpos!(G, lay)
     for i = 1:nv(G)
         set_prop!(G, i, :pos, lay[i])
     end
 end
 #
+"""
+    occupied_grid_index(G)
 
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+"""
 function occupied_grid_index(G)
     v_idx = []
     for i = 1:nv(G)
@@ -1357,6 +1621,14 @@ function occupied_grid_index(G)
     return v_idx
 end
 
+"""
+    occupied_grid_positions(G)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+"""
 function occupied_grid_positions(G)
     v_idx = Point2f[]
     for i = 1:nv(G)
@@ -1365,12 +1637,30 @@ function occupied_grid_positions(G)
     return v_idx
 end
 
+"""
+    available_grid_positions(G)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+"""
 function available_grid_positions(G)
     op = occupied_grid_positions(G)
     allpos = get_prop(G, :grid)
     return setdiff(allpos, op)
 end
 
+"""
+    node2rect(pos, ht, wid)
+
+DOCSTRING
+
+# Arguments:
+- `pos`: DESCRIPTION
+- `ht`: DESCRIPTION
+- `wid`: DESCRIPTION
+"""
 function node2rect(pos, ht, wid)
     x = pos[1]
     y = pos[2] - ht #shift to bottom left
@@ -1378,6 +1668,14 @@ function node2rect(pos, ht, wid)
     return rt
 end
 
+"""
+    graphBlocks(G)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+"""
 function graphBlocks(G)
     lay = occupied_grid_positions(G) .* get_prop(G, :c)
     blocks = [
@@ -1387,10 +1685,27 @@ function graphBlocks(G)
     return lay, blocks
 end
 
+"""
+    edgeTuples(G)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+"""
 function edgeTuples(G)
     return [(e.src, e.dst) for e in collect(edges(G))]
 end
 
+"""
+    available_grid_position_with_size(G, vj)
+
+DOCSTRING
+
+# Arguments:
+- `G`: DESCRIPTION
+- `vj`: DESCRIPTION
+"""
 function available_grid_position_with_size(G, vj)
 
     c = get_prop(G, :c)   # normalized grid spacing
@@ -1438,6 +1753,14 @@ function available_grid_position_with_size(G, vj)
     return av_pos
 end
 
+"""
+    update_pos!(G::AbstractGraph)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+"""
 function update_pos!(G::AbstractGraph)
     for vj = 1:nv(G)
         newpos = get_prop(G, vj, :pos)
@@ -1447,12 +1770,32 @@ function update_pos!(G::AbstractGraph)
     end
 end
 
+"""
+    update_pos!(G::AbstractGraph, vj::Int64, newpos::T)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+- `newpos::T`: DESCRIPTION
+"""
 function update_pos!(G::AbstractGraph, vj::Int64, newpos::T) where {T<:Point}
     newidx = findfirst(x -> x == newpos, get_prop(G, :grid))
     set_prop!(G, vj, :pos, newpos)
     set_prop!(G, vj, :grididx, newidx)
 end
 
+"""
+    swap_pos!(G::AbstractGraph, vj::Int64, vi::Int64)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+- `vi::Int64`: DESCRIPTION
+"""
 function swap_pos!(G::AbstractGraph, vj::Int64, vi::Int64)
     vj_pos = get_prop(G, vj, :pos)
     vj_idx = get_prop(G, vj, :grididx)
@@ -1462,6 +1805,18 @@ function swap_pos!(G::AbstractGraph, vj::Int64, vi::Int64)
     set_prop!(G, vi, :grididx, vj_idx)
 end
 
+"""
+    swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `maxiter = 10`: DESCRIPTION
+"""
 function swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)
     vj_pos = get_prop(G, vj, :pos)
     vj_edge_len = sum(edge_d_func(G, vj))
@@ -1499,6 +1854,18 @@ function swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 
     end
 end
 
+"""
+    swap_adjacents_check_size(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `vj::Int64`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `maxiter = 10`: DESCRIPTION
+"""
 function swap_adjacents_check_size(
     G::AbstractGraph,
     vj::Int64;
@@ -1566,6 +1933,17 @@ function swap_adjacents_check_size(
     end
 end
 
+"""
+    vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)
+
+DOCSTRING
+
+# Arguments:
+- `y1::Real`: DESCRIPTION
+- `h1::Real`: DESCRIPTION
+- `y2::Real`: DESCRIPTION
+- `h2::Real`: DESCRIPTION
+"""
 function vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)
     ylow = y1 - h1
     if y2 == y1
@@ -1583,6 +1961,17 @@ function vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)
     return false
 end
 
+"""
+    hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)
+
+DOCSTRING
+
+# Arguments:
+- `x1::Real`: DESCRIPTION
+- `w1::Real`: DESCRIPTION
+- `x2::Real`: DESCRIPTION
+- `w2::Real`: DESCRIPTION
+"""
 function hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)
     xhi = x1 + w1
     if x1 == x2
@@ -1601,6 +1990,15 @@ function hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)
     return false
 end
 
+"""
+    vlinecheck(srcl::Vector{Line}, dst::Line)
+
+DOCSTRING
+
+# Arguments:
+- `srcl::Vector{Line}`: DESCRIPTION
+- `dst::Line`: DESCRIPTION
+"""
 function vlinecheck(srcl::Vector{Line}, dst::Line)
     for sl in srcl
         sldc = decompose(Point2f, sl)
@@ -1617,6 +2015,16 @@ function vlinecheck(srcl::Vector{Line}, dst::Line)
     return false
 end
 
+"""
+    vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)
+
+DOCSTRING
+
+# Arguments:
+- `yvec::Vector{<:Real}`: DESCRIPTION
+- `y2::Real`: DESCRIPTION
+- `h2::Real`: DESCRIPTION
+"""
 function vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)
     yinter = findall(y -> (y <= y2) && (y >= y2 - h2), yvec)
     if y2 > yvec[1] && (y2 + h2) <= yvec[end]
@@ -1625,6 +2033,16 @@ function vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)
     return yinter
 end
 
+"""
+    hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)
+
+DOCSTRING
+
+# Arguments:
+- `xvec::Vector{<:Real}`: DESCRIPTION
+- `x2::Real`: DESCRIPTION
+- `w2::Real`: DESCRIPTION
+"""
 function hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)
     xinter = findall(x -> (x >= x2) && (x <= x2 + w2), xvec)
     if x2 <= xvec[1] && xvec[end] <= (x2 + w2)
@@ -1633,6 +2051,14 @@ function hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)
     return xinter
 end
 
+"""
+    horizontal_visibility_graph(G::AbstractGraph)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+"""
 function horizontal_visibility_graph(G::AbstractGraph)
     gg = DiGraph()
     add_vertices!(gg, nv(G))
@@ -1678,6 +2104,16 @@ function horizontal_visibility_graph(G::AbstractGraph)
     return gg
 end
 
+"""
+    vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+OPTIONAL INPUTS
+- `accountForWidth = true`: DESCRIPTION
+"""
 function vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)
     gg = DiGraph()
     add_vertices!(gg, nv(G))
@@ -1722,6 +2158,15 @@ function vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)
     return gg
 end
 
+"""
+    visibility_graph(G::AbstractGraph, dir = 1)
+
+DOCSTRING
+
+# Arguments:
+- `G::AbstractGraph`: DESCRIPTION
+- `dir = 1`: DESCRIPTION
+"""
 function visibility_graph(G::AbstractGraph, dir = 1)
     if dir == 1
         return horizontal_visibility_graph(G)
@@ -1729,6 +2174,14 @@ function visibility_graph(G::AbstractGraph, dir = 1)
     return vertical_visibility_graph(G)
 end
 
+"""
+    shiftlayout!(lay::Vector{T})
+
+DOCSTRING
+
+# Arguments:
+- `lay::Vector{T}`: DESCRIPTION
+"""
 function shiftlayout!(lay::Vector{T};) where {T<:Point}
     # # full sankey
     xlay = [xy[1] for xy in lay]
@@ -1791,6 +2244,20 @@ ck(x) = collect(keys(x))
 ce(x) = collect(edges(x))
 F32r(x, n) = Float32.(round.(x, digits = n))
 
+"""
+    create_plot_graph(GG; verbose = false, removeleafs = true, remove_from_plot, toignore, words_to_flag)
+
+DOCSTRING
+
+# Arguments:
+- `GG`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `removeleafs = true`: DESCRIPTION
+- `remove_from_plot`: DESCRIPTION
+- `toignore`: DESCRIPTION
+- `words_to_flag`: DESCRIPTION
+"""
 function create_plot_graph(
     GG;
     verbose = false,
@@ -2149,6 +2616,18 @@ requirementsf ror force_equal_layers = xLayReqs,
                 force_order = vSortReqs,
 from recent output xs,ys,paths
 """
+"""
+    layers_to_force!(gcopy; maxAlignCnt = 3, doplot = false, plotattr)
+
+DOCSTRING
+
+# Arguments:
+- `gcopy`: DESCRIPTION
+OPTIONAL INPUTS
+- `maxAlignCnt = 3`: DESCRIPTION
+- `doplot = false`: DESCRIPTION
+- `plotattr`: DESCRIPTION
+"""
 function layers_to_force!(
     gcopy;
     maxAlignCnt = 3,
@@ -2259,7 +2738,18 @@ function layers_to_force!(
     return xLayReqs, vSortReqs, xs, ys, paths, lay2node
 end
 
+"""
+    initialize_plot_props!(gcopy, lay2node, xs, ys, paths)
 
+DOCSTRING
+
+# Arguments:
+- `gcopy`: DESCRIPTION
+- `lay2node`: DESCRIPTION
+- `xs`: DESCRIPTION
+- `ys`: DESCRIPTION
+- `paths`: DESCRIPTION
+"""
 function initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
     default_plot_properties =
         Dict([:normheight => 1, :normwidth => 1, :height => 1, :width => 1])
@@ -2311,6 +2801,17 @@ function initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
 end
 
 """
+"""
+"""
+    add_plot_elments(gcopy; verbose = false, default_plot_properties = Dict([:displayName => "", :normheight => 1, :normwidth => 1, :height => 1, :width => 1, :nodeType => :fake]))
+
+DOCSTRING
+
+# Arguments:
+- `gcopy`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `default_plot_properties = Dict([:displayName => "", :normheight => 1, :normwidth => 1, :height => 1, :width => 1, :nodeType => :fake])`: DESCRIPTION
 """
 function add_plot_elments(
     gcopy;
@@ -2423,6 +2924,17 @@ function add_plot_elments(
         # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
 end
 
+"""
+    add_plot_elments!(gcopy; verbose = false, default_plot_properties = Dict([:displayName => "", :normheight => 1, :normwidth => 1, :height => 1, :width => 1, :nodeType => :fake]))
+
+DOCSTRING
+
+# Arguments:
+- `gcopy`: DESCRIPTION
+OPTIONAL INPUTS
+- `verbose = false`: DESCRIPTION
+- `default_plot_properties = Dict([:displayName => "", :normheight => 1, :normwidth => 1, :height => 1, :width => 1, :nodeType => :fake])`: DESCRIPTION
+"""
 function add_plot_elments!(
     gcopy;
     verbose = false,
@@ -2534,6 +3046,19 @@ end
 
 """
 """
+"""
+    setVerticalSpacing!(gc; vspan = 5.0, pad = 2.0, doplot = true, plotattr)
+
+DOCSTRING
+
+# Arguments:
+- `gc`: DESCRIPTION
+OPTIONAL INPUTS
+- `vspan = 5.0`: DESCRIPTION
+- `pad = 2.0`: DESCRIPTION
+- `doplot = true`: DESCRIPTION
+- `plotattr`: DESCRIPTION
+"""
 function setVerticalSpacing!(
     gc;
     vspan = 5.0,
@@ -2576,6 +3101,17 @@ function setVerticalSpacing!(
     return xs, ys
 end
 
+"""
+    setLayerWidth!(gc; pad = 0.5, verbose = false)
+
+DOCSTRING
+
+# Arguments:
+- `gc`: DESCRIPTION
+OPTIONAL INPUTS
+- `pad = 0.5`: DESCRIPTION
+- `verbose = false`: DESCRIPTION
+"""
 function setLayerWidth!(gc; pad = 0.5, verbose = false)
     gvert = vertical_visibility_graph(gc)
     vstacks = connected_components(gvert)
@@ -2621,6 +3157,15 @@ function setLayerWidth!(gc; pad = 0.5, verbose = false)
     # plotplant(gc)
 end
 
+"""
+    edgeroute(p1::T, p2::T)
+
+DOCSTRING
+
+# Arguments:
+- `p1::T`: DESCRIPTION
+- `p2::T`: DESCRIPTION
+"""
 function edgeroute(p1::T, p2::T) where {T<:Point}
     x1 = p1[1]
     x2 = p2[1]
@@ -2639,6 +3184,16 @@ function edgeroute(p1::T, p2::T) where {T<:Point}
     end
 end
 
+"""
+    edgeroute_nodes(gc; voff = 0.025)
+
+DOCSTRING
+
+# Arguments:
+- `gc`: DESCRIPTION
+OPTIONAL INPUTS
+- `voff = 0.025`: DESCRIPTION
+"""
 function edgeroute_nodes(gc; voff = 0.025)
     # first setting the outbound params
     npos = node_prop(gc, :pos)
@@ -2719,6 +3274,14 @@ function edgeroute_nodes(gc; voff = 0.025)
     end
 end
 
+"""
+    set_plot_props!(gc)
+
+DOCSTRING
+
+# Arguments:
+- `gc`: DESCRIPTION
+"""
 function set_plot_props!(gc)
     etd = edge_propdict(gc, :etype; edgekey = :edge)
     nodeTypes = node_propdict(gc, :nodeType)
@@ -2749,7 +3312,20 @@ function set_plot_props!(gc)
     end
 end
 
+"""
+    plotnode(pos::Union{Point2f, Vector}, plotshape::Symbol; r = 0.5, w = 1.0, h = 1.0, ngon = 5)
 
+DOCSTRING
+
+# Arguments:
+- `pos::Union{Point2f, Vector}`: DESCRIPTION
+- `plotshape::Symbol`: DESCRIPTION
+OPTIONAL INPUTS
+- `r = 0.5`: DESCRIPTION
+- `w = 1.0`: DESCRIPTION
+- `h = 1.0`: DESCRIPTION
+- `ngon = 5`: DESCRIPTION
+"""
 function plotnode(
     pos::Union{Point2f,Vector},
     plotshape::Symbol;
@@ -2790,7 +3366,29 @@ function plotnode(
     return Plots.Shape([x1, x1, x2, x2], [y1, y2, y2, y1])
 end
 
+"""
+    plotplant(g; mode = :patho, nsize = 1.0, compnamesubs, compnameattr, compnamerot = 45, numbering = false, sysnamedict = Dict(), legpad = 0.2, legheight = 0.5, legoffset = 0.5, nodesize = 6, legwid = 2, pathattr, figattr)
 
+DOCSTRING
+
+# Arguments:
+- `g`: DESCRIPTION
+OPTIONAL INPUTS
+- `mode = :patho`: DESCRIPTION
+- `nsize = 1.0`: DESCRIPTION
+- `compnamesubs`: DESCRIPTION
+- `compnameattr`: DESCRIPTION
+- `compnamerot = 45`: DESCRIPTION
+- `numbering = false`: DESCRIPTION
+- `sysnamedict = Dict()`: DESCRIPTION
+- `legpad = 0.2`: DESCRIPTION
+- `legheight = 0.5`: DESCRIPTION
+- `legoffset = 0.5`: DESCRIPTION
+- `nodesize = 6`: DESCRIPTION
+- `legwid = 2`: DESCRIPTION
+- `pathattr`: DESCRIPTION
+- `figattr`: DESCRIPTION
+"""
 function plotplant(
     g;
     mode = :patho,

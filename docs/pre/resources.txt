@@ -1,0 +1,21 @@
+    <h1>Resources</h1>
+    <!-- Content Here -->
+    <h1>Write-ups - Thermodynamics Fundamentals</h1>
+    <ul>
+        <li><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></li>
+        <li><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></li>
+        <li><a href="theory_mf.html"> Liquid and Multiphase systems</a></li>
+        <li><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></li>
+        <li><a href="underCon.html"> Heat Exchangers</a></li>
+        <li><a href="underCon.html"> Process Dynamics Interpretation</a></li>
+        <li><a href="underCon.html"> Graph Represntation</a></li>
+        <li><a href="underCon.html"> Graph Represntation</a></li>
+        <li><a href="underCon.html"> Process Dynamics Interpretation</a></li>
+        <!-- Add more links as needed -->
+    </ul>
+
+    <h1> Bibliography</h1>
+    <ul>
+        <li></li>
+        <!-- Add more links as needed -->
+    </ul>

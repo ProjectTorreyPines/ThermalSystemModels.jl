@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: white;
+            color: black;
+            padding: 0;
+        }
+
+        header {
+            background-color: #182251; /* Updated theme color to deep blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            width: 250px;
+            height: 100%;
+            background-color: #f2f2f2;
+            position: fixed;
+            font-size: 16px;
+            padding-top: 20px;
+        }
+
+        nav a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+            color: rgb(0, 0, 0); /* Updated theme color to deep blue */
+        }
+        nav a:hover {
+            background-color: #ddd;
+        }
+
+
+        .dropdown-btn {
+            background-color: #f2f2f2; /* Updated theme color to deep blue */
+            color: black;
+            text-decoration: underline;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-weight: bold; /* Bold text for items with dropdown menus */
+        }
+
+        .dropdown-content {
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .dropdown-content a {
+            padding: 15px;
+            text-decoration: none;
+            display: block;
+            color: #182251; /* Updated theme color to deep blue */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+<h1>multiphase<h1>
+</header>
+
+<nav>
+    <div><a href="index.html">Home</a></div>
+    <button class="dropdown-btn">Getting Started</button>
+    <div class="dropdown-content">
+        <div><a href="underCon.html">Overveiw</a></div>
+        <div><a href="underCon.html">Tutorial</a></div>
+        <div><a href="underCon.html">Plotting</a></div>
+    </div>
+    <button class="dropdown-btn">Libraries</button>
+    <div class="dropdown-content">
+        <div><a href="blocklibrary.html">Blocks</a></div>
+        <div><a href="multiphase.html">Multi-phase Documentation</a></div>
+        <div><a href="incompressible.html">Incompressible Library Documentation</a></div>
+        <div><a href="gaseous.html">Gas Library Documentation</a></div>
+    </div>
+    <button class="dropdown-btn">Resources</button>
+    <div class="dropdown-content">
+        <div><a href="resources.html">Resources</a></div>
+        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
+        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
+        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
+        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
+        <div><a href="underCon.html"> Heat Exchangers</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+        <div><a href="underCon.html"> Graph Represntation</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+    </div>
+    <div><a href="underCon.html">Examples</a></div>
+    <div><a href="underCon.html">Tutorial</a></div>
+    <div><a href="underCon.html">Full API</a></div>
+    <a href="#">Contact</a>
+</nav>
+
+<main>
+
+
+<div><section><h1>COMPONENT</h1>
+	<h4>AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: DESCRIPTION</li>
+				<li>- `setpressure = false`: DESCRIPTION</li>
+				<li>- `Pout = 10`: DESCRIPTION</li>
+				<li>- `controlinlet = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: DESCRIPTION</li>
+				<li>- `setpressure = false`: DESCRIPTION</li>
+				<li>- `Pout = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SIMOAdiabaticTurbine(; name, ηin = 1.0, setpressure = false, Pyin = 10, Pzin = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Single input multi output turbinbe<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ηin = 1.0`: DESCRIPTION</li>
+				<li>- `setpressure = false`: DESCRIPTION</li>
+				<li>- `Pyin = 10`: DESCRIPTION</li>
+				<li>- `Pzin = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SteamHeatTransfer(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TunableSteamHeatTransfer(; name, Q̇in = 1.5e8)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Q̇in = 1.5e8`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IdealBoiler(; name, Tout = 350)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Tout = 350`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IdealCondensor(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveCondensor(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ReliefElement(; name, pressurecontrol = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `pressurecontrol = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>OpenFeedwaterHeater(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>MixingChamber(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ClosedFeedwaterHeater(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				#     #   Steam_OFW CLOSED FEEDWATER HEATER<br>
+			#     #                _______________<br>
+			#     #               |               |<br>
+			#     #           -> ___/\/\/\/\/\/\______ Steam_known = outlet<br>
+			#     #               |               |<br>
+			#     #               |_______________|<br>
+			@named p1 = BasicSteamPin()<br>
+			@named n1 = BasicSteamPin()<br>
+			@named p2 = BasicSteamPin()<br>
+			@named n2 = BasicSteamPin()<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n1.P = p1.P \]
+				\[ 				    n2.P = p2.P\]
+				\[     n2.h = n1.h \]
+				\[ 				    0 = n1.ṁ + p1.ṁ\]
+				\[     0 = n2.ṁ + p2.ṁ\]
+				\[     yfrac = (n2.h - p2.h) / ((p1.h - n1.h) + (n2.h - p2.h))\]
+				\[     p1.ṁ = yfrac * (p1.ṁ + p2.ṁ)\]
+				\[     p1.Φ = yfrac * (p1.Φ + p2.Φ)\]
+				\[     0 = n1.Φ + p1.Φ + p1.ṁ * p1.h + n1.ṁ * n1.h\]
+				\[     0 = n2.Φ + p2.Φ + p2.ṁ * p2.h + n2.ṁ * n2.h\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>throttle(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>PIN</h1>
+	<h4>BasicSteamPin(; name, Pdef = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				    Basic Steam Pin<br>
+			    Self computes T,s,x,V<br>
+			    Must have methods for ṁ,Φ,P,h<br>
+			    across_var =<br>
+			    @variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001<br>
+			    thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Pdef = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     T = stm_Tphfunc(P, h)\]
+				\[     s = stm_sphfunc(P, h)\]
+				\[     x = stm_xphfunc(P, h)\]
+				\[     v = stm_vphfunc(P, h)\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>SOURCE</h1>
+	<h4>SetPressure(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Ideal pressure source<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SteamFlowSource(; name, ṁ = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>UTILITY</h1>
+	<h4>Reservoir(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>MultiPhaseGnd(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SuperHeatedReservoir(; name, P = 150, T = 600)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 150`: DESCRIPTION</li>
+				<li>- `T = 600`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ioReservoir(; name, P = 0.1, fixboth = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>- `fixboth = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TwoPortReservoir(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ContinuityReservoir2(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ContinuityReservoir(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SteamFlowValve(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ  \]
+				\[     0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = Ṁ\]
+				\[     p.h = n.h\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TunableSteamFlowValve(; name, ṁ = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ  \]
+				\[     0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = ṁ\]
+				\[     p.h = n.h\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>Splitter(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+</main>
+
+
+<script>
+    // JavaScript to handle dropdowns
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        dropdownBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

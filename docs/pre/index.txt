@@ -1,0 +1,27 @@
+<h1>ThermalSystem_Models.jl Documentation Home</h1>
+<section id="welcome">
+    <h2>ThermalSystems_Models.jl Documentation</h2>
+    <p>
+        This package was developed for modeling multi-domain physical systems. The package consists of several block libraries, as well as simplified models for faster computation.
+        This documentation will guide you through the features and usage of the library.
+    </p>
+</section>
+
+<section id="features">
+    <h2>Features</h2>
+    <ul>
+        <li>Multi-domain fluid thermal systems (currently supports multiphase, gasous, and incompressible liquids)</li>
+        <li>Dynamic and steady state models</li>
+        <li>Optionality for complex vs simple models</li>
+        <li>Visualization tools for block structures</li>
+        <!-- Add more features as needed -->
+    </ul>
+</section>
+
+<footer>
+    <p>This is a simple webpage <a href="index.html">Go to Index Page</a> hosted on GitHub Pages.</p>
+    <p>Nov 2023, Jackson Harvey</p>
+    <p>Contact: harveyj@fustion.gat.com</p>
+</footer>
+
+<!-- Add more sections as needed -->

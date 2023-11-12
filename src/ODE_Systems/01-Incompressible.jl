@@ -2,6 +2,7 @@
 using ModelingToolkit, Plots, DifferentialEquations, Revise, Symbolics, Logging #CoolProp,
 using NonlinearSolve, Printf
 using Plots
+using AutomaticD
 @variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
@@ -24,6 +25,26 @@ Lhfunc(x, y)    = hpb(x, y)
 propDict = Dict(Lcpfunc => cppb, Lvfunc => vpb, Lsfunc => spb, Lhfunc => hpb)
 
 
+"""
+    IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
+
+DOCSTRING
+Incompresible Fluid pin, 
+    across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001
+    thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow
+    sts = [T, P, ṁ, cp, s, v, Φ]
+ELEM TYPE: PIN
+EQUATIONS:
+    cp ~ Lcpfunc(T)
+    v ~ Lvfunc(T)
+    s ~ Lsfunc(T)
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Pdef = 50`:  Initial Pressure (bar)
+- `Tdef = 555`: Initial Temperature (K)
+- `ṁdef = 0.0`: Initial Flow Rate (kg/s)
+"""
 function IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
     across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001
     thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow
@@ -44,16 +65,56 @@ function IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
     )
 end
 
+"""
+    WorkPin(; name)
+
+DOCSTRING
+    Basic work pin
+    sts = @variables Ẇ(t) = 0.0
+
+ELEM TYPE: PIN
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function WorkPin(; name)
     sts = @variables Ẇ(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name)
 end
 
+"""
+    HeatTransferPin(; name)
+
+DOCSTRING
+sts = @variables Q̇(t) = 0.0
+
+ELEM TYPE: PIN
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function HeatTransferPin(; name)  #input in W
     sts = @variables Q̇(t) = 0.0
     ODESystem(Equation[], t, sts, []; name = name, defaults = [Q̇ => 0.0])
 end
 
+"""
+    FixedHeatFlowPin(; name, Qin = 1000.0)
+
+DOCSTRING
+Component with fixed heat flow rate
+sts = @variables Q̇(t) = Qin
+ps = @parameters Qin = Qin
+
+ELEM TYPE: PIN
+EQUATIONS:
+eqs = [Q̇ ~ Qin]
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Qin = 1000.0`: Heating rate, (W)
+"""
 function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
     sts = @variables Q̇(t) = Qin
     ps = @parameters Qin = Qin
@@ -61,6 +122,24 @@ function FixedHeatFlowPin(; name, Qin = 1e3)  #input in W
     ODESystem(eqs, t, sts, ps; name = name, defaults = [Q̇ => Qin])
 end
 
+"""
+    IncompressibleOnePort(; name)
+
+DOCSTRING
+Oneport element for connecting single port components
+    p = IncompressiblePin()
+    n = IncompressiblePin()
+    sts = @variables LHS(t) ΔP(t) = 0.0 ΔT(t) = 0.0
+
+ELEM TYPE: PORT
+EQUATIONS:
+    LHS ~ p.Φ + n.Φ             # conservation of energy
+    0 ~ p.ṁ + n.ṁ               # mass flow 
+    ΔP ~ n.P - p.P              # pressure drop
+    ΔT ~ n.T - p.T              # Temerature change
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IncompressibleOnePort(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -76,6 +155,19 @@ function IncompressibleOnePort(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n])
 end
 
+"""
+    SetPressure(; name, P = 0.1)
+
+DOCSTRING
+Fixed pressure element
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: Pressure (bar)
+"""
 function SetPressure(; name, P = 0.1)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
@@ -89,6 +181,26 @@ function SetPressure(; name, P = 0.1)
     extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
+"""
+    SetPressure2(; name, P = 0.1)
+
+DOCSTRING
+    Fixed pressure element that does not use the onport function
+    @named p = IncompressiblePin(Pdef = P)
+    @named n = IncompressiblePin(Pdef = P)
+    ps = @parameters P = P
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+    p.P ~ P
+    n.P ~ p.P
+    n.T ~ p.T
+    0 ~ p.Φ + n.Φ             # conservation of energy
+    0 ~ p.ṁ + n.ṁ
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: Pressure (bar)
+"""
 function SetPressure2(; name, P = 0.1)
     @named p = IncompressiblePin(Pdef = P)
     @named n = IncompressiblePin(Pdef = P)
@@ -103,6 +215,25 @@ function SetPressure2(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
+"""
+    SetTemperature(; name, T = 300)
+
+DOCSTRING
+Fixed temperature element
+    @named oneport = IncompressibleOnePort()
+    @unpack ΔT, ΔP, LHS, p = oneport
+    ps = @parameters T = T
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+    p.T ~ T
+    ΔT ~ 0
+    ΔP ~ 0
+    LHS ~ 0
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `T = 300`: Temperature (K)
+"""
 function SetTemperature(; name, T = 300)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, p = oneport
@@ -116,6 +247,25 @@ function SetTemperature(; name, T = 300)
     extend(ODESystem(eqs, t, [], ps; name = name), oneport)
 end
 
+"""
+    IncompressibleFlowValve(; name)
+
+DOCSTRING
+A flow valve object with a mass flow variable. Can be controlled with an external controller element.
+    @named p = IncompressiblePin()
+    @named n = IncompressiblePin()
+    sts = @variables ṁ(t) = 1.0
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.Φ + n.Φ   # conservation of energy
+    0 ~ p.ṁ + n.ṁ
+    p.ṁ ~ ṁ
+    p.T ~ n.T
+    n.P ~ p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IncompressibleFlowValve(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -131,6 +281,26 @@ function IncompressibleFlowValve(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n], defaults = [ṁ => 1.0])
 end
 
+"""
+    IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
+
+DOCSTRING
+    A fixed flow rate source
+    @named p = IncompressiblePin()
+    @named n = IncompressiblePin()
+    ps = @parameters Ṁ = Ṁ
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.Φ + n.Φ   # conservation of energy
+    0 ~ p.ṁ + n.ṁ
+    p.ṁ ~ Ṁ
+    p.T ~ n.T
+    n.P ~ p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Ṁ = 1.0`: mass flow rate of the fixed flow source
+"""
 function IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -146,6 +316,19 @@ function IncompressibleFixedFlowSource(; name, Ṁ = 1.0)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n])
 end
 
+"""
+    PassiveIncompressiblePump(; name, η = 0.9)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 0.9`: DESCRIPTION
+"""
 function PassiveIncompressiblePump(; name, η = 0.9)
     @named oneport = IncompressibleOnePort()
     @named w = WorkPin()
@@ -160,11 +343,30 @@ function PassiveIncompressiblePump(; name, η = 0.9)
     extend(ODESystem(eqs, t, [], ps; systems = [w], name = name), oneport)
 end
 
+"""
+    PassiveIncompressiblePump2(; name, η = 1.0)
+
+DOCSTRING
+A passive pump component for incompressible liquids. Calculates work required based off of pressures at the p and n port
+    @named p = IncompressiblePin()
+    @named n = IncompressiblePin()
+    @named w = WorkPin()
+    ps = @parameters η = η
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.ṁ + n.ṁ #p.ṁ ~ n.ṁ                               # conservation of mass
+    w.Ẇ ~ p.ṁ * p.v * (n.P - p.P) * 1e5 / η
+    w.Ẇ ~ p.Φ + n.Φ
+    n.T ~ p.T + (p.v * (n.P - p.P) * 1e5 / η - p.v * (n.P - p.P) * 1e5) / p.cp
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: Isentropic effeciency of the pump
+"""
 function PassiveIncompressiblePump2(; name, η = 1.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
     @named w = WorkPin()
-
     ps = @parameters η = η
 
     eqs = [
@@ -176,8 +378,27 @@ function PassiveIncompressiblePump2(; name, η = 1.0)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
+"""
+    IncompressibleHeatTransfer(; name)
 
+DOCSTRING
+Basic heat transfer port. Includes p,n ports for flow, and q which is a heat transfer port
+    @named p = IncompressiblePin()
+    @named n = IncompressiblePin()
+    @named q = HeatTransferPin()
+    st = @variables Q̇(t) = 0.0 C(t) = 187   , Heat rate and duty of the flow
 
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
+    q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+    C ~ p.ṁ * p.cp          # duty
+    0 ~ q.Q̇ - Q̇
+    n.T ~ p.T + q.Q̇ / C
+    n.P ~ p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IncompressibleHeatTransfer(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -204,6 +425,32 @@ function IncompressibleHeatTransfer(; name)
     )
 end
 
+"""
+    FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
+
+DOCSTRING
+A heat transfer element with the ability to change the flow rate to achieve a desired outlet temperature, specified by the inputs.
+    @named p = IncompressiblePin()
+    @named n = IncompressiblePin()
+    @named q = HeatTransferPin()
+    st = @variables Q̇(t) = 0.0 C(t) = 187 ṁ(t) = 1.0
+    ps = @parameters ΔP = ΔP Tout = Tout
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+        n.T ~ Tout
+        ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)           # q = mcp*ΔT
+        p.ṁ ~ ṁ
+        0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        C ~ ṁ * p.cp            # duty
+        0 ~ q.Q̇ - Q̇
+        n.P ~ p.P - ΔP
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ΔP = 0.0`: Pressure drop across the heat transfer element (bar)
+- `Tout = 1000.0`: outlet temperature (K)
+"""
 function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -232,6 +479,23 @@ function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
     )
 end
 
+"""
+    SinglePortReservoir(; name, P = 0.1, T = 300)
+
+DOCSTRING
+A sinlge port flow energy ground to connect with circiuts, only has n pin
+    @named n = IncompressiblePin(Pdef = P, Tdef = T)
+    ps = @parameters P = P T = T
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    n.P ~ P
+    n.T ~ T
+    n.Φ ~ 0
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: Pressure, (bar)
+- `T = 300`: Temperature (K)
+"""
 function SinglePortReservoir(; name, P = 0.1, T = 300)
     @named n = IncompressiblePin(Pdef = P, Tdef = T)
     ps = @parameters P = P T = T
@@ -243,6 +507,28 @@ function SinglePortReservoir(; name, P = 0.1, T = 300)
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
+"""
+    TwoPortReservoir(; name, P = 0.1, T = 300)
+
+DOCSTRING
+A flow conserving ground element with 2 ports.
+    @named oneport = IncompressibleOnePort()
+    @unpack ΔT, ΔP, LHS, n, p = oneport
+    ps = @parameters T = T P = P
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    LHS ~ 0
+    n.Φ ~ 0
+    p.T ~ T
+    p.P ~ P
+    ΔP ~ 0
+    ΔT ~ 0
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: Pressure
+- `T = 300`: Bar
+"""
 function TwoPortReservoir(; name, P = 0.1, T = 300)
     @named oneport = IncompressibleOnePort()
     @unpack ΔT, ΔP, LHS, n, p = oneport
@@ -262,6 +548,18 @@ function TwoPortReservoir(; name, P = 0.1, T = 300)
     )
 end
 
+"""
+    throttle(; name)
+
+DOCSTRING
+An enthalpy conserving throttle valve. Does not control the outlet pressure, but mimics a throttle valve when placed between 2 sources wtih a pressure differential.
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function throttle(; name)
     @named oneport = IncompressibleOnePort()
     @unpack LHS, p, ΔT, n = oneport
@@ -274,6 +572,18 @@ function throttle(; name)
     extend(ODESystem(eqs, t, sts, []; name = name, defaults = [Ė_loss => 0.0]), oneport)
 end
 
+"""
+    IdealCooler(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IdealCooler(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -290,6 +600,19 @@ function IdealCooler(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0])
 end
 
+"""
+    ReliefElement(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    n.ṁ + p.ṁ ~ 0           # has to be negative
+    q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function ReliefElement(; name)
     @named p = IncompressiblePin()
     @named n = IncompressiblePin()
@@ -304,7 +627,24 @@ end
 
 """
     incompressible_connect(pins...)
-    Adds mass and energy balance eqs to all nodes
+
+DOCSTRING
+
+
+ELEM TYPE: N/A
+EQUATIONS:
+eqs = [
+    sum(pin -> pin.ṁ, pins) ~ 0.0, # Mass
+    sum(pin -> pin.Φ, pins) ~ 0.0, # Energy
+]
+
+for pin in pins[2:end]
+    push!(eqs, pins[1].P ~ pin.P)   # p_1 = p_2, p_1 = p_3,...
+    push!(eqs, pins[1].T ~ pin.T)   # p_1 = p_2, p_1 = p_3,...
+end
+
+INPUTS
+pins..., a set of pins from components in which to apply conservation laws too 
 """
 function incompressible_connect(pins...)
 
@@ -319,97 +659,3 @@ function incompressible_connect(pins...)
     end
     return eqs
 end
-
-function showsol(c, sol)
-    for cel in c
-        cvec = []
-        if hasproperty(cel, :p)
-            push!(cvec, cel.p)
-        end
-        if hasproperty(cel, :n)
-            push!(cvec, cel.n)
-        end
-        for n in cvec
-
-            @printf "\t %s ṁ = %.2f \t P = % .2f \t T = %.2f " n.name sol[n.ṁ][end] sol[n.P][end] sol[n.T][end]
-
-            if hasproperty(cel, :Q̇)
-                @printf " Q̇ = %.2e " sol[cel.Q̇][end]
-            elseif hasproperty(cel, :q)
-                @printf " Q̇ = %.2e " sol[cel.q.Q̇][end]
-            end
-            if hasproperty(cel, :C)
-                @printf " C = %.2e " sol[cel.C][end]
-            end
-            if hasproperty(cel, :w)
-                @printf " Ẇ = %.2e " sol[cel.w.Ẇ][end]
-            end
-            @printf "\n"
-        end
-    end
-
-end
-
-
-# function breeder_loop()
-#     @named res = TwoPortReservoir(P=10,T=500)
-#     @named valve = IncompressibleFlowSource()
-#     @named pump = PassiveIncompressiblePump()
-#     @named pset = SetPressure(P=40)
-#     @named qin  = IncompressibleHeaatTransfer()
-#     @named qpsv = IdealCooler()
-#     @named throt = throttle()
-#     # @named res2 = SinglePortReservoir(P=40,T=500)
-
-#     connections = vcat(incompressible_connect(res.n,valve.p),
-#                         incompressible_connect(valve.n, pump.p),
-#                         incompressible_connect(pump.n,pset.p),
-#                         incompressible_connect(pset.n,qin.p),
-#                         incompressible_connect(qin.n,qpsv.p),
-#                         incompressible_connect(qpsv.n,throt.p),
-#                         incompressible_connect(throt.n,res.p))
-
-#     mass_flow_fcn(t) = 100 + 15 * sin(t)
-#     Q̇in_fcn(t) = 100e6 + 35e6 * cos(t)  
-
-#     @register_symbolic mass_flow_fcn(t)
-#     @register_symbolic Q̇in_fcn(t)
-
-#     controlled_eqs = [valve.p.ṁ ~ mass_flow_fcn(t),
-#                             qin.Q̇ ~ Q̇in_fcn(t)]
-
-#     systemNames = [res,valve,pump,pset,qin,qpsv,throt];#,throt];
-
-#     @named aux_sys = ODESystem(controlled_eqs,t)
-#     @named odemodel = ODESystem(connections,t; systems =  systemNames)
-#     @named odemodel = extend(aux_sys,odemodel)
-
-#     smodel = substitute(odemodel,propDict)
-#     simple_sys = structural_simplify(smodel)
-
-#     tspan = (0.0,5.0)
-
-#     saveat = LinRange(1.0,4.0,10)
-#     u0 = [valve.ṁ => 100]
-
-#     kwargs = (abstol=1e-10, reltol=1e-2, saveat = saveat)
-#     p = [500,10,1.0,40]
-
-#     probae = ODAEProblem(simple_sys,[],tspan, p)
-#     probde = ODEProblem(simple_sys,[],tspan, p)
-
-#     solde   = solve(probde, Rodas4(); kwargs...);
-#     solae   = solve(probae, Rodas4(); kwargs...);
-
-#     p1=plot(solae, vars = [valve.p.ṁ])
-#     p2=plot(solae, vars = [qin.Q̇, qpsv.Q̇])
-
-#     p = plot(p1,p2,layout = (2,1))
-
-
-#     display(p)
-#     showsol(systemNames,sol)
-#     sol.t
-# end
-
-# end

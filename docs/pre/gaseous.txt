@@ -1,0 +1,673 @@
+<h1>gaseous<h1>
+
+
+<div><section><h1>COMPONENT</h1>
+	<h4>GasFlowValve(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ThermoHeatTransfer(; name, ΔP = 0.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Thermodynamic heat transfer element<br>
+			pins<br>
+			@named p = ThermoPin()<br>
+			@named n = ThermoPin()<br>
+			@named q = HeatTransferPin()<br>
+			<br>
+			states<br>
+			st = @variables Q̇(t) = 0.0 C(t) = 5192<br>
+			parameters<br>
+			ps = @parameters ΔP = ΔP<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ΔP = 0.0`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature<br>
+			@named p = ThermoPin()<br>
+			@named n = ThermoPin()<br>
+			@named q = HeatTransferPin()<br>
+			st = @variables Q̇(t) = 0.0 C(t) = 5192 ṁ(t) = 1.0<br>
+			ps = @parameters ΔP = ΔP Tout = Tout<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ΔP = 0.0`: DESCRIPTION</li>
+				<li>- `Tout = 773.0`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n.T = Tout\]
+				\[     p.ṁ = q.Q̇ / ((n.T - p.T) * p.cp)         \]
+				\[     0 = p.ṁ + n.ṁ         \]
+				\[     q.Q̇ = p.Φ + n.Φ                 \]
+				\[     C = p.ṁ * p.cp       \]
+				\[     0 = q.Q̇ - Q̇\]
+				\[     n.P = p.P - ΔP\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>FixedThermoHeatTransfer(; name, Qin = 1.0e6)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Heat element with constant heat rate.<br>
+			<br>
+			st = @variables C(t) = 5192<br>
+			ps = @parameters Q̇ = Qin<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Qin = 1.0e6`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ 0 = p.ṁ + n.ṁ          \]
+				\[ q.Q̇ = p.Φ + n.Φ        \]
+				\[ C = p.ṁ * p.cp          \]
+				\[ 0 = q.Q̇ - Q̇\]
+				\[ n.T = p.T + Q̇ / C\]
+				\[ n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Compressor element that controls the outlet port<br>
+			    @named p = ThermoPin()<br>
+			    @named n = ThermoPin()<br>
+			    @named w = WorkPin()<br>
+			    ps = @parameters rp = rp η = η<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effecience</li>
+				<li> `rp = 3\.5`: Compression Ratio</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.ṁ + n.ṁ \]
+				\[ 				    n.P = p.P * rp\]
+				\[     n.T = p.T * ((1.0 - η - (rp^((p.k - 1) / p.k))) / (-η))\]
+				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
+				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveThermoCompressor(; name, η = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Compressor element that operates between externally controlled pressure nodes.<br>
+			    @named p = ThermoPin()<br>
+			    @named n = ThermoPin()<br>
+			    @named w = WorkPin()<br>
+			<br>
+			    ps = @parameters η = η<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effecience</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.ṁ + n.ṁ       \]
+				\[ 				    n.T = p.T * ((1.0 - η - ((n.P / p.P)^((p.k - 1) / p.k))) / (-η))\]
+				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
+				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				@named p = ThermoPin(Pdef = 80, Tdef = 800)<br>
+			@named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)<br>
+			@named w = WorkPin()<br>
+			ps = @parameters rp = rp η = η<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effecience</li>
+				<li> `rp = 3.5`: Compression Ratio</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ eqs = [\]
+				\[     0 = p.ṁ + n.ṁ                             \]
+				\[     p.P = n.P * rp\]
+				\[     n.T =\]
+				\[         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /\]
+				\[         (rp^((p.k - 1) / p.k))\]
+				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
+				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[ ]\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveThermoTurbine(; name, η = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effecience</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.ṁ + n.ṁ                               \]
+				\[ 				    p.P = n.P * rp\]
+				\[     n.T =\]
+				\[         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /\]
+				\[         (rp^((p.k - 1) / p.k))\]
+				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
+				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>IdealCooler(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				@named p = ThermoPin()<br>
+			@named n = ThermoPin()<br>
+			@named q = HeatTransferPin()<br>
+			sts = @variables Q̇(t) = 0.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     q.Q̇ = p.Φ + n.Φ        \]
+				\[     0 = p.ṁ + n.ṁ\]
+				\[     n.P = p.P              \]
+				\[     q.Q̇ = p.ṁ * p.cp * (n.T - p.T)\]
+				\[     Q̇ = q.Q̇\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveElement(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				@named p = ThermoPin()<br>
+			@named n = ThermoPin()<br>
+			sts = @variables Q̇(t) = 0.0 ΔP(t) = 0.0 ΔT(t) = 0.0 Δṁ(t) = 0.0<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n.ṁ + p.ṁ = Δṁ    \]
+				\[ 				    ΔT = p.T - n.T\]
+				\[     Q̇ = -(p.ṁ * p.cp * ΔT)\]
+				\[     ΔP = p.P - n.P\]
+				\[     Q̇ = p.Φ + n.Φ             \]
+				\[ 				\]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ReliefElement(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>throttle(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>Regenerator(; name, ϵ = 0.95)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ϵ = 0.95`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>Intercooler(; name, Tout = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Tout = 300`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>PIN</h1>
+	<h4>ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				@variables P(t) = Pdef             [unit = u"bar"] <br>
+			@variables ṁ(t) = ṁdef             [unit = u"kg/s"] <br>
+			@variables T(t) = Tdef             [unit = u"K"] <br>
+			@variables Φ(t) = 1.0<br>
+			@variables cp(t) = 5192<br>
+			@variables k(t) = 1.667<br>
+			sts = [T, P, ṁ, cp, k, Φ]<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Pdef = 10.0`: DESCRIPTION</li>
+				<li>- `Tdef = 300`: DESCRIPTION</li>
+				<li>- `ṁdef = 0.0`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ cp = gcpfunc(T)\]
+				\[ k = gkfunc(T)\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>SOURCE</h1>
+	<h4>GasFlowSource(; name, Ṁ = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Ṁ = 1.0`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ThermoHeatSource(; name, Qin = 1.0e6)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `Qin = 1.0e6`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>
+
+
+<div><section><h1>UTILITY</h1>
+	<h4>SetPressure(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SetTemperature(; name, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Constant Pressure Source<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SinglePortReservoir(; name, P = 0.1, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Single port flow energy ground element<br>
+			@named n = ThermoPin(Pdef = P, Tdef = T)<br>
+			ps = @parameters P = P T = T<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n.P = P\]
+				\[     n.T = T\]
+				\[     n.Φ = 0\]
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TwoPortReservoir(; name, P = 0.1, T = 300)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				<br>
+			<br>
+			
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+</section></div>

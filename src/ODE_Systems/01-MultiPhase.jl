@@ -1,6 +1,7 @@
 # module ThermoSteam
 using ModelingToolkit, Revise, Unitful, Symbolics, Logging, Printf, XSteam # Unitful
 using DifferentialEquations
+
 @variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
@@ -146,9 +147,24 @@ hydro_prop_dict = Dict(
 
 # #   STEAM PINS
 """
-    BasicSteamPin()
+    BasicSteamPin(; name, Pdef = 0.1)
+
+DOCSTRING
+    Basic Steam Pin
     Self computes T,s,x,V
     Must have methods for ṁ,Φ,P,h
+    across_var =
+    @variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001
+    thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow
+ELEM TYPE: PIN
+EQUATIONS:
+    T ~ stm_Tphfunc(P, h)
+    s ~ stm_sphfunc(P, h)
+    x ~ stm_xphfunc(P, h)
+    v ~ stm_vphfunc(P, h)
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Pdef = 0.1`: DESCRIPTION
 """
 function BasicSteamPin(; name, Pdef = 0.1)
     across_var =
@@ -249,6 +265,19 @@ function HeatTransferPort(; name)
     ODESystem(Equation[], t, [Q̇], []; name = name, systems = [p, n])
 end
 
+"""
+    Reservoir(; name, P = 0.1)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+"""
 function Reservoir(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
@@ -260,6 +289,19 @@ function Reservoir(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
+"""
+    MultiPhaseGnd(; name, P = 0.1)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+"""
 function MultiPhaseGnd(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P
@@ -270,6 +312,20 @@ function MultiPhaseGnd(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
+"""
+    SuperHeatedReservoir(; name, P = 150, T = 600)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 150`: DESCRIPTION
+- `T = 600`: DESCRIPTION
+"""
 function SuperHeatedReservoir(; name, P = 150, T = 600)
     @named n = BasicSteamPin(Pdef = P)
     ps = @parameters P = P T = T
@@ -281,6 +337,20 @@ function SuperHeatedReservoir(; name, P = 150, T = 600)
     ODESystem(eqs, t, [], ps; name = name, systems = [n])
 end
 
+"""
+    ioReservoir(; name, P = 0.1, fixboth = false)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+- `fixboth = false`: DESCRIPTION
+"""
 function ioReservoir(; name, P = 0.1, fixboth = false)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin(Pdef = P)
@@ -298,6 +368,19 @@ function ioReservoir(; name, P = 0.1, fixboth = false)
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
+"""
+    TwoPortReservoir(; name, P = 0.1)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+"""
 function TwoPortReservoir(; name, P = 0.1)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin(Pdef = P)
@@ -314,6 +397,18 @@ function TwoPortReservoir(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [n, p])
 end
 
+"""
+    ContinuityReservoir2(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function ContinuityReservoir2(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -327,6 +422,18 @@ function ContinuityReservoir2(; name)
     ODESystem(eqs, t, [], []; name = name, systems = [n, p])
 end
 
+"""
+    ContinuityReservoir(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function ContinuityReservoir(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -341,6 +448,19 @@ function ContinuityReservoir(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [n, p], defaults = [ΔΦ => 0.1])
 end
 
+"""
+    SetPressure(; name, P = 0.1)
+
+DOCSTRING
+Ideal pressure source
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `P = 0.1`: DESCRIPTION
+"""
 function SetPressure(; name, P = 0.1)
     @named p = BasicSteamPin(Pdef = P)
     @named n = BasicSteamPin(Pdef = P)
@@ -355,6 +475,19 @@ function SetPressure(; name, P = 0.1)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n], defaults = [P => 0.1])
 end
 
+"""
+    SteamFlowSource(; name, ṁ = 1.0)
+
+DOCSTRING
+
+
+ELEM TYPE: SOURCE
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ṁ = 1.0`: Mass flow rate (kg/s)
+"""
 function SteamFlowSource(; name, ṁ = 1.0)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -370,6 +503,22 @@ function SteamFlowSource(; name, ṁ = 1.0)
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
+"""
+    SteamFlowValve(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+    0 ~ p.Φ + n.Φ  
+    0 ~ p.ṁ + n.ṁ
+    p.ṁ ~ Ṁ
+    p.h ~ n.h
+    n.P ~ p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function SteamFlowValve(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -385,6 +534,23 @@ function SteamFlowValve(; name)
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
+"""
+    TunableSteamFlowValve(; name, ṁ = 1.0)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+    0 ~ p.Φ + n.Φ  
+    0 ~ p.ṁ + n.ṁ
+    p.ṁ ~ ṁ
+    p.h ~ n.h
+    n.P ~ p.P
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ṁ = 1.0`: Mass flow rate (kg/s)
+"""
 function TunableSteamFlowValve(; name, ṁ = 1.0)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -400,6 +566,22 @@ function TunableSteamFlowValve(; name, ṁ = 1.0)
     # compose(ODESystem(eqs, t, [], ps; name = name, defaults = [Ṁ => 1.0]),p,n)
 end
 
+"""
+    AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: DESCRIPTION
+- `setpressure = false`: DESCRIPTION
+- `Pout = 10`: DESCRIPTION
+- `controlinlet = false`: DESCRIPTION
+"""
 function AdiabaticPump(;
     name,
     η = 1.0,
@@ -431,6 +613,18 @@ function AdiabaticPump(;
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, w])
 end
 
+"""
+    Splitter(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: UTILITY
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function Splitter(; name)
     @named p = BasicSteamPin()
     @named n1 = BasicSteamPin()
@@ -449,6 +643,21 @@ function Splitter(; name)
     ODESystem(eqs, t, [], []; name = name, systems = [p, n1, n2])
 end
 
+"""
+    AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `η = 1.0`: DESCRIPTION
+- `setpressure = false`: DESCRIPTION
+- `Pout = 0.1`: DESCRIPTION
+"""
 function AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
     #Pout in bar
     @named p = BasicSteamPin()
@@ -482,6 +691,22 @@ function AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
     )
 end
 
+"""
+    SIMOAdiabaticTurbine(; name, ηin = 1.0, setpressure = false, Pyin = 10, Pzin = 0.1)
+
+DOCSTRING
+Single input multi output turbinbe
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `ηin = 1.0`: DESCRIPTION
+- `setpressure = false`: DESCRIPTION
+- `Pyin = 10`: DESCRIPTION
+- `Pzin = 0.1`: DESCRIPTION
+"""
 function SIMOAdiabaticTurbine(;
     name,
     ηin = 1.0,
@@ -519,6 +744,18 @@ function SIMOAdiabaticTurbine(;
     # extend(ODESystem(eqs, t,sts, ps; name = name, systems = [hp,lp], defaults = [η => 1.0 Py => 10 Pz => 0.1]),split)
 end
 
+"""
+    SteamHeatTransfer(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function SteamHeatTransfer(; name)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -535,6 +772,19 @@ function SteamHeatTransfer(; name)
     ODESystem(eqs, t, [Q̇, C], []; name = name, systems = [p, n, q])
 end
 
+"""
+    TunableSteamHeatTransfer(; name, Q̇in = 1.5e8)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Q̇in = 1.5e8`: DESCRIPTION
+"""
 function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -552,6 +802,19 @@ function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
     ODESystem(eqs, t, [C], ps; name = name, systems = [p, n, q], defaults = [C => 400])
 end
 
+"""
+    IdealBoiler(; name, Tout = 350)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `Tout = 350`: DESCRIPTION
+"""
 function IdealBoiler(; name, Tout = 350)
     #Pout in bar
     @named p = BasicSteamPin()
@@ -570,6 +833,18 @@ function IdealBoiler(; name, Tout = 350)
     ODESystem(eqs, t, [], ps; name = name, systems = [p, n, q], defaults = [T => Tout])
 end
 
+"""
+    IdealCondensor(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function IdealCondensor(; name)
     #Pout in bar
     @named p = BasicSteamPin()
@@ -589,6 +864,18 @@ function IdealCondensor(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0.0])
 end
 
+"""
+    PassiveCondensor(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function PassiveCondensor(; name)
     #Pout in bar
     @named p = BasicSteamPin()
@@ -605,6 +892,19 @@ function PassiveCondensor(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p, n, q], defaults = [Q̇ => 0.0])
 end
 
+"""
+    ReliefElement(; name, pressurecontrol = false)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- `pressurecontrol = false`: DESCRIPTION
+"""
 function ReliefElement(; name, pressurecontrol = false)
     @named p = BasicSteamPin()
     @named n = BasicSteamPin()
@@ -620,6 +920,18 @@ function ReliefElement(; name, pressurecontrol = false)
     ODESystem(eqs, t, [], []; name = name, systems = [p, n, q])
 end
 
+"""
+    OpenFeedwaterHeater(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function OpenFeedwaterHeater(; name)
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
@@ -645,6 +957,18 @@ function OpenFeedwaterHeater(; name)
     ODESystem(eqs, t, sts, []; name = name, systems = [p1, p2, n])
 end
 
+"""
+    MixingChamber(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function MixingChamber(; name)
     # flows x and y are the inlets
     @named p1 = BasicSteamPin()
@@ -661,6 +985,36 @@ function MixingChamber(; name)
     ODESystem(eqs, t, [], []; name = name, systems = [n, p1, p2])
 end
 
+"""
+    ClosedFeedwaterHeater(; name)
+
+DOCSTRING
+#     #   Steam_OFW CLOSED FEEDWATER HEATER
+#     #                _______________
+#     #               |               |
+#     #           -> ___/\/\/\/\/\/\______ Steam_known = outlet
+#     #               |               |
+#     #               |_______________|
+@named p1 = BasicSteamPin()
+@named n1 = BasicSteamPin()
+@named p2 = BasicSteamPin()
+@named n2 = BasicSteamPin()
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+    n1.P ~ p1.P # pressure
+    n2.P ~ p2.P
+    n2.h ~ n1.h # enthalpies
+    0 ~ n1.ṁ + p1.ṁ
+    0 ~ n2.ṁ + p2.ṁ
+    yfrac ~ (n2.h - p2.h) / ((p1.h - n1.h) + (n2.h - p2.h))
+    p1.ṁ ~ yfrac * (p1.ṁ + p2.ṁ)
+    p1.Φ ~ yfrac * (p1.Φ + p2.Φ)
+    0 ~ n1.Φ + p1.Φ + p1.ṁ * p1.h + n1.ṁ * n1.h
+    0 ~ n2.Φ + p2.Φ + p2.ṁ * p2.h + n2.ṁ * n2.h
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function ClosedFeedwaterHeater(; name)
 
     # flows x and y are the inlets
@@ -709,7 +1063,18 @@ function ClosedFeedwaterHeater(; name)
     )
 end
 
-# end
+"""
+    throttle(; name)
+
+DOCSTRING
+
+
+ELEM TYPE: COMPONENT
+EQUATIONS:
+
+INPUTS
+- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+"""
 function throttle(; name)
     # flows x and y are the inlets
     @named p = BasicSteamPin()
@@ -733,136 +1098,174 @@ function throttle(; name)
     )
 end
 
-function plotmod(smodel)
-    # structural_simplify(model)
 
-    var2idx = Dict(s => i for (i, s) in enumerate(states(smodel)))
-    idx2var = Dict(i => s for (i, s) in enumerate(states(smodel)))
+#     plotmod(smodel)
 
-    varvar = varvar_dependencies(asgraph(smodel), variable_dependencies(smodel))
+# DOCSTRING
+# # Arguments:
+# - `smodel`: DESCRIPTION
 
-    eqgraph = asgraph(equation_dependencies(smodel), var2idx)
-    equation_dep_digraph = asdigraph(eqgraph, smodel)
-    equation_dep_digraph.fadjlist
-    varvar = varvar_dependencies(asgraph(smodel), variable_dependencies(smodel))
-    varvar.badjlist
-    # # asd = asdigraph(digr,odesys)
-    nm = [idx2var[idx] for idx = 1:nv(varvar)]
-    p = plot(varvar, size = (1500, 1500), names = nm, method = :sfpd)
+# function plotmod(smodel)
+#     # structural_simplify(model)
+
+#     var2idx = Dict(s => i for (i, s) in enumerate(states(smodel)))
+#     idx2var = Dict(i => s for (i, s) in enumerate(states(smodel)))
+
+#     varvar = varvar_dependencies(asgraph(smodel), variable_dependencies(smodel))
+
+#     eqgraph = asgraph(equation_dependencies(smodel), var2idx)
+#     equation_dep_digraph = asdigraph(eqgraph, smodel)
+#     equation_dep_digraph.fadjlist
+#     varvar = varvar_dependencies(asgraph(smodel), variable_dependencies(smodel))
+#     varvar.badjlist
+#     # # asd = asdigraph(digr,odesys)
+#     nm = [idx2var[idx] for idx = 1:nv(varvar)]
+#     p = plot(varvar, size = (1500, 1500), names = nm, method = :sfpd)
 
 
-    return p, var2idx, idx2var, varvar, eqgraph
+#     return p, var2idx, idx2var, varvar, eqgraph
 
-end
+# end
 
-function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
-    # Control elements
-    @named gnd = Steam.ContinuityReservoir()
-    @named valve = Steam.SteamFlowValve()
-    @named pumpA = Steam.AdiabaticPump(Pout = Pmid, setpressure = false)
-    @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
+#     FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
 
-    #Boiler
-    # @named boil         = IdealBoiler(Tout = 600+273)
-    @named boil = Steam.SteamHeatTransfer()
-    @named turbn =
-        Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
+# DOCSTRING
+# ELEM TYPE: COMPONENT
+# EQUATIONS:
+# INPUTS
+# - `name`: Name of the system, symbol. Or use the @named macro when initializing.
+# - `Pmin = 0.1`: DESCRIPTION
+# - `Pmid = 10`: DESCRIPTION
+# - `Pmax = 150`: DESCRIPTION
 
-    @named cndnsr = Steam.IdealCondensor()
-    @named openfw = Steam.OpenFeedwaterHeater()
+# function FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+#     # Control elements
+#     @named gnd = Steam.ContinuityReservoir()
+#     @named valve = Steam.SteamFlowValve()
+#     @named pumpA = Steam.AdiabaticPump(Pout = Pmid, setpressure = false)
+#     @named pumpB = Steam.AdiabaticPump(Pout = Pmax, setpressure = true)
 
-    @named WorkRes = Steam.WorkPin()
-    @named ColdUtil = Steam.HeatTransferPin()
-    @named HotUtil = Steam.HeatTransferPin()
+#     #Boiler
+#     # @named boil         = IdealBoiler(Tout = 600+273)
+#     @named boil = Steam.SteamHeatTransfer()
+#     @named turbn =
+#         Steam.SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
 
-    connections = vcat(
-        Steam.hydro_connect(openfw.n, valve.p),
-        hydro_connect(valve.n, pumpB.p),          # pump -> boilder
-        hydro_connect(pumpB.n, gnd.p),
-        hydro_connect(gnd.n, boil.p),
-        hydro_connect(boil.n, turbn.p),             # boiler -> turbine
-        hydro_connect(turbn.hp.n, openfw.y),        # turbine -> openfw y
-        hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
-        hydro_connect(cndnsr.n, pumpA.p),
-        hydro_connect(pumpA.n, openfw.z),
-        work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
-        heat_connect(ColdUtil, cndnsr.q),
-        heat_connect(HotUtil, boil.q),
-    )
+#     @named cndnsr = Steam.IdealCondensor()
+#     @named openfw = Steam.OpenFeedwaterHeater()
 
-    systems =
-        [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
-    ODESystem(connections, t; name = name, systems = systems)
-end
+#     @named WorkRes = Steam.WorkPin()
+#     @named ColdUtil = Steam.HeatTransferPin()
+#     @named HotUtil = Steam.HeatTransferPin()
 
-function TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
-    # Control elements
-    @named gnd = ContinuityReservoir()
-    @named valve = TunableSteamFlowValve(ṁ = 1.0)
-    @named pumpA = AdiabaticPump(Pout = Pmid, setpressure = false)
-    @named pumpB = AdiabaticPump(Pout = Pmax, setpressure = true)
+#     connections = vcat(
+#         Steam.hydro_connect(openfw.n, valve.p),
+#         hydro_connect(valve.n, pumpB.p),          # pump -> boilder
+#         hydro_connect(pumpB.n, gnd.p),
+#         hydro_connect(gnd.n, boil.p),
+#         hydro_connect(boil.n, turbn.p),             # boiler -> turbine
+#         hydro_connect(turbn.hp.n, openfw.y),        # turbine -> openfw y
+#         hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
+#         hydro_connect(cndnsr.n, pumpA.p),
+#         hydro_connect(pumpA.n, openfw.z),
+#         work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
+#         heat_connect(ColdUtil, cndnsr.q),
+#         heat_connect(HotUtil, boil.q),
+#     )
 
-    #Boiler
-    # @named boil         = IdealBoiler(Tout = 600+273)
-    @named boil = TunableSteamHeatTransfer(Q̇in = 150e6)
-    @named turbn =
-        SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
+#     systems =
+#         [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
+#     ODESystem(connections, t; name = name, systems = systems)
+# end
+#
+#     TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
 
-    @named cndnsr = IdealCondensor()
-    @named openfw = OpenFeedwaterHeater()
+# DOCSTRING
+# ELEM TYPE: COMPONENT
+# EQUATIONS:
+# INPUTS
+# - `name`: Name of the system, symbol. Or use the @named macro when initializing.
+# - `Pmin = 0.1`: DESCRIPTION
+# - `Pmid = 10`: DESCRIPTION
+# - `Pmax = 150`: DESCRIPTION
 
-    @named WorkRes = WorkPin()
-    @named ColdUtil = HeatTransferPin()
-    @named HotUtil = HeatTransferPin()
+# function TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
+#     # Control elements
+#     @named gnd = ContinuityReservoir()
+#     @named valve = TunableSteamFlowValve(ṁ = 1.0)
+#     @named pumpA = AdiabaticPump(Pout = Pmid, setpressure = false)
+#     @named pumpB = AdiabaticPump(Pout = Pmax, setpressure = true)
 
-    connections = vcat(
-        Steam.hydro_connect(openfw.n, valve.p),
-        hydro_connect(valve.n, pumpB.p),          # pump -> boilder
-        hydro_connect(pumpB.n, gnd.p),
-        hydro_connect(gnd.n, boil.p),
-        hydro_connect(boil.n, turbn.p),             # boiler -> turbine
-        hydro_connect(turbn.hp.n, openfw.p1),        # turbine -> openfw y
-        hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
-        hydro_connect(cndnsr.n, pumpA.p),
-        hydro_connect(pumpA.n, openfw.p2),
-        work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
-        heat_connect(ColdUtil, cndnsr.q),
-        heat_connect(HotUtil, boil.q),
-    )
+#     #Boiler
+#     # @named boil         = IdealBoiler(Tout = 600+273)
+#     @named boil = TunableSteamHeatTransfer(Q̇in = 150e6)
+#     @named turbn =
+#         SIMOAdiabaticTurbine(setpressure = true, Pyin = Pmid, Pzin = Pmin, ηin = 1.0)
 
-    systems =
-        [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
-    ODESystem(connections, t; name = name, systems = systems)
-end
+#     @named cndnsr = IdealCondensor()
+#     @named openfw = OpenFeedwaterHeater()
 
-function Water_loop(; name, Pmin = 32, Pmax = 40)
-    @named WorkRes = WorkPin()
-    @named ColdUtil = HeatTransferPin()
-    @named res = ioReservoir(P = Pmin, fixboth = true)
-    @named valve = SteamFlowValve()
-    @named pump = AdiabaticPump(η = 0.9, setpressure = true, Pout = Pmax)
-    @named pset = SetPressure(P = Pmin)
-    @named HeatIn = SteamHeatTransfer()
-    @named HeatTx = SteamHeatTransfer()
-    @named HeatRej = IdealCondensor()
-    @named throttle = throttle()
+#     @named WorkRes = WorkPin()
+#     @named ColdUtil = HeatTransferPin()
+#     @named HotUtil = HeatTransferPin()
 
-    connections = vcat(
-        Steam.hydro_connect(res.n, valve.p),
-        Steam.hydro_connect(valve.n, pump.p),
-        Steam.hydro_connect(pump.n, HeatIn.p),
-        Steam.hydro_connect(HeatIn.n, HeatTx.p),
-        Steam.hydro_connect(HeatTx.n, throttle.p),
-        Steam.hydro_connect(throttle.n, HeatRej.p),
-        Steam.hydro_connect(HeatRej.n, res.p),
-        work_connect(WorkRes, pump.w),
-        heat_connect(ColdUtil, HeatRej.q),
-    )
+#     connections = vcat(
+#         Steam.hydro_connect(openfw.n, valve.p),
+#         hydro_connect(valve.n, pumpB.p),          # pump -> boilder
+#         hydro_connect(pumpB.n, gnd.p),
+#         hydro_connect(gnd.n, boil.p),
+#         hydro_connect(boil.n, turbn.p),             # boiler -> turbine
+#         hydro_connect(turbn.hp.n, openfw.p1),        # turbine -> openfw y
+#         hydro_connect(turbn.lp.n, cndnsr.p),        #   '------> condensor
+#         hydro_connect(cndnsr.n, pumpA.p),
+#         hydro_connect(pumpA.n, openfw.p2),
+#         work_connect(WorkRes, turbn.lp.w, turbn.hp.w, pumpA.w, pumpB.w),
+#         heat_connect(ColdUtil, cndnsr.q),
+#         heat_connect(HotUtil, boil.q),
+#     )
 
-    systemNames = [res, valve, pump, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
-    ODESystem(connections, t; name = name, systems = systemNames)
-end
+#     systems =
+#         [valve, pumpA, pumpB, boil, turbn, cndnsr, openfw, gnd, WorkRes, ColdUtil, HotUtil]
+#     ODESystem(connections, t; name = name, systems = systems)
+# end
+# 
+#     Water_loop(; name, Pmin = 32, Pmax = 40)
 
+# DOCSTRING
+# ELEM TYPE: COMPONENT
+# EQUATIONS:
+# INPUTS
+# - `name`: Name of the system, symbol. Or use the @named macro when initializing.
+# - `Pmin = 32`: DESCRIPTION
+# - `Pmax = 40`: DESCRIPTION
+# 
+# function Water_loop(; name, Pmin = 32, Pmax = 40)
+#     @named WorkRes = WorkPin()
+#     @named ColdUtil = HeatTransferPin()
+#     @named res = ioReservoir(P = Pmin, fixboth = true)
+#     @named valve = SteamFlowValve()
+#     @named pump = AdiabaticPump(η = 0.9, setpressure = true, Pout = Pmax)
+#     @named pset = SetPressure(P = Pmin)
+#     @named HeatIn = SteamHeatTransfer()
+#     @named HeatTx = SteamHeatTransfer()
+#     @named HeatRej = IdealCondensor()
+#     @named throttle = throttle()
+
+#     connections = vcat(
+#         Steam.hydro_connect(res.n, valve.p),
+#         Steam.hydro_connect(valve.n, pump.p),
+#         Steam.hydro_connect(pump.n, HeatIn.p),
+#         Steam.hydro_connect(HeatIn.n, HeatTx.p),
+#         Steam.hydro_connect(HeatTx.n, throttle.p),
+#         Steam.hydro_connect(throttle.n, HeatRej.p),
+#         Steam.hydro_connect(HeatRej.n, res.p),
+#         work_connect(WorkRes, pump.w),
+#         heat_connect(ColdUtil, HeatRej.q),
+#     )
+
+#     systemNames = [res, valve, pump, HeatIn, HeatTx, HeatRej, throttle, WorkRes, ColdUtil]
+#     ODESystem(connections, t; name = name, systems = systemNames)
+# end
 #     begin 
 #     Plow = 0.1;
 #     Pmid = 12;

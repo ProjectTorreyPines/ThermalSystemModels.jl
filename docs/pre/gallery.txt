@@ -1,0 +1,14 @@
+<h1>Gallery</h1>
+<!-- Content Here -->
+<section>
+    <figure>   
+        <img src="assets/gallery_FeedwaterRankine.png" alt="Generic TS Diagram" style = "width:100%;margin:auto">
+        <figcaption>Figure 1: Feedwater Rankine Cycle with 4 coupled cooling loops. The heat is delivered from the Orange fusion core on the left. All fluid flow lines are black and all heat flow lines are colorful. Purple lines represent a heat exchanger. Trim coolers are flex elements that stabalize the model.</figcaption>
+    </figure>
+</section>
+<section>
+    <figure>   
+        <img src="assets/gallery_regenbrayton.png" alt="Generic TS Diagram" style = "width:100%;margin:auto">
+        <figcaption>Figure 1: Regenerative Braytonb Cycle with 4 coupled cooling loops. The heat is delivered from the Orange fusion core on the left. All fluid flow lines are black and all heat flow lines are colorful. Purple lines represent a heat exchanger. Trim coolers are flex elements that stabalize the model.</figcaption>
+    </figure>
+</section>
