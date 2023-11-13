@@ -32,7 +32,7 @@
 		</ul>
 
 
-<div><section><h1>Functions</h1>
+<div><section><h3>Functions</h3>
 	<h4>gas_connect(pins)</h4>
 		<ul>
 		<li>

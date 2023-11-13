@@ -1,7 +1,7 @@
 <h1>MULTIPHASE<h1>
 
 
-<div><section><h1> All Functions </h1>
+<div><section><h3> All Functions </h3>
 		<ul>
 			<li>AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)</li>
 			<li>BasicSteamPin(; name, Pdef = 0.1)</li>
@@ -42,7 +42,7 @@
 		</ul>
 
 
-<div><section><h1>COMPONENTS</h1>
+<div><section><h3>COMPONENTS</h3>
 	<h4>AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)</h4>
 		<ul>
 		<li>
@@ -451,7 +451,7 @@
 </section></div>
 
 
-<div><section><h1>PINS</h1>
+<div><section><h3>PINS</h3>
 	<h4>BasicSteamPin(; name, Pdef = 0.1)</h4>
 		<ul>
 		<li>
@@ -488,7 +488,7 @@
 </section></div>
 
 
-<div><section><h1>SOURCES</h1>
+<div><section><h3>SOURCES</h3>
 	<h4>SetPressure(; name, P = 0.1)</h4>
 		<ul>
 		<li>
@@ -550,7 +550,7 @@
 </section></div>
 
 
-<div><section><h1>UTILITYS</h1>
+<div><section><h3>UTILITYS</h3>
 	<h4>Reservoir(; name, P = 0.1)</h4>
 		<ul>
 		<li>

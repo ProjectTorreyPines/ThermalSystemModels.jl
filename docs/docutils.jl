@@ -97,7 +97,7 @@ function generate_libtxt(filename::String,file_path::AbstractString)
     ORDER        = sortperm(UNIQUE_ELEM);
     HEADERS = UNIQUE_ELEM[ORDER];
     html = "<h1>"*filename*"<h1>\n"
-    html *= "\n\n<div><section><h1> All Functions </h1>\n"
+    html *= "\n\n<div><section><h3> All Functions </h3>\n"
     html *= "\t\t<ul>\n"
 
     for fn in fcn_names
@@ -109,7 +109,7 @@ function generate_libtxt(filename::String,file_path::AbstractString)
     prep(x) = replace(strip(x),r"\n\s*"=>"\n");
 
     for hd in HEADERS
-        html *= "\n\n<div><section><h1>"*hd*"S"*"</h1>"
+        html *= "\n\n<div><section><h3>"*hd*"S"*"</h3>"
         fcn_idx = findall(x -> x==hd, docstrings[:,3])
         for idx in fcn_idx
             row = docstrings[idx,:];
@@ -150,7 +150,7 @@ function generate_utiltxt(filename::String,file_path::AbstractString)
     prep(x) = replace(strip(x),r"\n\s*"=>"\n");
     HEADERS = ["Functions"]
     for hd in HEADERS
-        html *= "\n\n<div><section><h1>"*hd*"</h1>"
+        html *= "\n\n<div><section><h3>"*hd*"</h3>"
         for idx = 1:length(fcn_names)
             row = docstrings[idx,:];
             html *= "\n\t<h4>"*row[1]*"</h4>\n"

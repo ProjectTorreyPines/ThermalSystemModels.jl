@@ -1,7 +1,7 @@
 <h1>GASEOUS<h1>
 
 
-<div><section><h1> All Functions </h1>
+<div><section><h3> All Functions </h3>
 		<ul>
 			<li>ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)</li>
 			<li>ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)</li>
@@ -42,7 +42,7 @@
 		</ul>
 
 
-<div><section><h1>COMPONENTS</h1>
+<div><section><h3>COMPONENTS</h3>
 	<h4>GasFlowValve(; name)</h4>
 		<ul>
 		<li>
@@ -466,7 +466,7 @@
 </section></div>
 
 
-<div><section><h1>PINS</h1>
+<div><section><h3>PINS</h3>
 	<h4>ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)</h4>
 		<ul>
 		<li>
@@ -504,7 +504,7 @@
 </section></div>
 
 
-<div><section><h1>SOURCES</h1>
+<div><section><h3>SOURCES</h3>
 	<h4>GasFlowSource(; name, Ṁ = 1.0)</h4>
 		<ul>
 		<li>
@@ -558,7 +558,7 @@
 </section></div>
 
 
-<div><section><h1>UTILITYS</h1>
+<div><section><h3>UTILITYS</h3>
 	<h4>SetPressure(; name, P = 0.1)</h4>
 		<ul>
 		<li>

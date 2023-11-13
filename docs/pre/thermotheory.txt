@@ -1,5 +1,5 @@
  <h1>Thermodynamics</h1>
-    <h2>Thermodynamic Power Cycle Analysis</h1>
+    <h2>Thermodynamic Power Cycle Analysis</h2>
     Jakcson Harvey 
     (11/18/2022)
     <section>
