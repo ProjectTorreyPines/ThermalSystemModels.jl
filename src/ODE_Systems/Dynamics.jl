@@ -4,22 +4,21 @@ using ModelingToolkit,
 using Revise, OrdinaryDiffEq
 using Symbolics
 using LayeredLayouts, MetaGraphs, Graphs, Plots
-using ThermalSystem_Models, ModelingToolkit, Logging, Revise, Printf, OrdinaryDiffEq, Random
+using ThermalSystem_Models, Revise, Printf, OrdinaryDiffEq, Random
 using Statistics, GeometryBasics
-using LayeredLayouts, MetaGraphs, Graphs, Plots
 ModelingToolkit.@variables t
 # Logging.disable_logging(Logging.Warn)
 include("03-MTK_UTILS.jl")
 module Gas
-include("01-ThermoGas.jl")
+    include("01-ThermoGas.jl")
 end
 
 module Steam
-include("01-MultiPhase.jl")
+    include("01-MultiPhase.jl")
 end
 
 module Liq
-include("01-Incompressible.jl")
+    include("01-Incompressible.jl")
 end
 
 """
@@ -1348,17 +1347,12 @@ function directed2undir_adjacency(G::AbstractGraph)
 end
 #
 # Getters and setters
-"""
-node_prop(G,prop)
 
-
-function node_prop(G,prop)
-return vector of props, in order of nodes (first element corresponds to vertex/node 1)
-"""
 """
     node_prop(G, prop)
 
 DOCSTRING
+    return vector of props, in order of nodes (first element corresponds to vertex/node 1)
 
 # Arguments:
 - `G`: DESCRIPTION
@@ -1369,14 +1363,11 @@ function node_prop(G, prop)
 end
 
 """
-    node_propdict(G,prop)
-    return prop dict
-"""
-"""
     node_propdict(G, prop)
 
 DOCSTRING
-
+node_propdict(G,prop)
+return prop dict
 # Arguments:
 - `G`: DESCRIPTION
 - `prop`: DESCRIPTION
@@ -1466,6 +1457,7 @@ end
 
 """
     set_default_node_prop!(G,propname::Symbol,propval)
+    DOCSTRING
     applys props to whole graph
 """
 function set_default_node_prop!(G, propname::Symbol, propval)
@@ -1524,7 +1516,7 @@ function init_node_prop!(g, propname, deft)
         set_prop!(g, i, propname, deft)
     end
 end
-# returns vector with all edge lengths for node vj
+
 """
     edge_d_func(G::AbstractGraph, vj::Int64)
 
@@ -2596,33 +2588,30 @@ end
 
 
 """
-    layers_to_force!(
-    gcopy;
-    maxAlignCnt = 3,
-    doplot = false,
-    plotattr = (
-        linewidth = 0.5,
-        marker = :circle,
-        markersize = 1.5,
-        markercolor = :red,
-        color = :black,
-        alpha = 0.7,
-        legend = false,
-    ),
-)
-takes in graph, returns 
-maxAlignCnt specifies the largest groupings to requires equal layering, sometimes zarate struggles with more than 3
-requirementsf ror force_equal_layers = xLayReqs,
-                force_order = vSortReqs,
-from recent output xs,ys,paths
-"""
-"""
     layers_to_force!(gcopy; maxAlignCnt = 3, doplot = false, plotattr)
 
 DOCSTRING
-
+    layers_to_force!(
+        gcopy;
+        maxAlignCnt = 3,
+        doplot = false,
+        plotattr = (
+            linewidth = 0.5,
+            marker = :circle,
+            markersize = 1.5,
+            markercolor = :red,
+            color = :black,
+            alpha = 0.7,
+            legend = false,
+        ),
+    )
+    takes in graph, returns 
+    maxAlignCnt specifies the largest groupings to requires equal layering, sometimes zarate struggles with more than 3
+    requirementsf ror force_equal_layers = xLayReqs,
+                force_order = vSortReqs,
+    from recent output xs,ys,paths
 # Arguments:
-- `gcopy`: DESCRIPTION
+- `gcopy: graph
 OPTIONAL INPUTS
 - `maxAlignCnt = 3`: DESCRIPTION
 - `doplot = false`: DESCRIPTION
@@ -2800,8 +2789,7 @@ function initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
     # quick_plotG(gcopy)
 end
 
-"""
-"""
+
 """
     add_plot_elments(gcopy; verbose = false, default_plot_properties = Dict([:displayName => "", :normheight => 1, :normwidth => 1, :height => 1, :width => 1, :nodeType => :fake]))
 
@@ -3044,8 +3032,7 @@ function add_plot_elments!(
         # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
 end
 
-"""
-"""
+
 """
     setVerticalSpacing!(gc; vspan = 5.0, pad = 2.0, doplot = true, plotattr)
 

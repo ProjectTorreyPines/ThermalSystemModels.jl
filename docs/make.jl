@@ -9,7 +9,8 @@ complibs = Dict("MULTIPHASE" =>      "src/ODE_Systems/01-MultiPhase.jl",
 for k in collect(keys(complibs))
     generate_libtxt(k,complibs[k])
 end
-ulibs = Dict("UTILITIES" =>      "src/ODE_Systems/03-MTK_UTILS.jl")
+ulibs = Dict("UTILITIES" =>      "src/ODE_Systems/03-MTK_UTILS.jl",
+                "OTHER" =>          "src/ODE_Systems/Dynamics.jl")
 for k in collect(keys(ulibs))
     generate_utiltxt(k,ulibs[k])
 end

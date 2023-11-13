@@ -8,7 +8,6 @@
 			<li>ClosedFeedwaterHeater(; name)</li>
 			<li>ContinuityReservoir(; name)</li>
 			<li>ContinuityReservoir2(; name)</li>
-			<li>FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
 			<li>FixedHeatFlowPin(; name, Qin = 1e3)</li>
 			<li>HeatTransferPin(; name)</li>
 			<li>HeatTransferPort(; name)</li>
@@ -26,18 +25,15 @@
 			<li>SteamFlowValve(; name)</li>
 			<li>SteamHeatTransfer(; name)</li>
 			<li>SuperHeatedReservoir(; name, P = 150, T = 600)</li>
-			<li>TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
 			<li>TunableSteamFlowValve(; name, ṁ = 1.0)</li>
 			<li>TunableSteamHeatTransfer(; name, Q̇in = 150e6)</li>
 			<li>TwoPortReservoir(; name, P = 0.1)</li>
-			<li>Water_loop(; name, Pmin = 32, Pmax = 40)</li>
 			<li>WorkPin(; name)</li>
 			<li>extenda(odevec::Vector{ODESystem})</li>
 			<li>hydro_basic_connect(n, p)</li>
 			<li>hydro_connect(pins...)</li>
 			<li>hydro_series_connect(comp; returnmode = :eq)</li>
 			<li>ioReservoir(; name, P = 0.1, fixboth = false)</li>
-			<li>plotmod(smodel)</li>
 			<li>throttle(; name)</li>
 		</ul>
 
@@ -356,7 +352,9 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				
+				@named p1 = BasicSteamPin()<br>
+			@named p2 = BasicSteamPin()<br>
+			@named n = BasicSteamPin()
 			</p>
 		</li>
 		<li>
@@ -384,12 +382,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				#     #   Steam_OFW CLOSED FEEDWATER HEATER<br>
-			#     #                _______________<br>
-			#     #               |               |<br>
-			#     #           -> ___/\/\/\/\/\/\______ Steam_known = outlet<br>
-			#     #               |               |<br>
-			#     #               |_______________|<br>
+				Steam_OFW CLOSED FEEDWATER HEATER<br>
 			@named p1 = BasicSteamPin()<br>
 			@named n1 = BasicSteamPin()<br>
 			@named p2 = BasicSteamPin()<br>
@@ -399,7 +392,7 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>			</li>
 			</ul>
 		</li>

@@ -415,14 +415,13 @@ function ThermoHeatTransfer(; name, ΔP = 0.0)
     )
 end
 
-"""
-    FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)
-    Ability to change mass flow rate to achieve desired outlet temperature
-"""
+
 """
     FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
 
 DOCSTRING
+FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)
+Ability to change mass flow rate to achieve desired outlet temperature
 Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature
 @named p = ThermoPin()
 @named n = ThermoPin()
@@ -528,7 +527,7 @@ EQUATIONS:
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `η = 1.0`: Isentropic Effecience
- `rp = 3\.5`: Compression Ratio
+ `rp = 3.5`: Compression Ratio
 """
 function ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)
     @named p = ThermoPin()
@@ -595,7 +594,6 @@ ps = @parameters rp = rp η = η
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-eqs = [
     0 ~ p.ṁ + n.ṁ                             
     p.P ~ n.P * rp
     n.T ~
@@ -603,7 +601,6 @@ eqs = [
         (rp^((p.k - 1) / p.k))
     w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
     w.Ẇ ~ p.Φ + n.Φ
-]
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `η = 1.0`: Isentropic Effecience
@@ -636,9 +633,7 @@ ELEM TYPE: COMPONENT
 EQUATIONS:
     0 ~ p.ṁ + n.ṁ                               # conservation of mass
     p.P ~ n.P * rp
-    n.T ~
-        p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /
-        (rp^((p.k - 1) / p.k))
+    n.T ~ p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /(rp^((p.k - 1) / p.k))
     w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
     w.Ẇ ~ p.Φ + n.Φ
 INPUTS

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: white;
+            color: black;
+            padding: 0;
+        }
+
+        header {
+            background-color: #182251; /* Updated theme color to deep blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        h3 {
+            font-size: 15px;
+            background-color: #182251;
+            color: rgb(255, 255, 255);
+            padding: 10px;
+            margin: 0px;
+        }
+        
+        h4 {
+            font-size: 15px;
+            color: brown;
+            padding: 1px;
+            margin: 0px;
+        }
+
+        h5 {
+            font-size: 15px;
+            padding: 1px;
+            padding-bottom: 0px;
+            color: black ;
+            margin: 1px;
+        }
+
+        nav {
+            width: 250px;
+            height: 100%;
+            background-color: #f2f2f2;
+            position:absolute;
+            font-size: 16px;
+            padding-top: 10px;
+        }
+
+        nav a {
+            display: block;
+            padding: 5px;
+            padding-left: 10px;
+            text-decoration: none;
+            color: rgb(0, 0, 0); /* Updated theme color to deep blue */
+        }
+        nav a:hover {
+            background-color: #ddd;
+        }
+
+
+        .dropdown-btn {
+            background-color: #f2f2f2; /* Updated theme color to deep blue */
+            color: black;
+            text-decoration: underline;
+            padding: 5px;
+            padding-left: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-weight: bold; /* Bold text for items with dropdown menus */
+        }
+
+        .dropdown-content {
+            padding: 5px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .dropdown-content a {
+            padding: 5px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+            color: #182251; /* Updated theme color to deep blue */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+<h1>OTHER<h1>
+</header>
+
+<nav>
+    <div><a href="index.html">Home</a></div>
+    <button class="dropdown-btn">Getting Started</button>
+    <div class="dropdown-content">
+        <div><a href="underCon.html">Overveiw</a></div>
+        <div><a href="underCon.html">Tutorial</a></div>
+        <div><a href="underCon.html">Plotting</a></div>
+    </div>
+    <button class="dropdown-btn">Libraries</button>
+    <div class="dropdown-content">
+        <div><a href="blocklibrary.html">Blocks</a></div>
+        <div><a href="MULTIPHASE.html">Multi-phase Documentation</a></div>
+        <div><a href="INCOMPRESSIBLE.html">Incompressible Library Documentation</a></div>
+        <div><a href="GASEOUS.html">Gas Library Documentation</a></div>
+        <div><a href="UTILITIES.html">Utilities</a></div>
+    </div>
+    <button class="dropdown-btn">Resources</button>
+    <div class="dropdown-content">
+        <div><a href="resources.html">Resources</a></div>
+        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
+        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
+        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
+        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
+        <div><a href="underCon.html"> Heat Exchangers</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+        <div><a href="underCon.html"> Graph Represntation</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+    </div>
+    <div><a href="underCon.html">Examples</a></div>
+    <div><a href="underCon.html">Tutorial</a></div>
+    <div><a href="underCon.html">Full API</a></div>
+    <a href="#">Contact</a>
+</nav>
+
+<main>
+
+
+<div><section><h1> All Functions </h1>
+		<ul>
+			<li>ComplexBraytonRegen(; name)</li>
+			<li>FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>FwRankine3(; name)</li>
+			<li>Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)</li>
+			<li>He_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)</li>
+			<li>He_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)</li>
+			<li>He_quad_inter_loop(; name, Pmin = 80, Tmin = 300, Pmax = 85)</li>
+			<li>Water_loop(; name, Pmin = 32, Pmax = 40)</li>
+			<li>available_grid_position_with_size(G, vj)</li>
+			<li>available_grid_positions(G)</li>
+			<li>brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)</li>
+			<li>breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273.15, Tmax = 900+273.15, load = 100e6)</li>
+			<li>breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)</li>
+			<li>checker(x)</li>
+			<li>default_energy_sys()</li>
+			<li>directed2undir_adjacency(G::AbstractGraph)</li>
+			<li>divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)</li>
+			<li>divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)</li>
+			<li>edgeTuples(G)</li>
+			<li>edge_d_func(G::AbstractGraph, vj::Int64)</li>
+			<li>edge_d_func(G::AbstractGraph, vj::Int64, testpos::T)</li>
+			<li>edge_prop(G, prop)</li>
+			<li>edge_propdict(G, prop; edgekey = :tuple)</li>
+			<li>edgeroute(p1::T, p2::T)</li>
+			<li>edgeroute_nodes(gc; voff = 0.025)</li>
+			<li>find_common_name(stringvec::Vector{String}; verbose = false)</li>
+			<li>graphBlocks(G)</li>
+			<li>hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)</li>
+			<li>helium_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)</li>
+			<li>hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)</li>
+			<li>horizontal_visibility_graph(G::AbstractGraph)</li>
+			<li>intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)</li>
+			<li>node2rect(pos, ht, wid)</li>
+			<li>node_prop(G, prop)</li>
+			<li>node_propdict(G, prop)</li>
+			<li>occupied_grid_index(G)</li>
+			<li>occupied_grid_positions(G)</li>
+			<li>rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)</li>
+			<li>swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)</li>
+			<li>vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)</li>
+			<li>vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)</li>
+			<li>visibility_graph(G::AbstractGraph, dir = 1)</li>
+			<li>vlinecheck(srcl::Vector{Line}, dst::Line)</li>
+			<li>vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)</li>
+			<li>wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)</li>
+		</ul>
+
+
+<div><section><h3>Functions</h3>
+	<h4>L2G_HeatExchanger(; name, ϵ = 0.95, A = Liq.IncompressibleHeatTransfer(), B = Gas.ThermoHeatTransfer())</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `name`: DESCRIPTION<br>
+			- `ϵ = 0.95`: DESCRIPTION<br>
+			- `A = Liq.IncompressibleHeatTransfer()`: DESCRIPTION<br>
+			- `B = Gas.ThermoHeatTransfer()`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>S2G_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer(), returnmode = :eqs)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `name`: DESCRIPTION<br>
+			- `ϵ = 0.95`: DESCRIPTION<br>
+			- `A = Steam.SteamHeatTransfer()`: DESCRIPTION<br>
+			- `B = Gas.ThermoHeatTransfer()`: DESCRIPTION<br>
+			- `returnmode = :eqs`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>L2S_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Liq.IncompressibleHeatTransfer(), returnmode = :eqs)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `name`: DESCRIPTION<br>
+			- `ϵ = 0.95`: DESCRIPTION<br>
+			- `A = Steam.SteamHeatTransfer()`: DESCRIPTION<br>
+			- `B = Liq.IncompressibleHeatTransfer()`: DESCRIPTION<br>
+			- `returnmode = :eqs`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `name`: DESCRIPTION<br>
+			- `ϵ = 0.95`: DESCRIPTION<br>
+			- `A`: DESCRIPTION<br>
+			- `B`: DESCRIPTION<br>
+			- `returnmode = :ode`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>default_energy_sys()</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+			</ul>
+
+	<h4>wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `max_pressure = 80`: DESCRIPTION<br>
+			- `pressrue_drop = 5`: DESCRIPTION<br>
+			- `Tmin = 450 + 273.15`: DESCRIPTION<br>
+			- `Tmax = 550 + 273.15`: DESCRIPTION<br>
+			- `load = 1.0e8`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `max_pressure = 80`: DESCRIPTION<br>
+			- `pressrue_drop = 5`: DESCRIPTION<br>
+			- `Tmin = 450 + 273.15`: DESCRIPTION<br>
+			- `Tmax = 550 + 273.15`: DESCRIPTION<br>
+			- `load = 1.0e8`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 + 273.15, Tmax = 900 + 273.15, load = 1.0e8)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `max_pressure = 40`: DESCRIPTION<br>
+			- `pressrue_drop = 8`: DESCRIPTION<br>
+			- `Tmin = 750 + 273.15`: DESCRIPTION<br>
+			- `Tmax = 900 + 273.15`: DESCRIPTION<br>
+			- `load = 1.0e8`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>feedwater_rankine(; max_pressure = 150, mid_pressure = 25, min_pressure = 0.1, ηpump = 1.0, ηturbine = 1.0, flowrate = 50)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `max_pressure = 150`: DESCRIPTION<br>
+			- `mid_pressure = 25`: DESCRIPTION<br>
+			- `min_pressure = 0.1`: DESCRIPTION<br>
+			- `ηpump = 1.0`: DESCRIPTION<br>
+			- `ηturbine = 1.0`: DESCRIPTION<br>
+			- `flowrate = 50`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>intermediate_loop(; Pmax = 40, Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `Pmax = 40`: DESCRIPTION<br>
+			- `Pmin = 32`: DESCRIPTION<br>
+			- `Nhx = 3`: DESCRIPTION<br>
+			- `Tmin = 350 + 273.15`: DESCRIPTION<br>
+			- `flowrate = 100`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>hotswap!(G, n::Int64)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `n::Int64`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>node_prop(G, prop)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				return vector of props, in order of nodes (first element corresponds to vertex/node 1)<br>
+			# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `prop`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>node_propdict(G, prop)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				node_propdict(G,prop)<br>
+			return prop dict<br>
+			# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `prop`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>edge_prop(G, prop)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `prop`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>edge_propdict(G, prop; edgekey = :tuple)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `prop`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `edgekey = :tuple`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_single_edge_props!(G, e::Edge, pdict::Dict{Symbol, T})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `e::Edge`: DESCRIPTION<br>
+			- `pdict::Dict{Symbol, T}`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_default_edge_prop!(G, propname::Symbol, propval)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `propname::Symbol`: DESCRIPTION<br>
+			- `propval`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_default_edge_prop!(G, pdict::Dict{Symbol, T})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `pdict::Dict{Symbol, T}`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_default_node_prop!(G,propname::Symbol,propval)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				applys props to whole graph
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_default_node_prop!(G, pdict::Dict{Symbol, T})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `pdict::Dict{Symbol, T}`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>set_default_node_props!(G, propname::Vector{Symbol}, propval::Vector{Any})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `propname::Vector{Symbol}`: DESCRIPTION<br>
+			- `propval::Vector{Any}`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>init_node_prop!(g, propname, deft)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `g`: DESCRIPTION<br>
+			- `propname`: DESCRIPTION<br>
+			- `deft`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>edge_d_func(G::AbstractGraph, vj::Int64)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>edge_d_func(G::AbstractGraph, vj::Int64, testpos::T)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION<br>
+			- `testpos::T`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>setpos!(G, lay)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `lay`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>occupied_grid_index(G)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>occupied_grid_positions(G)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>available_grid_positions(G)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>node2rect(pos, ht, wid)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `pos`: DESCRIPTION<br>
+			- `ht`: DESCRIPTION<br>
+			- `wid`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>graphBlocks(G)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>edgeTuples(G)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>available_grid_position_with_size(G, vj)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G`: DESCRIPTION<br>
+			- `vj`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>update_pos!(G::AbstractGraph)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>update_pos!(G::AbstractGraph, vj::Int64, newpos::T)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION<br>
+			- `newpos::T`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>swap_pos!(G::AbstractGraph, vj::Int64, vi::Int64)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION<br>
+			- `vi::Int64`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `verbose = false`: DESCRIPTION<br>
+			- `maxiter = 10`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>swap_adjacents_check_size(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `vj::Int64`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `verbose = false`: DESCRIPTION<br>
+			- `maxiter = 10`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>vlinecheck(y1::Real, h1::Real, y2::Real, h2::Real)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `y1::Real`: DESCRIPTION<br>
+			- `h1::Real`: DESCRIPTION<br>
+			- `y2::Real`: DESCRIPTION<br>
+			- `h2::Real`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `x1::Real`: DESCRIPTION<br>
+			- `w1::Real`: DESCRIPTION<br>
+			- `x2::Real`: DESCRIPTION<br>
+			- `w2::Real`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>vlinecheck(srcl::Vector{Line}, dst::Line)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `srcl::Vector{Line}`: DESCRIPTION<br>
+			- `dst::Line`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `yvec::Vector{<:Real}`: DESCRIPTION<br>
+			- `y2::Real`: DESCRIPTION<br>
+			- `h2::Real`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `xvec::Vector{<:Real}`: DESCRIPTION<br>
+			- `x2::Real`: DESCRIPTION<br>
+			- `w2::Real`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>horizontal_visibility_graph(G::AbstractGraph)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `accountForWidth = true`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>visibility_graph(G::AbstractGraph, dir = 1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `dir = 1`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>shiftlayout!(lay::Vector{T})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `lay::Vector{T}`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+</section></div>
+</main>
+
+
+<script>
+    // JavaScript to handle dropdowns
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        dropdownBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

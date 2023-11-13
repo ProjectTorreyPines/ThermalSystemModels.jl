@@ -105,7 +105,9 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature<br>
+				FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout)<br>
+			Ability to change mass flow rate to achieve desired outlet temperature<br>
+			Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature<br>
 			@named p = ThermoPin()<br>
 			@named n = ThermoPin()<br>
 			@named q = HeatTransferPin()<br>
@@ -186,7 +188,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `η = 1.0`: Isentropic Effecience</li>
-				<li> `rp = 3\.5`: Compression Ratio</li>
+				<li> `rp = 3.5`: Compression Ratio</li>
 				<li>			</li>
 			</ul>
 		</li>
@@ -259,7 +261,6 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ eqs = [\]
 				\[     0 = p.ṁ + n.ṁ                             \]
 				\[     p.P = n.P * rp\]
 				\[     n.T =\]
@@ -267,7 +268,6 @@
 				\[         (rp^((p.k - 1) / p.k))\]
 				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
 				\[     w.Ẇ = p.Φ + n.Φ\]
-				\[ ]\]
 				\[ \]
 		</li>
 				</p>
@@ -294,9 +294,7 @@
 				<p>
 				\[     0 = p.ṁ + n.ṁ                               \]
 				\[ 				    p.P = n.P * rp\]
-				\[     n.T =\]
-				\[         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /\]
-				\[         (rp^((p.k - 1) / p.k))\]
+				\[     n.T = p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /(rp^((p.k - 1) / p.k))\]
 				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
 				\[     w.Ẇ = p.Φ + n.Φ\]
 				\[ \]

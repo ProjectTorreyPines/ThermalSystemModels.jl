@@ -2,7 +2,7 @@
 using ModelingToolkit, Plots, DifferentialEquations, Revise, Symbolics, Logging #CoolProp,
 using NonlinearSolve, Printf
 using Plots
-using AutomaticD
+
 @variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
