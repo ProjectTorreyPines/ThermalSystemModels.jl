@@ -19,10 +19,10 @@ function extract_docstrings(file_path::AbstractString)
     content = read(file_path, String)
     function_docstr = Dict{String,String}()
     # Extract function names using a regular expression
-    function_names_itterator =eachmatch(r"\"\"\"\n\s*(.*)\s*\n([\s\S]*?)\"\"\"[\n|\r](function\s+(([a-zA-z_]*)\w*(\(.*\))))", content);
-    function_names_obj =  [aa for aa in function_names_itterator];
-    function_docstr =  Dict(String(fn.captures[4]) => String(fn.captures[2]) for fn in function_names_obj)
-    return function_docstr
+    reg=r"\"\"\"\n\s*(.*)\s*DOCSTRING\n([\s\S]*?)\"\"\"";
+    matches = [ea.captures for ea in eachmatch(reg,content)];
+    matches = string.(permutedims(hcat(matches...)))
+    return matches
 end
 
 function extract_regex(file_path::AbstractString,reg)
@@ -47,26 +47,76 @@ function library_docstrings(file_path::AbstractString)
     return matches
 end
 
-## generates text files for component doc strings
-function generate_libtxt(filename::String,docstrings::Matrix{String})
+
+# ## generates text files for component doc strings
+# function generate_libtxt(filename::String,docstrings::Matrix{String})
+#     txtpath = "docs/pre/" * filename * ".txt";
+#     # Tpes of components
+#     ELEM_TYPES   = docstrings[:,3]
+#     UNIQUE_ELEM  = unique(ELEM_TYPES)
+#     ORDER        = sortperm(UNIQUE_ELEM);
+#     HEADERS = UNIQUE_ELEM[ORDER];
+#     html = "<h1>"*filename*"<h1>\n"
+
+#     prep(x) = replace(strip(x),r"\n\s*"=>"\n");
+
+#     for hd in HEADERS
+#         html *= "\n\n<div><section><h1>"*hd*"</h1>"
+#         fcn_idx = findall(x -> x==hd, docstrings[:,3])
+#         for idx in fcn_idx
+#             row = docstrings[idx,:];
+#             html *= "\n\t<h4>"*row[1]*"</h4>\n"
+#             html *= "\t\t<ul>\n"
+#             html *= "\t\t<li>\n\t\t\t<h5>DESCRIPTION:</h5>\n"
+#             html *= "\t\t\t<p>\n\t\t\t\t" * replace(prep(row[2]),"\n" => "<br>\n\t\t\t")* "\n\t\t\t</p>\n\t\t</li>\n"
+#             html *= "\t\t<li>\n\t\t\t<h5>INPUTS:</h5>\n"
+#             html *= "\t\t\t<ul>\n"
+#             html *= "\t\t\t\t<li>" * replace(row[5],"\n" => "</li>\n\t\t\t\t<li>") * "\t\t\t</li>\n\t\t\t</ul>\n\t\t</li>\n"
+#             html *= "\t\t<li>\n\t\t\t<h5>EQUATIONS:</h5>\n"
+#             html *= "\t\t\t\t<p>\n\t\t\t\t\\[ " * replace(replace(row[4],r"#.*\n" => "\n\t\t\t\t"),"\n" => "\\]\n\t\t\t\t\\[ " ,"~" => "=")  * "\\]\n\t\t</li>\n"
+#             html *= "\t\t\t\t</p>\n\t\t\t</ul>\n"
+#         end
+#         html *= "\n</section></div>\n"
+#     end
+#     touch(txtpath)
+#     write(txtpath,html)
+#     # writedlm(txtpath,html,quotes=false)
+#     # open(txtpath,"w") do file
+#     #     write(file,html)
+#     # end
+# end
+
+function generate_libtxt(filename::String,file_path::AbstractString)
+    docstrings = library_docstrings(file_path);
+    fcn_names = extract_function_names(file_path);
+    fcn_names = fcn_names[sortperm(fcn_names)];
     txtpath = "docs/pre/" * filename * ".txt";
     # Tpes of components
     ELEM_TYPES   = docstrings[:,3]
     UNIQUE_ELEM  = unique(ELEM_TYPES)
     ORDER        = sortperm(UNIQUE_ELEM);
-
     HEADERS = UNIQUE_ELEM[ORDER];
     html = "<h1>"*filename*"<h1>\n"
+    html *= "\n\n<div><section><h1> All Functions </h1>\n"
+    html *= "\t\t<ul>\n"
+
+    for fn in fcn_names
+        html *= "\t\t\t<li>" * fn * "</li>\n"
+    end
+    html *= "\t\t</ul>\n"
+
+
+    prep(x) = replace(strip(x),r"\n\s*"=>"\n");
 
     for hd in HEADERS
-        html *= "\n\n<div><section><h1>"*hd*"</h1>"
+        html *= "\n\n<div><section><h1>"*hd*"S"*"</h1>"
         fcn_idx = findall(x -> x==hd, docstrings[:,3])
         for idx in fcn_idx
             row = docstrings[idx,:];
             html *= "\n\t<h4>"*row[1]*"</h4>\n"
             html *= "\t\t<ul>\n"
             html *= "\t\t<li>\n\t\t\t<h5>DESCRIPTION:</h5>\n"
-            html *= "\t\t\t<p>\n\t\t\t\t" * replace(row[2],"\n" => "<br>\n\t\t\t")* "\n\t\t\t</p>\n\t\t</li>\n"
+            html *= "\t\t\t<p>\n\t\t\t\t" * replace(prep(row[2]),"\n" => "<br>\n\t\t\t")* "\n\t\t\t</p>\n\t\t</li>\n"
             html *= "\t\t<li>\n\t\t\t<h5>INPUTS:</h5>\n"
             html *= "\t\t\t<ul>\n"
             html *= "\t\t\t\t<li>" * replace(row[5],"\n" => "</li>\n\t\t\t\t<li>") * "\t\t\t</li>\n\t\t\t</ul>\n\t\t</li>\n"
@@ -78,12 +128,42 @@ function generate_libtxt(filename::String,docstrings::Matrix{String})
     end
     touch(txtpath)
     write(txtpath,html)
-    # writedlm(txtpath,html,quotes=false)
-    # open(txtpath,"w") do file
-    #     write(file,html)
-    # end
 end
 
+function generate_utiltxt(filename::String,file_path::AbstractString)
+    docstrings = extract_docstrings(file_path);
+    fcn_names = extract_function_names(file_path);
+    fcn_names = fcn_names[sortperm(fcn_names)];
+    docstrings = docstrings[sortperm(fcn_names),:];
+    txtpath = "docs/pre/" * filename * ".txt";
+    # Tpes of components
+    html = "<h1>"*filename*"<h1>\n"
+    html *= "\n\n<div><section><h1> All Functions </h1>\n"
+    html *= "\t\t<ul>\n"
+
+    for fn in fcn_names
+        html *= "\t\t\t<li>" * fn * "</li>\n"
+    end
+    html *= "\t\t</ul>\n"
+
+
+    prep(x) = replace(strip(x),r"\n\s*"=>"\n");
+    HEADERS = ["Functions"]
+    for hd in HEADERS
+        html *= "\n\n<div><section><h1>"*hd*"</h1>"
+        for idx = 1:length(fcn_names)
+            row = docstrings[idx,:];
+            html *= "\n\t<h4>"*row[1]*"</h4>\n"
+            html *= "\t\t<ul>\n"
+            html *= "\t\t<li>\n\t\t\t<h5>DESCRIPTION:</h5>\n"
+            html *= "\t\t\t<p>\n\t\t\t\t" * replace(prep(row[2]),"\n" => "<br>\n\t\t\t")* "\n\t\t\t</p>\n\t\t</li>\n"
+            html *= "\t\t\t</ul>\n"
+        end
+        html *= "\n</section></div>\n"
+    end
+    touch(txtpath)
+    write(txtpath,html)
+end
 """     
     buildhtml(filref)
 

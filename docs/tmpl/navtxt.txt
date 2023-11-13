@@ -11,9 +11,10 @@
     <button class="dropdown-btn">Libraries</button>
     <div class="dropdown-content">
         <div><a href="blocklibrary.html">Blocks</a></div>
-        <div><a href="multiphase.html">Multi-phase Documentation</a></div>
-        <div><a href="incompressible.html">Incompressible Library Documentation</a></div>
-        <div><a href="gaseous.html">Gas Library Documentation</a></div>
+        <div><a href="MULTIPHASE.html">Multi-phase Documentation</a></div>
+        <div><a href="INCOMPRESSIBLE.html">Incompressible Library Documentation</a></div>
+        <div><a href="GASEOUS.html">Gas Library Documentation</a></div>
+        <div><a href="UTILITIES.html">Utilities</a></div>
     </div>
     <button class="dropdown-btn">Resources</button>
     <div class="dropdown-content">

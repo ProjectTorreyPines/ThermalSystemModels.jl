@@ -87,7 +87,7 @@
 </head>
 <body>
 <header>
-<h1>gaseous<h1>
+<h1>MULTIPHASE<h1>
 </header>
 
 <nav>
@@ -104,7 +104,7 @@
         <div><a href="MULTIPHASE.html">Multi-phase Documentation</a></div>
         <div><a href="INCOMPRESSIBLE.html">Incompressible Library Documentation</a></div>
         <div><a href="GASEOUS.html">Gas Library Documentation</a></div>
-        <div><a href="UTILITIES.html">Gas Library Documentation</a></div>
+        <div><a href="UTILITIES.html">Utilities</a></div>
     </div>
     <button class="dropdown-btn">Resources</button>
     <div class="dropdown-content">
@@ -129,47 +129,154 @@
 
 <div><section><h1> All Functions </h1>
 		<ul>
-			<li>ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)</li>
-			<li>ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)</li>
-			<li>FixedHeatFlowPin(; name, Qin = 1e6)</li>
-			<li>FixedThermoHeatTransfer(; name, Qin = 1e6)</li>
-			<li>FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)</li>
-			<li>GasFlowSource(; name, Ṁ = 1.0)</li>
-			<li>GasFlowValve(; name)</li>
-			<li>GasReference(; name, Pref = 10, T_ref = 500)</li>
+			<li>AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)</li>
+			<li>BasicSteamPin(; name, Pdef = 0.1)</li>
+			<li>ClosedFeedwaterHeater(; name)</li>
+			<li>ContinuityReservoir(; name)</li>
+			<li>ContinuityReservoir2(; name)</li>
+			<li>FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>FixedHeatFlowPin(; name, Qin = 1e3)</li>
 			<li>HeatTransferPin(; name)</li>
-			<li>IdealCooler(; name)</li>
-			<li>Intercooler(; name, Tout = 300)</li>
-			<li>PassiveElement(; name)</li>
-			<li>PassiveThermoCompressor(; name, η = 1.0)</li>
-			<li>PassiveThermoTurbine(; name, η = 1.0)</li>
-			<li>Regenerator(; name, ϵ = 0.95)</li>
-			<li>ReliefElement(; name)</li>
+			<li>HeatTransferPort(; name)</li>
+			<li>IdealBoiler(; name, Tout = 350)</li>
+			<li>IdealCondensor(; name)</li>
+			<li>MixingChamber(; name)</li>
+			<li>MultiPhaseGnd(; name, P = 0.1)</li>
+			<li>OpenFeedwaterHeater(; name)</li>
+			<li>PassiveCondensor(; name)</li>
+			<li>ReliefElement(; name, pressurecontrol = false)</li>
+			<li>Reservoir(; name, P = 0.1)</li>
 			<li>SetPressure(; name, P = 0.1)</li>
-			<li>SetTemperature(; name, T = 300)</li>
-			<li>SinglePortReservoir(; name, P = 0.1, T = 300)</li>
-			<li>ThermoHeatSource(; name, Qin = 1e6)</li>
-			<li>ThermoHeatTransfer(; name, ΔP = 0.0)</li>
-			<li>ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)</li>
-			<li>TwoPortReservoir(; name, P = 0.1, T = 300)</li>
+			<li>Splitter(; name)</li>
+			<li>SteamFlowSource(; name, ṁ = 1.0)</li>
+			<li>SteamFlowValve(; name)</li>
+			<li>SteamHeatTransfer(; name)</li>
+			<li>SuperHeatedReservoir(; name, P = 150, T = 600)</li>
+			<li>TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>TunableSteamFlowValve(; name, ṁ = 1.0)</li>
+			<li>TunableSteamHeatTransfer(; name, Q̇in = 150e6)</li>
+			<li>TwoPortReservoir(; name, P = 0.1)</li>
+			<li>Water_loop(; name, Pmin = 32, Pmax = 40)</li>
 			<li>WorkPin(; name)</li>
-			<li>gas_CopyConnect(pins...)</li>
-			<li>gas_connect(pins...)</li>
-			<li>hx_connect(hx, compAin, compAout, compBin, compBout)</li>
-			<li>series_connect(pins)</li>
-			<li>showsol(c, sol)</li>
-			<li>simpleBrayton()</li>
-			<li>simpleBraytonRegen()</li>
-			<li>testHeater(Tin = 300, Pin = 100, Qin = 15e6)</li>
-			<li>testIntercool()</li>
-			<li>testRegen()</li>
-			<li>testTurbine(; Tin = 1000, Pin = 50, rp = 3.0, returnmode = :sys)</li>
+			<li>extenda(odevec::Vector{ODESystem})</li>
+			<li>hydro_basic_connect(n, p)</li>
+			<li>hydro_connect(pins...)</li>
+			<li>hydro_series_connect(comp; returnmode = :eq)</li>
+			<li>ioReservoir(; name, P = 0.1, fixboth = false)</li>
+			<li>plotmod(smodel)</li>
 			<li>throttle(; name)</li>
 		</ul>
 
 
 <div><section><h1>COMPONENTS</h1>
-	<h4>GasFlowValve(; name)</h4>
+	<h4>AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Adiabatic pump<br>
+			# work, multiply by 100 to get to kPa<br>
+			@named p = BasicSteamPin()<br>
+			@named n = BasicSteamPin()<br>
+			@named w = WorkPin()<br>
+			ps = @parameters η = η P = Pout
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effciency</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
+				<li>- `Pout = 10`: Pressure (bar)</li>
+				<li>- `controlinlet = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ w.Ẇ = p.Φ + n.Φ                       \]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ n.h = p.h + p.v * 1e5 * (n.P - p.P) / η \]
+				\[ w.Ẇ = p.ṁ * (n.h - p.h)\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `η = 1.0`: Isentropic Effciency</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
+				<li>- `Pout = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ Ẇ = p.Φ + n.Φ\]
+				\[ w.Ẇ = Ẇ\]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ n.h = p.h - (p.h - stm_hpsfunc(n.P, p.s)) * η\]
+				\[ w.Ẇ = p.ṁ * (n.h - p.h)\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SIMOAdiabaticTurbine(; name, ηin = 1.0, setpressure = false, Pyin = 10, Pzin = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Single input multi output turbinbe<br>
+			EXTERNAL NODES FOR INTERFACING<br>
+			@named p = BasicSteamPin()  # inlet node<br>
+			@named hp = AdiabaticTurbine(η = ηin, Pout = Pyin, setpressure = sp)<br>
+			@named lp = AdiabaticTurbine(η = ηin, Pout = Pzin, setpressure = sp)<br>
+			@named yn = BasicSteamPin()<br>
+			@named zn = BasicSteamPin()<br>
+			split_connect = hydro_connect(p, yn, zn)    # mflow, p.ṁ => positive<br>
+			hp_connect = hydro_connect(yn, hp.p)<br>
+			lp_connect = hydro_connect(zn, lp.p)<br>
+			#                yn(-) -------> y<br>
+			# IN --> p (+) --|<br>
+			#                zn(-) -------> z
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ηin = 1.0`: DESCRIPTION</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
+				<li>- `Pyin = 10`: DESCRIPTION</li>
+				<li>- `Pzin = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SteamHeatTransfer(; name)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -187,219 +294,48 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[     0 = p.ṁ + n.ṁ           \]
+				\[     q.Q̇ = p.Φ + n.Φ             \]
+				\[     C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[ 				    0 = q.Q̇ - Q̇\]
+				\[     n.h = p.h + q.Q̇ / (p.ṁ)\]
+				\[     n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
 			</ul>
 
-	<h4>ThermoHeatTransfer(; name, ΔP = 0.0)</h4>
+	<h4>TunableSteamHeatTransfer(; name, Q̇in = 1.5e8)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				Thermodynamic heat transfer element<br>
-			pins<br>
-			@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			@named q = HeatTransferPin()<br>
-			states<br>
-			st = @variables Q̇(t) = 0.0 C(t) = 5192<br>
-			parameters<br>
-			ps = @parameters ΔP = ΔP
+				
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `ΔP = 0.0`: DESCRIPTION</li>
+				<li>- `Q̇in = 1.5e8`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Heat transfer element with the ability to control flow rate to achieve a desired outlet temperature<br>
-			@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			@named q = HeatTransferPin()<br>
-			st = @variables Q̇(t) = 0.0 C(t) = 5192 ṁ(t) = 1.0<br>
-			ps = @parameters ΔP = ΔP Tout = Tout
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `ΔP = 0.0`: DESCRIPTION</li>
-				<li>- `Tout = 773.0`: DESCRIPTION</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     n.T = Tout\]
-				\[     p.ṁ = q.Q̇ / ((n.T - p.T) * p.cp)         \]
-				\[     0 = p.ṁ + n.ṁ         \]
-				\[     q.Q̇ = p.Φ + n.Φ                 \]
-				\[     C = p.ṁ * p.cp       \]
-				\[     0 = q.Q̇ - Q̇\]
-				\[     n.P = p.P - ΔP\]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>FixedThermoHeatTransfer(; name, Qin = 1.0e6)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Heat element with constant heat rate.<br>
-			st = @variables C(t) = 5192<br>
-			ps = @parameters Q̇ = Qin
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Qin = 1.0e6`: DESCRIPTION</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[ 0 = p.ṁ + n.ṁ          \]
-				\[ q.Q̇ = p.Φ + n.Φ        \]
-				\[ C = p.ṁ * p.cp          \]
-				\[ 0 = q.Q̇ - Q̇\]
-				\[ n.T = p.T + Q̇ / C\]
+				\[ 0 = p.ṁ + n.ṁ           \]
+				\[ 				q.Q̇ = p.Φ + n.Φ         \]
+				\[ 				C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[ 				0 = q.Q̇ - Q̇in\]
+				\[ n.h = p.h + q.Q̇ / (p.ṁ)\]
 				\[ n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
 			</ul>
 
-	<h4>ActiveThermoCompressor(; name, η = 1.0, rp = 3.5)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Compressor element that controls the outlet port<br>
-			@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			@named w = WorkPin()<br>
-			ps = @parameters rp = rp η = η
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: Isentropic Effecience</li>
-				<li> `rp = 3\.5`: Compression Ratio</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     0 = p.ṁ + n.ṁ \]
-				\[ 				    n.P = p.P * rp\]
-				\[     n.T = p.T * ((1.0 - η - (rp^((p.k - 1) / p.k))) / (-η))\]
-				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
-				\[     w.Ẇ = p.Φ + n.Φ\]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>PassiveThermoCompressor(; name, η = 1.0)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Compressor element that operates between externally controlled pressure nodes.<br>
-			@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			@named w = WorkPin()<br>
-			ps = @parameters η = η
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: Isentropic Effecience</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     0 = p.ṁ + n.ṁ       \]
-				\[ 				    n.T = p.T * ((1.0 - η - ((n.P / p.P)^((p.k - 1) / p.k))) / (-η))\]
-				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
-				\[     w.Ẇ = p.Φ + n.Φ\]
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>ActiveThermoTurbine(; name, η = 1.0, rp = 3.5)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				@named p = ThermoPin(Pdef = 80, Tdef = 800)<br>
-			@named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)<br>
-			@named w = WorkPin()<br>
-			ps = @parameters rp = rp η = η
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: Isentropic Effecience</li>
-				<li> `rp = 3.5`: Compression Ratio</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[ eqs = [\]
-				\[     0 = p.ṁ + n.ṁ                             \]
-				\[     p.P = n.P * rp\]
-				\[     n.T =\]
-				\[         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /\]
-				\[         (rp^((p.k - 1) / p.k))\]
-				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
-				\[     w.Ẇ = p.Φ + n.Φ\]
-				\[ ]\]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>PassiveThermoTurbine(; name, η = 1.0)</h4>
+	<h4>IdealBoiler(; name, Tout = 350)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -411,87 +347,24 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: Isentropic Effecience</li>
+				<li>- `Tout = 350`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[     0 = p.ṁ + n.ṁ                               \]
-				\[ 				    p.P = n.P * rp\]
-				\[     n.T =\]
-				\[         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /\]
-				\[         (rp^((p.k - 1) / p.k))\]
-				\[     w.Ẇ = p.ṁ * p.cp * (n.T - p.T)\]
-				\[     w.Ẇ = p.Φ + n.Φ\]
+				\[ q.Q̇ = p.Φ + n.Φ                 \]
+				\[ 				0 = p.ṁ + n.ṁ\]
+				\[ n.P = p.P                     \]
+				\[ 				n.h = stm_hptfunc(p.P, T)       \]
+				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
 				</p>
 			</ul>
 
-	<h4>IdealCooler(; name)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			@named q = HeatTransferPin()<br>
-			sts = @variables Q̇(t) = 0.0
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     q.Q̇ = p.Φ + n.Φ        \]
-				\[     0 = p.ṁ + n.ṁ\]
-				\[     n.P = p.P              \]
-				\[     q.Q̇ = p.ṁ * p.cp * (n.T - p.T)\]
-				\[     Q̇ = q.Q̇\]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>PassiveElement(; name)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				@named p = ThermoPin()<br>
-			@named n = ThermoPin()<br>
-			sts = @variables Q̇(t) = 0.0 ΔP(t) = 0.0 ΔT(t) = 0.0 Δṁ(t) = 0.0
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     n.ṁ + p.ṁ = Δṁ    \]
-				\[ 				    ΔT = p.T - n.T\]
-				\[     Q̇ = -(p.ṁ * p.cp * ΔT)\]
-				\[     ΔP = p.P - n.P\]
-				\[     Q̇ = p.Φ + n.Φ             \]
-				\[ 				\]
-		</li>
-				</p>
-			</ul>
-
-	<h4>ReliefElement(; name)</h4>
+	<h4>IdealCondensor(; name)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -509,7 +382,166 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
+				\[ q.Q̇ = p.Φ + n.Φ             \]
+				\[ 				0 = p.ṁ + n.ṁ\]
+				\[ n.P = p.P                 \]
+				\[ 				n.h = stm_hsatfunc(p.P)        \]
+				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
+				\[ q.Q̇ = Q̇\]
 				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>PassiveCondensor(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ q.Q̇ = p.ṁ * (n.h - p.h)\]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ q.Q̇ = Q̇\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ReliefElement(; name, pressurecontrol = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `pressurecontrol = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.ṁ + p.ṁ = 0         \]
+				\[ q.Q̇ = p.Φ + n.Φ         \]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>OpenFeedwaterHeater(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ [yfrac = 1] => [yfrac = 1]\]
+				\[ [yfrac = 0] => [yfrac = 0.0]\]
+				\[ n.P = p2.P\]
+				\[ p1.P = n.P\]
+				\[ n.h = stm_hsatfunc(n.P) \]
+				\[ 				0 = n.h - (yfrac * p1.h + (1 - yfrac) * p2.h)\]
+				\[ 0 = n.ṁ * yfrac + p1.ṁ\]
+				\[ 0 = n.ṁ + p1.ṁ + p2.ṁ\]
+				\[ 0 = n.Φ + (p1.Φ + p2.Φ)\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>MixingChamber(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = p1.P\]
+				\[ p1.P = p2.P\]
+				\[ n.h = 1 / (p1.ṁ + p2.ṁ) * (p1.ṁ * p1.h + p2.ṁ * p2.h)\]
+				\[ 0 = n.ṁ + p1.ṁ + p2.ṁ\]
+				\[ 0 = n.Φ + p1.Φ + p2.Φ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ClosedFeedwaterHeater(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				#     #   Steam_OFW CLOSED FEEDWATER HEATER<br>
+			#     #                _______________<br>
+			#     #               |               |<br>
+			#     #           -> ___/\/\/\/\/\/\______ Steam_known = outlet<br>
+			#     #               |               |<br>
+			#     #               |_______________|<br>
+			@named p1 = BasicSteamPin()<br>
+			@named n1 = BasicSteamPin()<br>
+			@named p2 = BasicSteamPin()<br>
+			@named n2 = BasicSteamPin()
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     n1.P = p1.P \]
+				\[ 				    n2.P = p2.P\]
+				\[     n2.h = n1.h \]
+				\[ 				    0 = n1.ṁ + p1.ṁ\]
+				\[     0 = n2.ṁ + p2.ṁ\]
+				\[     yfrac = (n2.h - p2.h) / ((p1.h - n1.h) + (n2.h - p2.h))\]
+				\[     p1.ṁ = yfrac * (p1.ṁ + p2.ṁ)\]
+				\[     p1.Φ = yfrac * (p1.Φ + p2.Φ)\]
+				\[     0 = n1.Φ + p1.Φ + p1.ṁ * p1.h + n1.ṁ * n1.h\]
+				\[     0 = n2.Φ + p2.Φ + p2.ṁ * p2.h + n2.ṁ * n2.h\]
 				\[ \]
 		</li>
 				</p>
@@ -533,57 +565,10 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>Regenerator(; name, ϵ = 0.95)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `ϵ = 0.95`: DESCRIPTION</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>Intercooler(; name, Tout = 300)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Tout = 300`: DESCRIPTION</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[ \]
+				\[ n.ṁ + p.ṁ = 0\]
+				\[ p.h = n.h\]
+				\[ ΔP = p.P - n.P\]
+				\[ n.Φ = 0\]
 				\[ \]
 		</li>
 				</p>
@@ -593,35 +578,34 @@
 
 
 <div><section><h1>PINS</h1>
-	<h4>ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)</h4>
+	<h4>BasicSteamPin(; name, Pdef = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				@variables P(t) = Pdef             [unit = u"bar"] <br>
-			@variables ṁ(t) = ṁdef             [unit = u"kg/s"] <br>
-			@variables T(t) = Tdef             [unit = u"K"] <br>
-			@variables Φ(t) = 1.0<br>
-			@variables cp(t) = 5192<br>
-			@variables k(t) = 1.667<br>
-			sts = [T, P, ṁ, cp, k, Φ]
+				Basic Steam Pin<br>
+			Self computes T,s,x,V<br>
+			Must have methods for ṁ,Φ,P,h<br>
+			across_var =<br>
+			@variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001<br>
+			thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Pdef = 10.0`: DESCRIPTION</li>
-				<li>- `Tdef = 300`: DESCRIPTION</li>
-				<li>- `ṁdef = 0.0`: DESCRIPTION</li>
+				<li>- `Pdef = 0.1`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ cp = gcpfunc(T)\]
-				\[ k = gkfunc(T)\]
+				\[     T = stm_Tphfunc(P, h)\]
+				\[     s = stm_sphfunc(P, h)\]
+				\[     x = stm_xphfunc(P, h)\]
+				\[     v = stm_vphfunc(P, h)\]
 				\[ \]
 		</li>
 				</p>
@@ -631,32 +615,36 @@
 
 
 <div><section><h1>SOURCES</h1>
-	<h4>GasFlowSource(; name, Ṁ = 1.0)</h4>
+	<h4>SetPressure(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				
+				Ideal pressure source
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Ṁ = 1.0`: DESCRIPTION</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ p.P = P\]
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ 0 = p.Φ + n.Φ           \]
+				\[ 0 = p.ṁ + n.ṁ\]
 				\[ \]
 		</li>
 				</p>
 			</ul>
 
-	<h4>ThermoHeatSource(; name, Qin = 1.0e6)</h4>
+	<h4>SteamFlowSource(; name, ṁ = 1.0)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -668,14 +656,18 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Qin = 1.0e6`: DESCRIPTION</li>
+				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
 				<li>			</li>
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ 0 = p.Φ + n.Φ \]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ p.ṁ = Ṁ\]
+				\[ p.h = n.h\]
+				\[ n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
@@ -685,7 +677,7 @@
 
 
 <div><section><h1>UTILITYS</h1>
-	<h4>SetPressure(; name, P = 0.1)</h4>
+	<h4>Reservoir(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -704,69 +696,15 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>SetTemperature(; name, T = 300)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Constant Pressure Source
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `T = 300`: Temperature (K)</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.Φ = 0\]
 				\[ \]
 		</li>
 				</p>
 			</ul>
 
-	<h4>SinglePortReservoir(; name, P = 0.1, T = 300)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				Single port flow energy ground element<br>
-			@named n = ThermoPin(Pdef = P, Tdef = T)<br>
-			ps = @parameters P = P T = T
-			</p>
-		</li>
-		<li>
-			<h5>INPUTS:</h5>
-			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>- `T = 300`: Temperature (K)</li>
-				<li>			</li>
-			</ul>
-		</li>
-		<li>
-			<h5>EQUATIONS:</h5>
-				<p>
-				\[     n.P = P\]
-				\[     n.T = T\]
-				\[     n.Φ = 0\]
-				\[ \]
-				\[ \]
-		</li>
-				</p>
-			</ul>
-
-	<h4>TwoPortReservoir(; name, P = 0.1, T = 300)</h4>
+	<h4>MultiPhaseGnd(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -779,7 +717,229 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>- `T = 300`: Temperature (K)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = P\]
+				\[ n.Φ = 0\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SuperHeatedReservoir(; name, P = 150, T = 600)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 150`: DESCRIPTION</li>
+				<li>- `T = 600`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = P\]
+				\[ 0 = stm_hptfunc(P, T) + n.h\]
+				\[ n.Φ = -n.ṁ * n.h\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ioReservoir(; name, P = 0.1, fixboth = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>- `fixboth = false`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.Φ = 0\]
+				\[ 0 = n.ṁ + p.ṁ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TwoPortReservoir(; name, P = 0.1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `P = 0.1`: DESCRIPTION</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = P\]
+				\[ p.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ p.h = n.h\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ContinuityReservoir2(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ p.Φ = 0\]
+				\[ 0 = n.Φ + p.Φ\]
+				\[ 0 = n.ṁ + p.ṁ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>ContinuityReservoir(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ n.Φ = 0\]
+				\[ ΔΦ = p.Φ\]
+				\[ 0 = n.ṁ + p.ṁ\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>SteamFlowValve(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ  \]
+				\[     0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = Ṁ\]
+				\[     p.h = n.h\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>TunableSteamFlowValve(; name, ṁ = 1.0)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
+				<li>			</li>
+			</ul>
+		</li>
+		<li>
+			<h5>EQUATIONS:</h5>
+				<p>
+				\[     0 = p.Φ + n.Φ  \]
+				\[     0 = p.ṁ + n.ṁ\]
+				\[     p.ṁ = ṁ\]
+				\[     p.h = n.h\]
+				\[     n.P = p.P\]
+				\[ \]
+		</li>
+				</p>
+			</ul>
+
+	<h4>Splitter(; name)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				
+			</p>
+		</li>
+		<li>
+			<h5>INPUTS:</h5>
+			<ul>
+				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>			</li>
 			</ul>
 		</li>

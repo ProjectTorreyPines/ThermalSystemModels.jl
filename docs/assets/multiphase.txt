@@ -1,24 +1,68 @@
 <h1>multiphase<h1>
 
 
-<div><section><h1>COMPONENT</h1>
+<div><section><h1> All Functions </h1>
+		<ul>
+			<li>AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)</li>
+			<li>BasicSteamPin(; name, Pdef = 0.1)</li>
+			<li>ClosedFeedwaterHeater(; name)</li>
+			<li>ContinuityReservoir(; name)</li>
+			<li>ContinuityReservoir2(; name)</li>
+			<li>FeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>FixedHeatFlowPin(; name, Qin = 1e3)</li>
+			<li>HeatTransferPin(; name)</li>
+			<li>HeatTransferPort(; name)</li>
+			<li>IdealBoiler(; name, Tout = 350)</li>
+			<li>IdealCondensor(; name)</li>
+			<li>MixingChamber(; name)</li>
+			<li>MultiPhaseGnd(; name, P = 0.1)</li>
+			<li>OpenFeedwaterHeater(; name)</li>
+			<li>PassiveCondensor(; name)</li>
+			<li>ReliefElement(; name, pressurecontrol = false)</li>
+			<li>Reservoir(; name, P = 0.1)</li>
+			<li>SetPressure(; name, P = 0.1)</li>
+			<li>Splitter(; name)</li>
+			<li>SteamFlowSource(; name, ṁ = 1.0)</li>
+			<li>SteamFlowValve(; name)</li>
+			<li>SteamHeatTransfer(; name)</li>
+			<li>SuperHeatedReservoir(; name, P = 150, T = 600)</li>
+			<li>TunableFeedwaterRankine(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)</li>
+			<li>TunableSteamFlowValve(; name, ṁ = 1.0)</li>
+			<li>TunableSteamHeatTransfer(; name, Q̇in = 150e6)</li>
+			<li>TwoPortReservoir(; name, P = 0.1)</li>
+			<li>Water_loop(; name, Pmin = 32, Pmax = 40)</li>
+			<li>WorkPin(; name)</li>
+			<li>extenda(odevec::Vector{ODESystem})</li>
+			<li>hydro_basic_connect(n, p)</li>
+			<li>hydro_connect(pins...)</li>
+			<li>hydro_series_connect(comp; returnmode = :eq)</li>
+			<li>ioReservoir(; name, P = 0.1, fixboth = false)</li>
+			<li>plotmod(smodel)</li>
+			<li>throttle(; name)</li>
+		</ul>
+
+
+<div><section><h1>COMPONENTS</h1>
 	<h4>AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				Adiabatic pump<br>
+			# work, multiply by 100 to get to kPa<br>
+			@named p = BasicSteamPin()<br>
+			@named n = BasicSteamPin()<br>
+			@named w = WorkPin()<br>
+			ps = @parameters η = η P = Pout
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: DESCRIPTION</li>
-				<li>- `setpressure = false`: DESCRIPTION</li>
-				<li>- `Pout = 10`: DESCRIPTION</li>
+				<li>- `η = 1.0`: Isentropic Effciency</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
+				<li>- `Pout = 10`: Pressure (bar)</li>
 				<li>- `controlinlet = false`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
@@ -26,7 +70,10 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ w.Ẇ = p.Φ + n.Φ                       \]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ n.h = p.h + p.v * 1e5 * (n.P - p.P) / η \]
+				\[ w.Ẇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
 				</p>
@@ -37,17 +84,15 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `η = 1.0`: DESCRIPTION</li>
-				<li>- `setpressure = false`: DESCRIPTION</li>
+				<li>- `η = 1.0`: Isentropic Effciency</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
 				<li>- `Pout = 0.1`: DESCRIPTION</li>
 				<li>			</li>
 			</ul>
@@ -55,7 +100,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ Ẇ = p.Φ + n.Φ\]
+				\[ w.Ẇ = Ẇ\]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ n.h = p.h - (p.h - stm_hpsfunc(n.P, p.s)) * η\]
+				\[ w.Ẇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
 				</p>
@@ -67,8 +116,18 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				Single input multi output turbinbe<br>
-			<br>
-			
+			EXTERNAL NODES FOR INTERFACING<br>
+			@named p = BasicSteamPin()  # inlet node<br>
+			@named hp = AdiabaticTurbine(η = ηin, Pout = Pyin, setpressure = sp)<br>
+			@named lp = AdiabaticTurbine(η = ηin, Pout = Pzin, setpressure = sp)<br>
+			@named yn = BasicSteamPin()<br>
+			@named zn = BasicSteamPin()<br>
+			split_connect = hydro_connect(p, yn, zn)    # mflow, p.ṁ => positive<br>
+			hp_connect = hydro_connect(yn, hp.p)<br>
+			lp_connect = hydro_connect(zn, lp.p)<br>
+			#                yn(-) -------> y<br>
+			# IN --> p (+) --|<br>
+			#                zn(-) -------> z
 			</p>
 		</li>
 		<li>
@@ -76,7 +135,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `ηin = 1.0`: DESCRIPTION</li>
-				<li>- `setpressure = false`: DESCRIPTION</li>
+				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
 				<li>- `Pyin = 10`: DESCRIPTION</li>
 				<li>- `Pzin = 0.1`: DESCRIPTION</li>
 				<li>			</li>
@@ -96,9 +155,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -111,7 +168,12 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[     0 = p.ṁ + n.ṁ           \]
+				\[     q.Q̇ = p.Φ + n.Φ             \]
+				\[     C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[ 				    0 = q.Q̇ - Q̇\]
+				\[     n.h = p.h + q.Q̇ / (p.ṁ)\]
+				\[     n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
@@ -122,9 +184,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -138,7 +198,12 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ 0 = p.ṁ + n.ṁ           \]
+				\[ 				q.Q̇ = p.Φ + n.Φ         \]
+				\[ 				C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[ 				0 = q.Q̇ - Q̇in\]
+				\[ n.h = p.h + q.Q̇ / (p.ṁ)\]
+				\[ n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
@@ -149,9 +214,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -165,7 +228,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ q.Q̇ = p.Φ + n.Φ                 \]
+				\[ 				0 = p.ṁ + n.ṁ\]
+				\[ n.P = p.P                     \]
+				\[ 				n.h = stm_hptfunc(p.P, T)       \]
+				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
 				</p>
@@ -176,9 +243,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -191,7 +256,12 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ q.Q̇ = p.Φ + n.Φ             \]
+				\[ 				0 = p.ṁ + n.ṁ\]
+				\[ n.P = p.P                 \]
+				\[ 				n.h = stm_hsatfunc(p.P)        \]
+				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
+				\[ q.Q̇ = Q̇\]
 				\[ \]
 		</li>
 				</p>
@@ -202,9 +272,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -217,7 +285,9 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ q.Q̇ = p.ṁ * (n.h - p.h)\]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ q.Q̇ = Q̇\]
 				\[ \]
 		</li>
 				</p>
@@ -228,9 +298,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -244,7 +312,8 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.ṁ + p.ṁ = 0         \]
+				\[ q.Q̇ = p.Φ + n.Φ         \]
 				\[ \]
 		</li>
 				</p>
@@ -255,9 +324,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -270,7 +337,15 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ [yfrac = 1] => [yfrac = 1]\]
+				\[ [yfrac = 0] => [yfrac = 0.0]\]
+				\[ n.P = p2.P\]
+				\[ p1.P = n.P\]
+				\[ n.h = stm_hsatfunc(n.P) \]
+				\[ 				0 = n.h - (yfrac * p1.h + (1 - yfrac) * p2.h)\]
+				\[ 0 = n.ṁ * yfrac + p1.ṁ\]
+				\[ 0 = n.ṁ + p1.ṁ + p2.ṁ\]
+				\[ 0 = n.Φ + (p1.Φ + p2.Φ)\]
 				\[ \]
 		</li>
 				</p>
@@ -281,9 +356,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -296,7 +369,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = p1.P\]
+				\[ p1.P = p2.P\]
+				\[ n.h = 1 / (p1.ṁ + p2.ṁ) * (p1.ṁ * p1.h + p2.ṁ * p2.h)\]
+				\[ 0 = n.ṁ + p1.ṁ + p2.ṁ\]
+				\[ 0 = n.Φ + p1.Φ + p2.Φ\]
 				\[ \]
 		</li>
 				</p>
@@ -316,9 +393,7 @@
 			@named p1 = BasicSteamPin()<br>
 			@named n1 = BasicSteamPin()<br>
 			@named p2 = BasicSteamPin()<br>
-			@named n2 = BasicSteamPin()<br>
-			<br>
-			
+			@named n2 = BasicSteamPin()
 			</p>
 		</li>
 		<li>
@@ -351,9 +426,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -366,7 +439,10 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.ṁ + p.ṁ = 0\]
+				\[ p.h = n.h\]
+				\[ ΔP = p.P - n.P\]
+				\[ n.Φ = 0\]
 				\[ \]
 		</li>
 				</p>
@@ -375,19 +451,18 @@
 </section></div>
 
 
-<div><section><h1>PIN</h1>
+<div><section><h1>PINS</h1>
 	<h4>BasicSteamPin(; name, Pdef = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				    Basic Steam Pin<br>
-			    Self computes T,s,x,V<br>
-			    Must have methods for ṁ,Φ,P,h<br>
-			    across_var =<br>
-			    @variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001<br>
-			    thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow<br>
-			
+				Basic Steam Pin<br>
+			Self computes T,s,x,V<br>
+			Must have methods for ṁ,Φ,P,h<br>
+			across_var =<br>
+			@variables P(t) = Pdef T(t) = 300 s(t) = 0.0 h(t) = 191e3 x(t) = 0.0 v(t) = 0.001<br>
+			thru_var = @variables ṁ(t) = 0.0 Φ(t) = 0.0                     # mass flow and energy flow
 			</p>
 		</li>
 		<li>
@@ -413,15 +488,13 @@
 </section></div>
 
 
-<div><section><h1>SOURCE</h1>
+<div><section><h1>SOURCES</h1>
 	<h4>SetPressure(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				Ideal pressure source<br>
-			<br>
-			
+				Ideal pressure source
 			</p>
 		</li>
 		<li>
@@ -435,7 +508,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ p.P = P\]
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ 0 = p.Φ + n.Φ           \]
+				\[ 0 = p.ṁ + n.ṁ\]
 				\[ \]
 		</li>
 				</p>
@@ -446,9 +523,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -462,7 +537,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ 0 = p.Φ + n.Φ \]
+				\[ 0 = p.ṁ + n.ṁ\]
+				\[ p.ṁ = Ṁ\]
+				\[ p.h = n.h\]
+				\[ n.P = p.P\]
 				\[ \]
 		</li>
 				</p>
@@ -471,15 +550,13 @@
 </section></div>
 
 
-<div><section><h1>UTILITY</h1>
+<div><section><h1>UTILITYS</h1>
 	<h4>Reservoir(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -493,7 +570,9 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.Φ = 0\]
 				\[ \]
 		</li>
 				</p>
@@ -504,9 +583,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -520,7 +597,8 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ n.Φ = 0\]
 				\[ \]
 		</li>
 				</p>
@@ -531,9 +609,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -548,7 +624,9 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ 0 = stm_hptfunc(P, T) + n.h\]
+				\[ n.Φ = -n.ṁ * n.h\]
 				\[ \]
 		</li>
 				</p>
@@ -559,9 +637,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -576,7 +652,10 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.Φ = 0\]
+				\[ 0 = n.ṁ + p.ṁ\]
 				\[ \]
 		</li>
 				</p>
@@ -587,9 +666,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -603,7 +680,10 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = P\]
+				\[ p.P = P\]
+				\[ n.h = stm_hsatfunc(P)\]
+				\[ p.h = n.h\]
 				\[ \]
 		</li>
 				</p>
@@ -614,9 +694,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -629,7 +707,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ p.Φ = 0\]
+				\[ 0 = n.Φ + p.Φ\]
+				\[ 0 = n.ṁ + p.ṁ\]
 				\[ \]
 		</li>
 				</p>
@@ -640,9 +722,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -655,7 +735,11 @@
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[ \]
+				\[ n.P = p.P\]
+				\[ n.h = p.h\]
+				\[ n.Φ = 0\]
+				\[ ΔΦ = p.Φ\]
+				\[ 0 = n.ṁ + p.ṁ\]
 				\[ \]
 		</li>
 				</p>
@@ -666,9 +750,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -696,9 +778,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -727,9 +807,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>

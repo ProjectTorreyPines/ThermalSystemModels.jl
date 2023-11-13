@@ -6,9 +6,9 @@ MTK = ModelingToolkit
     gas_connect(pins)
 
 DOCSTRING
-
+Connect gas pins
 # Arguments:
-- `pins`: DESCRIPTION
+- `pins`: Pins of the same domain to apply conservation laws to
 """
 function gas_connect(pins...)
 
@@ -28,9 +28,9 @@ end
     work_connect(pins)
 
 DOCSTRING
-
+Connect work
 # Arguments:
-- `pins`: DESCRIPTION
+- `pins`: Pins of the same domain to apply conservation laws to
 """
 function work_connect(pins...)
     eqs = [
@@ -42,9 +42,9 @@ end
     heat_connect(pins)
 
 DOCSTRING
-
+Connect heat pins
 # Arguments:
-- `pins`: DESCRIPTION
+- `pins`: Pins of the same domain to apply conservation laws to
 """
 function heat_connect(pins...)
     eqs = [
@@ -57,9 +57,9 @@ end
     showsol(c, sol::ODESolution)
 
 DOCSTRING
-
+Prints the solution for all components in vector C for solution sol
 # Arguments:
-- `c`: DESCRIPTION
+- `c`: Vector of ODE_systems to evaluate
 - `sol::ODESolution`: DESCRIPTION
 """
 function showsol(c, sol::ODESolution)
@@ -134,9 +134,9 @@ end
     variable2symbol(var)
 
 DOCSTRING
-
+Converts modeling toolkit variable to symbol 
 # Arguments:
-- `var`: DESCRIPTION
+- `var`: ModelingToolkit variable
 """
 function variable2symbol(var)
     sm = Symbol[]
@@ -152,7 +152,7 @@ end
 DOCSTRING
 
 # Arguments:
-- `c`: DESCRIPTION
+- `c`: Vector of ODE_systems to evaluate
 - `prob::ODEProblem`: DESCRIPTION
 OPTIONAL INPUTS
 - `prob_attr = nothing`: DESCRIPTION
@@ -260,7 +260,7 @@ end
 DOCSTRING
 
 # Arguments:
-- `c`: DESCRIPTION
+- `c`: Vector of ODE_systems to evaluate
 - `sol`: DESCRIPTION
 """
 function showSpecificSol(c, sol)
@@ -281,9 +281,9 @@ end
     showsys(sys)
 
 DOCSTRING
-
+Prints sys.systems
 # Arguments:
-- `sys`: DESCRIPTION
+- `sys`: ODESystem
 """
 function showsys(sys)
     display([s.name for s in sys.systems])
@@ -294,9 +294,10 @@ end
     sys2dict(sys::Vector{ODESystem})
 
 DOCSTRING
-
+Returns a dict d for subsytems within sys
+    where d[:subsys_name] => subsys_object
 # Arguments:
-- `sys::Vector{ODESystem}`: DESCRIPTION
+- `sys::Vector{ODESystem}`: Vector of ODESystems
 """
 function sys2dict(sys::Vector{ODESystem})
     d = Dict()
@@ -308,9 +309,10 @@ end
     sys2dict(sys::ODESystem)
 
 DOCSTRING
-
+Returns a dict d for subsytems within sys
+    where d[:subsys_name] => subsys_object
 # Arguments:
-- `sys::ODESystem`: DESCRIPTION
+- `sys::ODESystem`: Top level ODE System
 """
 function sys2dict(sys::ODESystem)
     d = Dict()
@@ -322,9 +324,11 @@ end
     plantsys(Plant; compoenent_level = 2)
 
 DOCSTRING
-
+Traverses to a depth given by component level where depth represents
+Plant.level1.level2....
+Returns a dict
 # Arguments:
-- `Plant`: DESCRIPTION
+- `Plant`: ODE_system with subsystems
 OPTIONAL INPUTS
 - `compoenent_level = 2`: DESCRIPTION
 """
@@ -343,7 +347,7 @@ end
     systems(p::ODESystem)
 
 DOCSTRING
-
+Returns p.systems
 # Arguments:
 - `p::ODESystem`: DESCRIPTION
 """
@@ -357,7 +361,8 @@ end
     connection_equations(BaseSys)
 
 DOCSTRING
-
+Gathers all equations within a system which represent connections rather than intercomponent equations
+i.e. all equations which are formed during component connections
 # Arguments:
 - `BaseSys`: DESCRIPTION
 """
@@ -374,11 +379,17 @@ end
 """
     check_for_var(var; tofind = :ṁ)
 
+
+DOCSTRING
     checks if a an array of variables are "tofind" variables 
     returns false is any of the input variables are not the "tofind" variable
     Useful for identifying balance equations within a larger system equations vector
         example mass flow continuity:  ṁ_in + ṁ_out = 0
         only variables in that equations are ṁ
+
+# Arguments:
+- `var`: MTK variable
+- tofind: Symbol to look for
 """
 function check_for_var(var; tofind = :ṁ)
 
@@ -403,8 +414,12 @@ check_for_Q(var) = check_for_var(var; tofind = Symbol("̇"))
 """
     find_flow_vars(BaseSys; tofind = :ṁ)
 
+DOCSTRING
     this returns all system variables with mass flow
-
+# Arguments:
+    - `BaseSys`: MTK ststem
+Optional
+    - tofind: Symbol to look for
 """
 function find_flow_vars(BaseSys; tofind = :ṁ)
     v2n = BaseSys.var_to_name
@@ -431,7 +446,12 @@ heat_flow_vars(x) = find_flow_vars(x; tofind = "̇") # this is odd, took forever
 
 """
     find_flow_vars(BaseSys; tofind = :ṁ)
+DOCSTRING
+    splits apart MTK variable at levels
     :divertor_circulator₊p₊ṁ => ["divertor_circulator", "p", "ṁ"]
+
+# Arguments
+var: variable
 """
 function split_variable_sym(var)
     return split(String(Symbolics.tosymbol(var; escape = false)), "₊")
@@ -441,7 +461,7 @@ end
     join_variable_str(splitvar, num2keep::Int; joinstr = ₊)
 
 DOCSTRING
-
+Joins MTK variable string that has been split using split_variable_sym
 # Arguments:
 - `splitvar`: DESCRIPTION
 - `num2keep::Int`: DESCRIPTION
@@ -460,7 +480,7 @@ end
     component_names(eqs; unique_only = true, num2keep = 1)
 
 DOCSTRING
-
+returns all component names found within a vecotr of equations
 # Arguments:
 - `eqs`: DESCRIPTION
 OPTIONAL INPUTS
@@ -489,7 +509,7 @@ end
     component_names(eqs, tofind; unique_only = true)
 
 DOCSTRING
-
+returns all component names found within a vecotr of equations
 # Arguments:
 - `eqs`: DESCRIPTION
 - `tofind`: DESCRIPTION
@@ -517,7 +537,7 @@ end
     all_component_names(sys; num2keep = 1, unique_only = true)
 
 DOCSTRING
-
+returns all component names found within a vecotr of equations
 # Arguments:
 - `sys`: DESCRIPTION
 OPTIONAL INPUTS
@@ -540,7 +560,8 @@ end
     system_details(sys::ODESystem; alias_elimate = true)
 
 DOCSTRING
-
+Displays system equation information after alias alias_elimination
+Use to confirm the DOF and constraints for a top level system
 # Arguments:
 - `sys::ODESystem`: DESCRIPTION
 OPTIONAL INPUTS
@@ -565,7 +586,7 @@ end
     connection_equations2(BaseSys; flagvec)
 
 DOCSTRING
-
+Connection equations
 # Arguments:
 - `BaseSys`: DESCRIPTION
 OPTIONAL INPUTS
@@ -1270,7 +1291,7 @@ end
 
 """
     convert_pressure(val::Real,from_unit::Symbol,to_unit::Symbol)
-
+DOCSTRING
     convert pressure units, optional to specify to_unit, default = bar because that is what XSTeam uses
 """
 function convert_pressure(val::Real, from_unit::Symbol, to_unit::Symbol)
@@ -1301,7 +1322,7 @@ end
     convert_pressure(val::Real, from_unit::Symbol)
 
 DOCSTRING
-
+convert pressure units required specify to_unit, default = bar because that is what XSTeam uses
 # Arguments:
 - `val::Real`: DESCRIPTION
 - `from_unit::Symbol`: DESCRIPTION

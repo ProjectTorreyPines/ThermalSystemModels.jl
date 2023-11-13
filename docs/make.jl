@@ -2,12 +2,16 @@ include("docutils.jl")
 
 
 # Reading Doc Strings
-complibs = Dict("multiphase" =>      "src/ODE_Systems/01-MultiPhase.jl",
-                "incompressible" =>  "src/ODE_Systems/01-Incompressible.jl",
-                "gaseous" =>         "src/ODE_Systems/01-ThermoGas.jl")
+complibs = Dict("MULTIPHASE" =>      "src/ODE_Systems/01-MultiPhase.jl",
+                "INCOMPRESSIBLE" =>  "src/ODE_Systems/01-Incompressible.jl",
+                "GASEOUS" =>         "src/ODE_Systems/01-ThermoGas.jl")
 
 for k in collect(keys(complibs))
-    generate_libtxt(k,library_docstrings(complibs[k]))
+    generate_libtxt(k,complibs[k])
+end
+ulibs = Dict("UTILITIES" =>      "src/ODE_Systems/03-MTK_UTILS.jl")
+for k in collect(keys(ulibs))
+    generate_utiltxt(k,ulibs[k])
 end
 
 # all text files in the pre folder

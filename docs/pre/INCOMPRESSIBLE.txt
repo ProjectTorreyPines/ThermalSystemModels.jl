@@ -1,140 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Website</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: white;
-            color: black;
-            padding: 0;
-        }
-
-        header {
-            background-color: #182251; /* Updated theme color to deep blue */
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-
-        nav {
-            width: 250px;
-            height: 100%;
-            background-color: #f2f2f2;
-            position: fixed;
-            font-size: 16px;
-            padding-top: 20px;
-        }
-
-        nav a {
-            display: block;
-            padding: 15px;
-            text-decoration: none;
-            color: rgb(0, 0, 0); /* Updated theme color to deep blue */
-        }
-        nav a:hover {
-            background-color: #ddd;
-        }
+<h1>INCOMPRESSIBLE<h1>
 
 
-        .dropdown-btn {
-            background-color: #f2f2f2; /* Updated theme color to deep blue */
-            color: black;
-            text-decoration: underline;
-            padding: 15px;
-            font-size: 16px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
-            outline: none;
-            font-weight: bold; /* Bold text for items with dropdown menus */
-        }
-
-        .dropdown-content {
-            padding: 15px;
-            text-decoration: none;
-            display: block;
-            padding-left: 20px;
-        }
-
-        .dropdown-content a {
-            padding: 15px;
-            text-decoration: none;
-            display: block;
-            color: #182251; /* Updated theme color to deep blue */
-        }
-
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-
-        main {
-            margin-left: 250px;
-            padding: 20px;
-        }
-    </style>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-</head>
-<body>
-<header>
-<h1>incompressible<h1>
-</header>
-
-<nav>
-    <div><a href="index.html">Home</a></div>
-    <button class="dropdown-btn">Getting Started</button>
-    <div class="dropdown-content">
-        <div><a href="underCon.html">Overveiw</a></div>
-        <div><a href="underCon.html">Tutorial</a></div>
-        <div><a href="underCon.html">Plotting</a></div>
-    </div>
-    <button class="dropdown-btn">Libraries</button>
-    <div class="dropdown-content">
-        <div><a href="blocklibrary.html">Blocks</a></div>
-        <div><a href="multiphase.html">Multi-phase Documentation</a></div>
-        <div><a href="incompressible.html">Incompressible Library Documentation</a></div>
-        <div><a href="gaseous.html">Gas Library Documentation</a></div>
-    </div>
-    <button class="dropdown-btn">Resources</button>
-    <div class="dropdown-content">
-        <div><a href="resources.html">Resources</a></div>
-        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
-        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
-        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
-        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
-        <div><a href="underCon.html"> Heat Exchangers</a></div>
-        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
-        <div><a href="underCon.html"> Graph Represntation</a></div>
-        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
-    </div>
-    <div><a href="underCon.html">Examples</a></div>
-    <div><a href="underCon.html">Tutorial</a></div>
-    <div><a href="underCon.html">Full API</a></div>
-    <a href="#">Contact</a>
-</nav>
-
-<main>
+<div><section><h1> All Functions </h1>
+		<ul>
+			<li>FixedHeatFlowPin(; name, Qin = 1e3)</li>
+			<li>FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)</li>
+			<li>HeatTransferPin(; name)</li>
+			<li>IdealCooler(; name)</li>
+			<li>IncompressibleFixedFlowSource(; name, Ṁ = 1.0)</li>
+			<li>IncompressibleFlowValve(; name)</li>
+			<li>IncompressibleHeatTransfer(; name)</li>
+			<li>IncompressibleOnePort(; name)</li>
+			<li>IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)</li>
+			<li>PassiveIncompressiblePump(; name, η = 0.9)</li>
+			<li>PassiveIncompressiblePump2(; name, η = 1.0)</li>
+			<li>ReliefElement(; name)</li>
+			<li>SetPressure(; name, P = 0.1)</li>
+			<li>SetPressure2(; name, P = 0.1)</li>
+			<li>SetTemperature(; name, T = 300)</li>
+			<li>SinglePortReservoir(; name, P = 0.1, T = 300)</li>
+			<li>TwoPortReservoir(; name, P = 0.1, T = 300)</li>
+			<li>WorkPin(; name)</li>
+			<li>incompressible_connect(pins...)</li>
+			<li>throttle(; name)</li>
+		</ul>
 
 
-<div><section><h1>COMPONENT</h1>
+<div><section><h1>COMPONENTS</h1>
 	<h4>IncompressibleFlowValve(; name)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
 				A flow valve object with a mass flow variable. Can be controlled with an external controller element.<br>
-			    @named p = IncompressiblePin()<br>
-			    @named n = IncompressiblePin()<br>
-			    sts = @variables ṁ(t) = 1.0<br>
-			<br>
-			
+			@named p = IncompressiblePin()<br>
+			@named n = IncompressiblePin()<br>
+			sts = @variables ṁ(t) = 1.0
 			</p>
 		</li>
 		<li>
@@ -162,12 +63,10 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				    A fixed flow rate source<br>
-			    @named p = IncompressiblePin()<br>
-			    @named n = IncompressiblePin()<br>
-			    ps = @parameters Ṁ = Ṁ<br>
-			<br>
-			
+				A fixed flow rate source<br>
+			@named p = IncompressiblePin()<br>
+			@named n = IncompressiblePin()<br>
+			ps = @parameters Ṁ = Ṁ
 			</p>
 		</li>
 		<li>
@@ -196,9 +95,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -224,12 +121,10 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				A passive pump component for incompressible liquids. Calculates work required based off of pressures at the p and n port<br>
-			    @named p = IncompressiblePin()<br>
-			    @named n = IncompressiblePin()<br>
-			    @named w = WorkPin()<br>
-			    ps = @parameters η = η<br>
-			<br>
-			
+			@named p = IncompressiblePin()<br>
+			@named n = IncompressiblePin()<br>
+			@named w = WorkPin()<br>
+			ps = @parameters η = η
 			</p>
 		</li>
 		<li>
@@ -258,12 +153,10 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				Basic heat transfer port. Includes p,n ports for flow, and q which is a heat transfer port<br>
-			    @named p = IncompressiblePin()<br>
-			    @named n = IncompressiblePin()<br>
-			    @named q = HeatTransferPin()<br>
-			    st = @variables Q̇(t) = 0.0 C(t) = 187   , Heat rate and duty of the flow<br>
-			<br>
-			
+			@named p = IncompressiblePin()<br>
+			@named n = IncompressiblePin()<br>
+			@named q = HeatTransferPin()<br>
+			st = @variables Q̇(t) = 0.0 C(t) = 187   , Heat rate and duty of the flow
 			</p>
 		</li>
 		<li>
@@ -293,13 +186,11 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				A heat transfer element with the ability to change the flow rate to achieve a desired outlet temperature, specified by the inputs.<br>
-			    @named p = IncompressiblePin()<br>
-			    @named n = IncompressiblePin()<br>
-			    @named q = HeatTransferPin()<br>
-			    st = @variables Q̇(t) = 0.0 C(t) = 187 ṁ(t) = 1.0<br>
-			    ps = @parameters ΔP = ΔP Tout = Tout<br>
-			<br>
-			
+			@named p = IncompressiblePin()<br>
+			@named n = IncompressiblePin()<br>
+			@named q = HeatTransferPin()<br>
+			st = @variables Q̇(t) = 0.0 C(t) = 187 ṁ(t) = 1.0<br>
+			ps = @parameters ΔP = ΔP Tout = Tout
 			</p>
 		</li>
 		<li>
@@ -333,9 +224,8 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				A sinlge port flow energy ground to connect with circiuts, only has n pin<br>
-			    @named n = IncompressiblePin(Pdef = P, Tdef = T)<br>
-			    ps = @parameters P = P T = T<br>
-			
+			@named n = IncompressiblePin(Pdef = P, Tdef = T)<br>
+			ps = @parameters P = P T = T
 			</p>
 		</li>
 		<li>
@@ -364,11 +254,9 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				A flow conserving ground element with 2 ports.<br>
-			    @named oneport = IncompressibleOnePort()<br>
-			    @unpack ΔT, ΔP, LHS, n, p = oneport<br>
-			    ps = @parameters T = T P = P<br>
-			<br>
-			
+			@named oneport = IncompressibleOnePort()<br>
+			@unpack ΔT, ΔP, LHS, n, p = oneport<br>
+			ps = @parameters T = T P = P
 			</p>
 		</li>
 		<li>
@@ -399,9 +287,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				An enthalpy conserving throttle valve. Does not control the outlet pressure, but mimics a throttle valve when placed between 2 sources wtih a pressure differential.<br>
-			<br>
-			
+				An enthalpy conserving throttle valve. Does not control the outlet pressure, but mimics a throttle valve when placed between 2 sources wtih a pressure differential.
 			</p>
 		</li>
 		<li>
@@ -425,9 +311,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -451,9 +335,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				<br>
-			<br>
-			
+				
 			</p>
 		</li>
 		<li>
@@ -476,17 +358,16 @@
 </section></div>
 
 
-<div><section><h1>PIN</h1>
+<div><section><h1>PINS</h1>
 	<h4>IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
 				Incompresible Fluid pin, <br>
-			    across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001<br>
-			    thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow<br>
-			    sts = [T, P, ṁ, cp, s, v, Φ]<br>
-			
+			across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001<br>
+			thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow<br>
+			sts = [T, P, ṁ, cp, s, v, Φ]
 			</p>
 		</li>
 		<li>
@@ -516,10 +397,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				    Basic work pin<br>
-			    sts = @variables Ẇ(t) = 0.0<br>
-			<br>
-			
+				Basic work pin<br>
+			sts = @variables Ẇ(t) = 0.0
 			</p>
 		</li>
 		<li>
@@ -543,9 +422,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				sts = @variables Q̇(t) = 0.0<br>
-			<br>
-			
+				sts = @variables Q̇(t) = 0.0
 			</p>
 		</li>
 		<li>
@@ -571,9 +448,7 @@
 			<p>
 				Component with fixed heat flow rate<br>
 			sts = @variables Q̇(t) = Qin<br>
-			ps = @parameters Qin = Qin<br>
-			<br>
-			
+			ps = @parameters Qin = Qin
 			</p>
 		</li>
 		<li>
@@ -596,18 +471,16 @@
 </section></div>
 
 
-<div><section><h1>PORT</h1>
+<div><section><h1>PORTS</h1>
 	<h4>IncompressibleOnePort(; name)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
 				Oneport element for connecting single port components<br>
-			    p = IncompressiblePin()<br>
-			    n = IncompressiblePin()<br>
-			    sts = @variables LHS(t) ΔP(t) = 0.0 ΔT(t) = 0.0<br>
-			<br>
-			
+			p = IncompressiblePin()<br>
+			n = IncompressiblePin()<br>
+			sts = @variables LHS(t) ΔP(t) = 0.0 ΔT(t) = 0.0
 			</p>
 		</li>
 		<li>
@@ -632,15 +505,13 @@
 </section></div>
 
 
-<div><section><h1>SOURCE</h1>
+<div><section><h1>SOURCES</h1>
 	<h4>SetPressure(; name, P = 0.1)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				Fixed pressure element<br>
-			<br>
-			
+				Fixed pressure element
 			</p>
 		</li>
 		<li>
@@ -665,12 +536,10 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				    Fixed pressure element that does not use the onport function<br>
-			    @named p = IncompressiblePin(Pdef = P)<br>
-			    @named n = IncompressiblePin(Pdef = P)<br>
-			    ps = @parameters P = P<br>
-			<br>
-			
+				Fixed pressure element that does not use the onport function<br>
+			@named p = IncompressiblePin(Pdef = P)<br>
+			@named n = IncompressiblePin(Pdef = P)<br>
+			ps = @parameters P = P
 			</p>
 		</li>
 		<li>
@@ -700,11 +569,9 @@
 			<h5>DESCRIPTION:</h5>
 			<p>
 				Fixed temperature element<br>
-			    @named oneport = IncompressibleOnePort()<br>
-			    @unpack ΔT, ΔP, LHS, p = oneport<br>
-			    ps = @parameters T = T<br>
-			<br>
-			
+			@named oneport = IncompressibleOnePort()<br>
+			@unpack ΔT, ΔP, LHS, p = oneport<br>
+			ps = @parameters T = T
 			</p>
 		</li>
 		<li>
@@ -728,26 +595,3 @@
 			</ul>
 
 </section></div>
-</main>
-
-
-<script>
-    // JavaScript to handle dropdowns
-    document.addEventListener("DOMContentLoaded", function () {
-        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
-        dropdownBtns.forEach(function (btn) {
-            btn.addEventListener("click", function () {
-                this.classList.toggle("active");
-                var content = this.nextElementSibling;
-                if (content.style.display === "block") {
-                    content.style.display = "none";
-                } else {
-                    content.style.display = "block";
-                }
-            });
-        });
-    });
-</script>
-
-</body>
-</html>

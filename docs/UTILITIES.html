@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background-color: white;
+            color: black;
+            padding: 0;
+        }
+
+        header {
+            background-color: #182251; /* Updated theme color to deep blue */
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        nav {
+            width: 250px;
+            height: 100%;
+            background-color: #f2f2f2;
+            position:absolute;
+            font-size: 16px;
+            padding-top: 10px;
+        }
+
+        nav a {
+            display: block;
+            padding: 5px;
+            padding-left: 10px;
+            text-decoration: none;
+            color: rgb(0, 0, 0); /* Updated theme color to deep blue */
+        }
+        nav a:hover {
+            background-color: #ddd;
+        }
+
+
+        .dropdown-btn {
+            background-color: #f2f2f2; /* Updated theme color to deep blue */
+            color: black;
+            text-decoration: underline;
+            padding: 5px;
+            padding-left: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            outline: none;
+            font-weight: bold; /* Bold text for items with dropdown menus */
+        }
+
+        .dropdown-content {
+            padding: 5px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+        }
+
+        .dropdown-content a {
+            padding: 5px;
+            text-decoration: none;
+            display: block;
+            padding-left: 20px;
+            color: #182251; /* Updated theme color to deep blue */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script async src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<header>
+<h1>UTILITIES<h1>
+</header>
+
+<nav>
+    <div><a href="index.html">Home</a></div>
+    <button class="dropdown-btn">Getting Started</button>
+    <div class="dropdown-content">
+        <div><a href="underCon.html">Overveiw</a></div>
+        <div><a href="underCon.html">Tutorial</a></div>
+        <div><a href="underCon.html">Plotting</a></div>
+    </div>
+    <button class="dropdown-btn">Libraries</button>
+    <div class="dropdown-content">
+        <div><a href="blocklibrary.html">Blocks</a></div>
+        <div><a href="MULTIPHASE.html">Multi-phase Documentation</a></div>
+        <div><a href="INCOMPRESSIBLE.html">Incompressible Library Documentation</a></div>
+        <div><a href="GASEOUS.html">Gas Library Documentation</a></div>
+        <div><a href="UTILITIES.html">Utilities</a></div>
+    </div>
+    <button class="dropdown-btn">Resources</button>
+    <div class="dropdown-content">
+        <div><a href="resources.html">Resources</a></div>
+        <div><a href="thermotheory.html"> Thermodynamic Power Cycle Analysis</a></div>
+        <div><a href="theory_gas.html"> Gas and Brayton Cycle Components</a></div>
+        <div><a href="theory_mf.html"> Liquid and Multiphase systems</a></div>
+        <div><a href="fastbrayton.html"> Matrix Interpretation for gaseous systemts</a></div>
+        <div><a href="underCon.html"> Heat Exchangers</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+        <div><a href="underCon.html"> Graph Represntation</a></div>
+        <div><a href="underCon.html"> Process Dynamics Interpretation</a></div>
+    </div>
+    <div><a href="underCon.html">Examples</a></div>
+    <div><a href="underCon.html">Tutorial</a></div>
+    <div><a href="underCon.html">Full API</a></div>
+    <a href="#">Contact</a>
+</nav>
+
+<main>
+
+
+<div><section><h1> All Functions </h1>
+		<ul>
+			<li>all_component_names(sys; num2keep = 1, unique_only = true)</li>
+			<li>check_for_var(var; tofind = :ṁ)</li>
+			<li>component_names(eqs, tofind; unique_only = true)</li>
+			<li>component_names(eqs; unique_only = true, num2keep = 1)</li>
+			<li>connection_equations(BaseSys)</li>
+			<li>connection_equations2(BaseSys; flagvec = [])</li>
+			<li>convert_pressure(val::Real, from_unit::Symbol)</li>
+			<li>convert_pressure(val::Real, from_unit::Symbol, to_unit::Symbol)</li>
+			<li>enforce_lowercase(x = insym)</li>
+			<li>find_flow_vars(BaseSys; tofind = :ṁ)</li>
+			<li>gas_connect(pins...)</li>
+			<li>heat_connect(pins...)</li>
+			<li>join_variable_str(splitvar, num2keep::Int; joinstr = "₊")</li>
+			<li>plantsys(Plant; compoenent_level = 2)</li>
+			<li>showSpecificSol(c, sol)</li>
+			<li>showsol(c, prob::ODEProblem; prob_attr = nothing)</li>
+			<li>showsol(c, sol::ODESolution)</li>
+			<li>showsys(sys)</li>
+			<li>split_variable_sym(var)</li>
+			<li>sys2dict(sys::ODESystem)</li>
+			<li>sys2dict(sys::Vector{ODESystem})</li>
+			<li>system2graph(ODESYS::ODESystem; verbose = false)</li>
+			<li>system_details(sys::ODESystem; alias_elimate = true)</li>
+			<li>systems(p::ODESystem)</li>
+			<li>variable2symbol(var)</li>
+			<li>work_connect(pins...)</li>
+		</ul>
+
+
+<div><section><h1>Functions</h1>
+	<h4>gas_connect(pins)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Connect gas pins<br>
+			# Arguments:<br>
+			- `pins`: Pins of the same domain to apply conservation laws to
+			</p>
+		</li>
+			</ul>
+
+	<h4>work_connect(pins)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Connect work<br>
+			# Arguments:<br>
+			- `pins`: Pins of the same domain to apply conservation laws to
+			</p>
+		</li>
+			</ul>
+
+	<h4>heat_connect(pins)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Connect heat pins<br>
+			# Arguments:<br>
+			- `pins`: Pins of the same domain to apply conservation laws to
+			</p>
+		</li>
+			</ul>
+
+	<h4>showsol(c, sol::ODESolution)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Prints the solution for all components in vector C for solution sol<br>
+			# Arguments:<br>
+			- `c`: Vector of ODE_systems to evaluate<br>
+			- `sol::ODESolution`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>variable2symbol(var)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Converts modeling toolkit variable to symbol <br>
+			# Arguments:<br>
+			- `var`: ModelingToolkit variable
+			</p>
+		</li>
+			</ul>
+
+	<h4>showsol(c, prob::ODEProblem; prob_attr = nothing)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `c`: Vector of ODE_systems to evaluate<br>
+			- `prob::ODEProblem`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `prob_attr = nothing`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>showSpecificSol(c, sol)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `c`: Vector of ODE_systems to evaluate<br>
+			- `sol`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>showsys(sys)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Prints sys.systems<br>
+			# Arguments:<br>
+			- `sys`: ODESystem
+			</p>
+		</li>
+			</ul>
+
+	<h4>sys2dict(sys::Vector{ODESystem})</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Returns a dict d for subsytems within sys<br>
+			where d[:subsys_name] => subsys_object<br>
+			# Arguments:<br>
+			- `sys::Vector{ODESystem}`: Vector of ODESystems
+			</p>
+		</li>
+			</ul>
+
+	<h4>sys2dict(sys::ODESystem)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Returns a dict d for subsytems within sys<br>
+			where d[:subsys_name] => subsys_object<br>
+			# Arguments:<br>
+			- `sys::ODESystem`: Top level ODE System
+			</p>
+		</li>
+			</ul>
+
+	<h4>plantsys(Plant; compoenent_level = 2)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Traverses to a depth given by component level where depth represents<br>
+			Plant.level1.level2....<br>
+			Returns a dict<br>
+			# Arguments:<br>
+			- `Plant`: ODE_system with subsystems<br>
+			OPTIONAL INPUTS<br>
+			- `compoenent_level = 2`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>systems(p::ODESystem)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Returns p.systems<br>
+			# Arguments:<br>
+			- `p::ODESystem`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>connection_equations(BaseSys)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Gathers all equations within a system which represent connections rather than intercomponent equations<br>
+			i.e. all equations which are formed during component connections<br>
+			# Arguments:<br>
+			- `BaseSys`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>check_for_var(var; tofind = :ṁ)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				checks if a an array of variables are "tofind" variables <br>
+			returns false is any of the input variables are not the "tofind" variable<br>
+			Useful for identifying balance equations within a larger system equations vector<br>
+			example mass flow continuity:  ṁ_in + ṁ_out = 0<br>
+			only variables in that equations are ṁ<br>
+			# Arguments:<br>
+			- `var`: MTK variable<br>
+			- tofind: Symbol to look for
+			</p>
+		</li>
+			</ul>
+
+	<h4>find_flow_vars(BaseSys; tofind = :ṁ)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				this returns all system variables with mass flow<br>
+			# Arguments:<br>
+			- `BaseSys`: MTK ststem<br>
+			Optional<br>
+			- tofind: Symbol to look for
+			</p>
+		</li>
+			</ul>
+
+	<h4>find_flow_vars(BaseSys; tofind = :ṁ)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				splits apart MTK variable at levels<br>
+			:divertor_circulator₊p₊ṁ => ["divertor_circulator", "p", "ṁ"]<br>
+			# Arguments<br>
+			var: variable
+			</p>
+		</li>
+			</ul>
+
+	<h4>join_variable_str(splitvar, num2keep::Int; joinstr = ₊)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Joins MTK variable string that has been split using split_variable_sym<br>
+			# Arguments:<br>
+			- `splitvar`: DESCRIPTION<br>
+			- `num2keep::Int`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `joinstr = ₊`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>component_names(eqs; unique_only = true, num2keep = 1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				returns all component names found within a vecotr of equations<br>
+			# Arguments:<br>
+			- `eqs`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `unique_only = true`: DESCRIPTION<br>
+			- `num2keep = 1`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>component_names(eqs, tofind; unique_only = true)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				returns all component names found within a vecotr of equations<br>
+			# Arguments:<br>
+			- `eqs`: DESCRIPTION<br>
+			- `tofind`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `unique_only = true`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>all_component_names(sys; num2keep = 1, unique_only = true)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				returns all component names found within a vecotr of equations<br>
+			# Arguments:<br>
+			- `sys`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `num2keep = 1`: DESCRIPTION<br>
+			- `unique_only = true`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>system_details(sys::ODESystem; alias_elimate = true)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Displays system equation information after alias alias_elimination<br>
+			Use to confirm the DOF and constraints for a top level system<br>
+			# Arguments:<br>
+			- `sys::ODESystem`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `alias_elimate = true`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>connection_equations2(BaseSys; flagvec)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				Connection equations<br>
+			# Arguments:<br>
+			- `BaseSys`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `flagvec`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>system2graph(ODESYS::ODESystem; verbose = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `ODESYS::ODESystem`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `verbose = false`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>system2graph2(ODESYS::ODESystem, utility_vector::Vector{Symbol}; verbose = false, soln = nothing)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `ODESYS::ODESystem`: DESCRIPTION<br>
+			- `utility_vector::Vector{Symbol}`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `verbose = false`: DESCRIPTION<br>
+			- `soln = nothing`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>add_graph_connection!(sys, g, component_dict, vertex_dict, Component_Variable, edge_power_dict; flip_dir = false, verbose = false)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `sys`: DESCRIPTION<br>
+			- `g`: DESCRIPTION<br>
+			- `component_dict`: DESCRIPTION<br>
+			- `vertex_dict`: DESCRIPTION<br>
+			- `Component_Variable`: DESCRIPTION<br>
+			- `edge_power_dict`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `flip_dir = false`: DESCRIPTION<br>
+			- `verbose = false`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>system2metagraph(sys::ODESystem, utility_vector::Vector{Symbol}; verbose = false, soln = nothing)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `sys::ODESystem`: DESCRIPTION<br>
+			- `utility_vector::Vector{Symbol}`: DESCRIPTION<br>
+			OPTIONAL INPUTS<br>
+			- `verbose = false`: DESCRIPTION<br>
+			- `soln = nothing`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+</section></div>
+</main>
+
+
+<script>
+    // JavaScript to handle dropdowns
+    document.addEventListener("DOMContentLoaded", function () {
+        var dropdownBtns = document.querySelectorAll(".dropdown-btn");
+        dropdownBtns.forEach(function (btn) {
+            btn.addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

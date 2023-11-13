@@ -273,7 +273,9 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ P
+n.h ~ stm_hsatfunc(P)
+n.Φ ~ 0
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 0.1`: DESCRIPTION
@@ -297,7 +299,8 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ P
+n.Φ ~ 0
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 0.1`: DESCRIPTION
@@ -320,7 +323,9 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ P
+0 ~ stm_hptfunc(P, T) + n.h
+n.Φ ~ -n.ṁ * n.h
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 150`: DESCRIPTION
@@ -345,7 +350,10 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ P
+n.h ~ stm_hsatfunc(P)
+n.Φ ~ 0
+0 ~ n.ṁ + p.ṁ
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 0.1`: DESCRIPTION
@@ -376,7 +384,10 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ P
+p.P ~ P
+n.h ~ stm_hsatfunc(P)
+p.h ~ n.h
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 0.1`: DESCRIPTION
@@ -405,7 +416,11 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ p.P
+n.h ~ p.h
+p.Φ ~ 0
+0 ~ n.Φ + p.Φ
+0 ~ n.ṁ + p.ṁ
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -430,7 +445,11 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-
+n.P ~ p.P
+n.h ~ p.h
+n.Φ ~ 0
+ΔΦ ~ p.Φ
+0 ~ n.ṁ + p.ṁ
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -456,7 +475,11 @@ Ideal pressure source
 
 ELEM TYPE: SOURCE
 EQUATIONS:
-
+p.P ~ P
+n.P ~ p.P
+n.h ~ p.h
+0 ~ p.Φ + n.Φ           
+0 ~ p.ṁ + n.ṁ
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 0.1`: DESCRIPTION
@@ -483,7 +506,11 @@ DOCSTRING
 
 ELEM TYPE: SOURCE
 EQUATIONS:
-
+0 ~ p.Φ + n.Φ 
+0 ~ p.ṁ + n.ṁ
+p.ṁ ~ Ṁ
+p.h ~ n.h
+n.P ~ p.P
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `ṁ = 1.0`: Mass flow rate (kg/s)
@@ -570,16 +597,24 @@ end
     AdiabaticPump(; name, η = 1.0, setpressure = false, Pout = 10, controlinlet = false)
 
 DOCSTRING
-
+Adiabatic pump
+# work, multiply by 100 to get to kPa
+@named p = BasicSteamPin()
+@named n = BasicSteamPin()
+@named w = WorkPin()
+ps = @parameters η = η P = Pout
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+w.Ẇ ~ p.Φ + n.Φ                       
+0 ~ p.ṁ + n.ṁ
+n.h ~ p.h + p.v * 1e5 * (n.P - p.P) / η 
+w.Ẇ ~ p.ṁ * (n.h - p.h)
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `η = 1.0`: DESCRIPTION
-- `setpressure = false`: DESCRIPTION
-- `Pout = 10`: DESCRIPTION
+- `η = 1.0`: Isentropic Effciency
+- `setpressure = false`: Option to constrain outlet pressure
+- `Pout = 10`: Pressure (bar)
 - `controlinlet = false`: DESCRIPTION
 """
 function AdiabaticPump(;
@@ -651,11 +686,15 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+Ẇ ~ p.Φ + n.Φ
+w.Ẇ ~ Ẇ
+0 ~ p.ṁ + n.ṁ
+n.h ~ p.h - (p.h - stm_hpsfunc(n.P, p.s)) * η
+w.Ẇ ~ p.ṁ * (n.h - p.h)
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `η = 1.0`: DESCRIPTION
-- `setpressure = false`: DESCRIPTION
+- `η = 1.0`: Isentropic Effciency
+- `setpressure = false`: Option to constrain outlet pressure
 - `Pout = 0.1`: DESCRIPTION
 """
 function AdiabaticTurbine(; name, η = 1.0, setpressure = false, Pout = 0.1)
@@ -696,6 +735,18 @@ end
 
 DOCSTRING
 Single input multi output turbinbe
+EXTERNAL NODES FOR INTERFACING
+@named p = BasicSteamPin()  # inlet node
+@named hp = AdiabaticTurbine(η = ηin, Pout = Pyin, setpressure = sp)
+@named lp = AdiabaticTurbine(η = ηin, Pout = Pzin, setpressure = sp)
+@named yn = BasicSteamPin()
+@named zn = BasicSteamPin()
+split_connect = hydro_connect(p, yn, zn)    # mflow, p.ṁ => positive
+hp_connect = hydro_connect(yn, hp.p)
+lp_connect = hydro_connect(zn, lp.p)
+#                yn(-) -------> y
+# IN --> p (+) --|
+#                zn(-) -------> z
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
@@ -703,7 +754,7 @@ EQUATIONS:
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `ηin = 1.0`: DESCRIPTION
-- `setpressure = false`: DESCRIPTION
+- `setpressure = false`: Option to constrain outlet pressure
 - `Pyin = 10`: DESCRIPTION
 - `Pzin = 0.1`: DESCRIPTION
 """
@@ -752,7 +803,12 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+    0 ~ p.ṁ + n.ṁ           
+    q.Q̇ ~ p.Φ + n.Φ             
+    C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000
+    0 ~ q.Q̇ - Q̇
+    n.h ~ p.h + q.Q̇ / (p.ṁ)
+    n.P ~ p.P
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -780,7 +836,12 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
+q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000   # duty T/h = cp
+0 ~ q.Q̇ - Q̇in
+n.h ~ p.h + q.Q̇ / (p.ṁ)
+n.P ~ p.P
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `Q̇in = 1.5e8`: DESCRIPTION
@@ -810,7 +871,11 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+q.Q̇ ~ p.Φ + n.Φ                 # conservation of energy
+0 ~ p.ṁ + n.ṁ
+n.P ~ p.P                     # no pressure
+n.h ~ stm_hptfunc(p.P, T)       # work, multiply by 100 to get to kPa
+q.Q̇ ~ p.ṁ * (n.h - p.h)
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `Tout = 350`: DESCRIPTION
@@ -841,7 +906,12 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+q.Q̇ ~ p.Φ + n.Φ             # conservation of energy
+0 ~ p.ṁ + n.ṁ
+n.P ~ p.P                 # no pressure
+n.h ~ stm_hsatfunc(p.P)        # work, multiply by 100 to get to kPa
+q.Q̇ ~ p.ṁ * (n.h - p.h)
+q.Q̇ ~ Q̇
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -872,7 +942,9 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+q.Q̇ ~ p.ṁ * (n.h - p.h)
+0 ~ p.ṁ + n.ṁ
+q.Q̇ ~ Q̇
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -900,7 +972,8 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+n.ṁ + p.ṁ ~ 0         
+q.Q̇ ~ p.Φ + n.Φ         
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 - `pressurecontrol = false`: DESCRIPTION
@@ -928,7 +1001,15 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+[yfrac ~ 1] => [yfrac ~ 1]
+[yfrac ~ 0] => [yfrac ~ 0.0]
+n.P ~ p2.P
+p1.P ~ n.P
+n.h ~ stm_hsatfunc(n.P) # sat liquid
+0 ~ n.h - (yfrac * p1.h + (1 - yfrac) * p2.h)
+0 ~ n.ṁ * yfrac + p1.ṁ
+0 ~ n.ṁ + p1.ṁ + p2.ṁ
+0 ~ n.Φ + (p1.Φ + p2.Φ)
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -965,7 +1046,11 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+n.P ~ p1.P
+p1.P ~ p2.P
+n.h ~ 1 / (p1.ṁ + p2.ṁ) * (p1.ṁ * p1.h + p2.ṁ * p2.h)
+0 ~ n.ṁ + p1.ṁ + p2.ṁ
+0 ~ n.Φ + p1.Φ + p2.Φ
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
@@ -1071,7 +1156,10 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-
+n.ṁ + p.ṁ ~ 0
+p.h ~ n.h
+ΔP ~ p.P - n.P
+n.Φ ~ 0
 INPUTS
 - `name`: Name of the system, symbol. Or use the @named macro when initializing.
 """
