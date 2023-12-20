@@ -1,8 +1,8 @@
 # module ThermoIncompressible
-using ModelingToolkit, Plots, DifferentialEquations, Revise, Symbolics, Logging #CoolProp,
-using NonlinearSolve, Printf
+using ModelingToolkit, Plots, Revise, Symbolics, Logging
+using Printf
 using Plots
-
+# NonlinearSolve,   DifferentialEquations, #CoolProp,
 @variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")

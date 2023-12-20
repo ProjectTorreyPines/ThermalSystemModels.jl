@@ -29,6 +29,7 @@ src/Playground/Images/sfdp_animation.mp4
 src/Playground/Images/stress_anim.mp4
 src/Playground/Images/stress_animation.mp4
 src/Playground/Reference/asdf.pdf
+src/Playground/04-Plottting.jl
 src/Playground/Reference/ControlVolumeDiagram.bmp
 src/Playground/Reference/CV_DIAGRAM.jpg
 src/Playground/Reference/equations_used.aux
@@ -76,4 +77,6 @@ src/Archive/plot_runme.jl
 src/Archive/runme.jl
 src/ODE_Systems/02-SystemModels.jl
 src/ODE_Systems/05-saving.jl
-src/Deadtime/brayton.jl
+src/Playground/270723_demos.jl
+src/Playground/02-SystemModels.jl
+src/Playground/Verification.ipynb

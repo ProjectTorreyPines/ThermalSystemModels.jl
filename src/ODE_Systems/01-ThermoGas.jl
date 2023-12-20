@@ -13,8 +13,8 @@
 #       Work out is negative
 #       Work in is positive
 #=============================================================#
-using ModelingToolkit, Plots, DifferentialEquations, Revise,  Logging, Printf
-# using NonlinearSolve, Printf
+using ModelingToolkit, Plots, Revise,  Logging, Printf
+# using NonlinearSolve, Printf, DifferentialEquations, 
 # Unitful, CoolProp,
 Revise.retry()
 # Logging.disable_logging(Logging.Warn)

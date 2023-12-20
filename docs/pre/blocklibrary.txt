@@ -1,7 +1,7 @@
 <h1>ThermalSystem_Models.jl Documentation Template</h1>
     <section>
         <h2>Multi-Phase Library</h2>
-        <a href="multiphase.html">Read Documentation</a>
+        <a href="MULTIPHASE.html">Read Documentation</a>
         <p>
             Documentation for the Steam Library, providing components and features for modeling water systems.
         </p>
@@ -12,7 +12,7 @@
 
     <section>
         <h2>Incompressible Liquid Library</h2>
-        <a href="incompressible.html">Read Documentation</a>
+        <a href="INCOMPRESSIBLE.html">Read Documentation</a>
         <p>
             Explore the Incompressible liquid Library documentation, tailored for modeling systems where the only phase present is saturated liquid. Including liquid metal, oil-based systems. 
         </p>
@@ -23,11 +23,16 @@
 
     <section>
         <h2>Gas Library</h2>
-        <a href="gaseous.html">Read Documentation</a>
+        <a href="GASEOUS.html">Read Documentation</a>
         <p>
             The Gas Library documentation covers components and functionalities for modeling gas systems.
         </p>
         <p>
             These componets are evaluated analytically through the ideal gas relations.
         </p>
+    </section>  
+
+    <section>
+        <h2>Other </h2>
+        <a href="OTHER.html">Read Documentation</a>
     </section>  

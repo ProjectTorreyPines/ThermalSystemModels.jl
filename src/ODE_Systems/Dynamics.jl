@@ -1,13 +1,11 @@
 module Dynamics
-using ModelingToolkit,
-    Plots, DifferentialEquations, Revise, Unitful, CoolProp, Logging, NonlinearSolve, Printf
-using Revise, OrdinaryDiffEq
+using ModelingToolkit, Plots, Revise, Unitful, Logging,  Printf
+using OrdinaryDiffEq, NonlinearSolve, DifferentialEquations
 using Symbolics
-using LayeredLayouts, MetaGraphs, Graphs, Plots
-using ThermalSystem_Models, Revise, Printf, OrdinaryDiffEq, Random
+using LayeredLayouts, MetaGraphs, Graphs, Plots, Random
 using Statistics, GeometryBasics
 ModelingToolkit.@variables t
-# Logging.disable_logging(Logging.Warn)
+# Logging.disable_logging(Logging.Warn) NonlinearSolve, DifferentialEquations, 
 include("03-MTK_UTILS.jl")
 module Gas
     include("01-ThermoGas.jl")
@@ -242,7 +240,7 @@ DOCSTRING
 """
 function default_energy_sys()
     sts = ModelingToolkit.@variables η_cycle(t) = 0.5 η_bop(t) = 0.5
-    @named Electric = Gas.WorkPin()                # Connects to all pumps, turbines, compressors
+    @named Electric   = Gas.WorkPin()                # Connects to all pumps, turbines, compressors
     @named HotUtility = Gas.HeatTransferPin()
     @named ColdUtility = Gas.HeatTransferPin()
     energy_sys = [Electric, HotUtility, ColdUtility]
@@ -1254,30 +1252,30 @@ function hotswap!(G, n::Int64)
     in_v = inneighbors(G, n)
     ou_v = outneighbors(G, n)
 
-    @printf "Attempting to remove node %i , %s from G\n\t" n get_prop(G, n, :name)
+    # @printf "Attempting to remove node %i , %s from G\n\t" n get_prop(G, n, :name)
     @assert length(in_v) == 1 && length(ou_v) == 1 "$in_v "
     in_v = in_v[1]
     ou_v = ou_v[1]
 
-    @printf "Incoming node %i , %s\n\t" in_v get_prop(G, in_v, :name)
-    @printf "Outgoing node %i , %s\n\t" ou_v get_prop(G, ou_v, :name)
+    # @printf "Incoming node %i , %s\n\t" in_v get_prop(G, in_v, :name)
+    # @printf "Outgoing node %i , %s\n\t" ou_v get_prop(G, ou_v, :name)
     # in_props = props(G,Edge(in_v,n))
     ou_props = props(G, n, ou_v)
 
     add_edge!(G, in_v, ou_v)
 
-    @printf "Added Edge : (%i , %s) -> (%i , %s) \n\t" in_v get_prop(G, in_v, :name) ou_v get_prop(
-        G,
-        ou_v,
-        :name,
-    )
+    # @printf "Added Edge : (%i , %s) -> (%i , %s) \n\t" in_v get_prop(G, in_v, :name) ou_v get_prop(
+    #     G,
+    #     ou_v,
+    #     :name,
+    # )
     set_single_edge_props!(G, Edge(in_v, ou_v), ou_props)
-    @printf "with properties\n\t\t"
-    for p in collect(keys(ou_props))
-        @printf "key: %s ,\t value: %s\n\t\t" p ou_props[p]
-    end
+    # @printf "with properties\n\t\t"
+    # for p in collect(keys(ou_props))
+    #     @printf "key: %s ,\t value: %s\n\t\t" p ou_props[p]
+    # end
     rem_vertex!(G, n)
-    @printf("\n")
+    # @printf("\n")
 end
 
 """
@@ -2296,7 +2294,7 @@ function create_plot_graph(
     # toig = G[toignore, :name]    #to_ignore
     # toig = [G[:cycle_cooler,:name]] #,G[:cycle_intercooler_1,:name],G[:cycle_intercooler_2,:name]]
     torm = G[:ColdUtility, :name]        #to_remove
-    rem_all_edge!(G, [torm]; ignore = [G[toignore[toig], :name] for toig = eachindex(toignore)], verbose = true)
+    rem_all_edge!(G, [torm]; ignore = [G[toignore[toig], :name] for toig = eachindex(toignore)], verbose = false)
 
     # (FROM "G") not needed
     # all_neighbors(G,torm)
@@ -2424,7 +2422,7 @@ function create_plot_graph(
             # src_v = in_diff[1]
             src_v = id
             src_flow_group_idx = findfirst(x -> src_v ∈ x, flow_groups) # cycle 2
-            println(src_v)
+            # println(src_v)
             add_edge!(G2, src_flow_group_idx, fgv)
             set_prop!(G2, Edge(src_flow_group_idx, fgv), :referenced_edge, Edge(src_v, v))
             # println("Cycle  $fgv connected to cycle $(src_flow_group_idx),
@@ -3426,9 +3424,9 @@ function plotplant(
 
     soln = get_prop(gc, :soln)
 
-    ecolor = edge_propdict(gc, :color; edgekey = :edge)
-    fn(gc, x) = get_prop(gc, x, :nodeType) == :real
-    real_nodes = filter_vertices(gc, fn)
+    ecolor      = edge_propdict(gc, :color; edgekey = :edge)
+    fn(gc, x)   = get_prop(gc, x, :nodeType) == :real
+    real_nodes  = filter_vertices(gc, fn)
 
     # dots
     p = Plots.scatter(xs, ys; markeralpha = 0)
@@ -3560,7 +3558,7 @@ function plotplant(
             if nodeTypes[n] == :real
                 outlinecolor = get_prop(gc, n, :markeroutline)
                 outlinestroke = outlinecolor == :black ? 1.0 : 3.0
-                println(nodeShps[n],get_prop(gc, n, :markeroutline))
+                # println(nodeShps[n],get_prop(gc, n, :markeroutline))
                 shp = plotnode(nodePos[n], nodeShps[n]; w = nsize, r = nsize/2, h = nsize)
                 Plots.plot!(shp;
                     color = color,
@@ -3720,8 +3718,6 @@ function plotplant(
         if nodeTypes[n] == :fake
 
             inn = outneighbors(gc, n)[1]
-
-
             if hasproperty(sys, :n) && get_prop(gc, n, inn, :etype) == :flow
                 par = get_prop(gc, n, :parent)
                 sysp = getproperty(sys, :n)
