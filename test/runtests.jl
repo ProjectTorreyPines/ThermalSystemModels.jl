@@ -4,15 +4,16 @@ using Test
 using MetaGraphs
 using Plots, DifferentialEquations
 
-display("testscript")
+display("Running Tests")
 
 @testset "ThermalSystem_Models.jl" begin
     TSM   = ThermalSystem_Models
     TSMD  = TSM.Dynamics
     MTK   = ModelingToolkit
     Steam = TSMD.Steam
-    Gas = TSMD.Gas
-    Liq = TSMD.Liq
+    Gas   = TSMD.Gas
+    Liq   = TSMD.Liq
+    TSMfb = TSM.FastBrayton
     #=========================================================#
     #                Rankine feedwater
     #=========================================================#

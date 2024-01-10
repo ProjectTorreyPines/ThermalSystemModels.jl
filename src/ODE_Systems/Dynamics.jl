@@ -429,7 +429,7 @@ function feedwater_rankine(;
     steam_pmax = max_pressure
     @named steam_supply = Steam.ContinuityReservoir()
     @named steam_hp_pump =
-        Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η =ηpump)
+        Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true, η = ηpump)
     @named steam_boiler = Steam.SteamHeatTransfer()
     @named steam_turbine = Steam.SIMOAdiabaticTurbine(
         setpressure = true,
@@ -510,6 +510,50 @@ function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, 
 
     sysdict = sys2dict(inter_loop_sys)
     return inter_loop_sys, inter_loop_connections, params, sysdict
+end
+
+
+"""
+    rankine(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
+
+DOCSTRING
+
+
+OPTIONAL INPUTS
+- `Pmax = 40`: DESCRIPTION
+- `Pmin = 32`: DESCRIPTION
+- `Nhx = 3`: DESCRIPTION
+- `Tmin = 350 + 273.15`: DESCRIPTION
+- `flowrate = 100`: DESCRIPTION
+"""
+
+function rankine(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
+    #presssure units in bar
+    params = @parameters steam_ṁ = flowrate
+    @named steam_supply = Steam.Reservoir(P = steam_pmin)
+    @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
+    @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
+    @named steam_boiler = Steam.SteamHeatTransfer()
+    @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
+    @named steam_condensor = Steam.ReliefElement()
+    steam_sys = [
+        steam_supply,
+        steam_valve,
+        steam_pump,
+        steam_boiler,
+        steam_turbine,
+        steam_condensor,
+    ]
+    steam_connections = vcat(
+        Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
+        Steam.hydro_connect(steam_valve.n, steam_pump.p),
+        Steam.hydro_connect(steam_pump.n, steam_boiler.p),
+        Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
+        Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
+    )
+
+    sysdict = sys2dict(steam_sys)
+    return steam_sys, steam_connections, params, sysdict
 end
 
 
@@ -1090,34 +1134,6 @@ end
         #     return steam_systems, steam_connections, params, sysdict
         # end
 
-        # function rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
-        #     #presssure units in bar
-        #     params = @parameters steam_ṁ = flowrate
-        #     @named steam_supply = Steam.Reservoir(P = steam_pmin)
-        #     @named steam_valve = Steam.SteamFlowSource(ṁ = flowrate)
-        #     @named steam_pump = Steam.AdiabaticPump(Pout = steam_pmax, setpressure = true)
-        #     @named steam_boiler = Steam.SteamHeatTransfer()
-        #     @named steam_turbine = Steam.AdiabaticTurbine(setpressure = true, Pout = steam_pmin)
-        #     @named steam_condensor = Steam.ReliefElement()
-        #     steam_sys = [
-        #         steam_supply,
-        #         steam_valve,
-        #         steam_pump,
-        #         steam_boiler,
-        #         steam_turbine,
-        #         steam_condensor,
-        #     ]
-        #     steam_connections = vcat(
-        #         Steam.hydro_connect(steam_supply.n, steam_valve.p, steam_condensor.n),
-        #         Steam.hydro_connect(steam_valve.n, steam_pump.p),
-        #         Steam.hydro_connect(steam_pump.n, steam_boiler.p),
-        #         Steam.hydro_connect(steam_boiler.n, steam_turbine.p),
-        #         Steam.hydro_connect(steam_turbine.n, steam_condensor.p),
-        #     )
-
-        #     sysdict = sys2dict(steam_sys)
-        #     return steam_sys, steam_connections, params, sysdict
-        # # end
 
         # function intermediate_loop(;
         #     Pmax = 40,
@@ -1174,8 +1190,6 @@ end
         # end
 
 function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
-    TminCycle = 300
-    PminCycle = 15
     params = @parameters cycle_ṁ = flowrate
     @named cycle_supply = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
     @named cycle_compressor_lp = Gas.ActiveThermoCompressor(rp = 1.7, η = 0.9)
@@ -1196,15 +1210,6 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
         returnmode = :eq,
     )
 
-    # connections = vcat(Gas.gas_connect(cycle_supply.n,cycle_compressor_lp.p),
-    #     Gas.gas_connect(cycle_compressor_lp.n,cycle_intercooler_1.p),
-    #     Gas.gas_connect(cycle_intercooler_1.n,cycle_compressor_mp.p),
-    #     Gas.gas_connect(cycle_compressor_mp.n,cycle_intercooler_2.p),
-    #     Gas.gas_connect(cycle_intercooler_2.n,cycle_compressor_hp.p),
-    #     Gas.hx_connect(cycle_regenerator,cycle_compressor_hp,cycle_heat,cycle_turbine,cycle_cooler),
-    #     Gas.gas_connect(cycle_heat.n,cycle_turbine.p),
-    #     Gas.gas_connect(cycle_cooler.n,cycle_supply.p),
-    #     cycle_compressor_lp.p.ṁ ~ cycle_ṁ);
     connections = vcat(
         Gas.gas_connect(cycle_supply.n, cycle_compressor_lp.p),
         Gas.gas_connect(cycle_compressor_lp.n, cycle_intercooler_1.p),

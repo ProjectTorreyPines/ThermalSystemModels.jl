@@ -78,7 +78,11 @@ function showsol(c, sol::ODESolution)
             push!(estorage, cel)
         end
         for n in cvec
-            @printf "%-13s  P[bar]= %-8.1f T[C]= %-8.1f ṁ[kg/s]= %+-7.2f Φ=%+-7.2f" n.name sol[n.P][end] sol[n.T][end]-273.15 sol[n.ṁ][end] sol[n.Φ][end] /
+            sname = String(n.name)
+            if length(sname) > 13
+                sname = sname[1:3] * "..." * sname[end-8:end]
+            end
+            @printf "%-13s  P[bar]= %-6.1f T[C]= %-7.1f ṁ[kg/s]= %+-9.1f Φ=%+-8.1f" sname sol[n.P][end] sol[n.T][end]-273.15 sol[n.ṁ][end] sol[n.Φ][end] /
                                                                                                                                        10^6
             if hasproperty(n, :h)
                 @printf "h[kJ/kg]= %-8.1f" sol[n.h][end] / 1e3
@@ -91,10 +95,10 @@ function showsol(c, sol::ODESolution)
             end
 
             if hasproperty(cel, :Q̇)
-                @printf "Q̇[kW]= %-8.2f" sol[cel.Q̇][end] / 10^3
+                @printf "Q̇[kW]= %+-8.1f" sol[cel.Q̇][end] / 10^3
                 # @printf "Q̇[k]= %-8.2i" sol[cel.Q̇][end]
             elseif hasproperty(cel, :q)
-                @printf "Q̇[kW]= %-8.2f" sol[cel.q.Q̇][end] / 10^3
+                @printf "Q̇[kW]= %+-8.1f" sol[cel.q.Q̇][end] / 10^3
 
                 # @printf "Q̇[k]= %-8.2s" sol[cel.q.Q̇][end]
             end
@@ -103,13 +107,13 @@ function showsol(c, sol::ODESolution)
             end
 
             if hasproperty(cel, :C)
-                @printf "C = %-8.2f" sol[cel.C][end]
+                @printf "C = %-8.1f" sol[cel.C][end]
             end
 
             if hasproperty(cel, :Ẇ)
-                @printf "Ẇ[kW]= %-8.2f" sol[cel.Ẇ][end] / 1e3
+                @printf "Ẇ[kW]= %+-8.1f" sol[cel.Ẇ][end] / 1e3
             elseif hasproperty(cel, :w)
-                @printf "Ẇ[kW]= %-8.2f" sol[cel.w.Ẇ][end] / 1e3
+                @printf "Ẇ[kW]= %+-8.1f" sol[cel.w.Ẇ][end] / 1e3
             end
             @printf "\n"
         end
@@ -300,7 +304,7 @@ Returns a dict d for subsytems within sys
 - `sys::Vector{ODESystem}`: Vector of ODESystems
 """
 function sys2dict(sys::Vector{ODESystem})
-    d = Dict()
+    d = Dict{MTK.Symbol, MTK.ODESystem}()
     [d[s.name] = s for s in sys]
     return d
 end
@@ -905,6 +909,10 @@ function system2graph2(
     return g, component_name_dict, num_to_name_dict, edge_power_dict, num_to_sys_dict
 end
 
+function updateGraphSoln(G,soln)
+    set_prop!(G, :soln, soln)
+end
+
 """
     add_graph_connection!(sys, g, component_dict, vertex_dict, Component_Variable, edge_power_dict; flip_dir = false, verbose = false)
 
@@ -1057,9 +1065,8 @@ function system2metagraph(
             if !isempty(src) && !isnothing(dst) && !(portNames[src] == portNames[dst])
                 # adding edge from n -> p
                 if length(src) > 1
-                    println(
-                        "Warning - may incorrectly create graph @ src = $(portNames[src]) to dst = $(portNames[dst])",
-                    )
+                    @warn "Warning - may incorrectly create graph @ src = $(portNames[src]) to dst = $(portNames[dst])"
+
                 end
 
                 for s in src
