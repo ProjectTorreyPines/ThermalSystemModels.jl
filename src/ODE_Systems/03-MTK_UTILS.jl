@@ -38,6 +38,7 @@ function work_connect(pins...)
     ]
     return eqs
 end
+
 """
     heat_connect(pins)
 
@@ -359,7 +360,6 @@ function systems(p::ODESystem)
     return p.systems
 end
 
-#   returns all connection equations
 
 """
     connection_equations(BaseSys)
@@ -367,6 +367,7 @@ end
 DOCSTRING
 Gathers all equations within a system which represent connections rather than intercomponent equations
 i.e. all equations which are formed during component connections
+returns all connection equations
 # Arguments:
 - `BaseSys`: DESCRIPTION
 """
@@ -1064,10 +1065,9 @@ function system2metagraph(
 
             if !isempty(src) && !isnothing(dst) && !(portNames[src] == portNames[dst])
                 # adding edge from n -> p
-                if length(src) > 1
-                    @warn "Warning - may incorrectly create graph @ src = $(portNames[src]) to dst = $(portNames[dst])"
-
-                end
+                # if length(src) > 1
+                #     @warn "Warning - may incorrectly create graph @ src = $(portNames[src]) to dst = $(portNames[dst])"
+                # end
 
                 for s in src
                     for d in dst

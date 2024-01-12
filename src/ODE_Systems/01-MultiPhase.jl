@@ -52,7 +52,7 @@ stm_sptfunc(x, y) = s_pT(x, y - 273.15) * 1e3
 stm_sphfunc(x, y) = s_ph(x, y / 1e3) * 1e3
 stm_hptfunc(x, y) = h_pT(x, y - 273.15) * 1e3
 stm_hpsfunc(x, y) = h_ps(x, y / 1e3) * 1e3
-stm_hsatfunc(x) = hL_p(x) * 1e3
+stm_hsatfunc(x)   = hL_p(x) * 1e3
 
 
 @variables x, y
@@ -163,8 +163,8 @@ EQUATIONS:
     x ~ stm_xphfunc(P, h)
     v ~ stm_vphfunc(P, h)
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `Pdef = 0.1`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+- Pdef = 0.1: DESCRIPTION
 """
 function BasicSteamPin(; name, Pdef = 0.1)
     across_var =
@@ -277,8 +277,8 @@ n.P ~ P
 n.h ~ stm_hsatfunc(P)
 n.Φ ~ 0
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `P = 0.1`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+-  = 0.1`: DESCRIPTION
 """
 function Reservoir(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
@@ -302,8 +302,8 @@ EQUATIONS:
 n.P ~ P
 n.Φ ~ 0
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `P = 0.1`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+-  = 0.1`: DESCRIPTION
 """
 function MultiPhaseGnd(; name, P = 0.1)
     @named n = BasicSteamPin(Pdef = P)
@@ -327,7 +327,7 @@ n.P ~ P
 0 ~ stm_hptfunc(P, T) + n.h
 n.Φ ~ -n.ṁ * n.h
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `P = 150`: DESCRIPTION
 - `T = 600`: DESCRIPTION
 """
@@ -346,7 +346,7 @@ end
     ioReservoir(; name, P = 0.1, fixboth = false)
 
 DOCSTRING
-
+Fluid reference element with the option to set both the inlet and outlet pressures
 
 ELEM TYPE: UTILITY
 EQUATIONS:
@@ -355,9 +355,9 @@ n.h ~ stm_hsatfunc(P)
 n.Φ ~ 0
 0 ~ n.ṁ + p.ṁ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `P = 0.1`: DESCRIPTION
-- `fixboth = false`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+- P = 0.1: Pressure (bar)
+- `fixboth = false`: Option to fix both the inlet an d the outlet
 """
 function ioReservoir(; name, P = 0.1, fixboth = false)
     @named p = BasicSteamPin()
@@ -380,17 +380,19 @@ end
     TwoPortReservoir(; name, P = 0.1)
 
 DOCSTRING
-
-
+Basic
 ELEM TYPE: UTILITY
 EQUATIONS:
 n.P ~ P
 p.P ~ P
 n.h ~ stm_hsatfunc(P)
 p.h ~ n.h
+p.Φ ~ 0             
+0 ~ n.ṁ + p.ṁ                                                           
+0 ~ n.Φ + p.Φ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `P = 0.1`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+- P = 0.1: Pressure for both the p and n ports
 """
 function TwoPortReservoir(; name, P = 0.1)
     @named p = BasicSteamPin()
@@ -401,7 +403,7 @@ function TwoPortReservoir(; name, P = 0.1)
         p.P ~ P
         n.h ~ stm_hsatfunc(P)
         p.h ~ n.h
-        p.Φ ~ 0 #p.ṁ*p.h         # E = Pressure * Volumetric flow rate = PRessures * mass flow rate / density
+        p.Φ ~ 0             #p.ṁ*p.h         # E = Pressure * Volumetric flow rate = PRessures * mass flow rate / density
         0 ~ n.ṁ + p.ṁ                                                           # 1/density = specific volume
         0 ~ n.Φ + p.Φ
     ]
@@ -422,7 +424,7 @@ p.Φ ~ 0
 0 ~ n.Φ + p.Φ
 0 ~ n.ṁ + p.ṁ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function ContinuityReservoir2(; name)
     @named p = BasicSteamPin()
@@ -451,7 +453,7 @@ n.Φ ~ 0
 ΔΦ ~ p.Φ
 0 ~ n.ṁ + p.ṁ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function ContinuityReservoir(; name)
     @named p = BasicSteamPin()
@@ -481,8 +483,8 @@ n.h ~ p.h
 0 ~ p.Φ + n.Φ           
 0 ~ p.ṁ + n.ṁ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
-- `P = 0.1`: DESCRIPTION
+- name: Name of the system, symbol. Or use the @named macro when initializing.
+- P = 0.1: DESCRIPTION
 """
 function SetPressure(; name, P = 0.1)
     @named p = BasicSteamPin(Pdef = P)
@@ -512,7 +514,7 @@ p.ṁ ~ Ṁ
 p.h ~ n.h
 n.P ~ p.P
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `ṁ = 1.0`: Mass flow rate (kg/s)
 """
 function SteamFlowSource(; name, ṁ = 1.0)
@@ -544,7 +546,7 @@ EQUATIONS:
     p.h ~ n.h
     n.P ~ p.P
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function SteamFlowValve(; name)
     @named p = BasicSteamPin()
@@ -575,7 +577,7 @@ EQUATIONS:
     p.h ~ n.h
     n.P ~ p.P
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `ṁ = 1.0`: Mass flow rate (kg/s)
 """
 function TunableSteamFlowValve(; name, ṁ = 1.0)
@@ -611,7 +613,7 @@ w.Ẇ ~ p.Φ + n.Φ
 n.h ~ p.h + p.v * 1e5 * (n.P - p.P) / η 
 w.Ẇ ~ p.ṁ * (n.h - p.h)
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `η = 1.0`: Isentropic Effciency
 - `setpressure = false`: Option to constrain outlet pressure
 - `Pout = 10`: Pressure (bar)
@@ -658,7 +660,7 @@ ELEM TYPE: UTILITY
 EQUATIONS:
 
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function Splitter(; name)
     @named p = BasicSteamPin()
@@ -692,7 +694,7 @@ w.Ẇ ~ Ẇ
 n.h ~ p.h - (p.h - stm_hpsfunc(n.P, p.s)) * η
 w.Ẇ ~ p.ṁ * (n.h - p.h)
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `η = 1.0`: Isentropic Effciency
 - `setpressure = false`: Option to constrain outlet pressure
 - `Pout = 0.1`: DESCRIPTION
@@ -752,7 +754,7 @@ ELEM TYPE: COMPONENT
 EQUATIONS:
 
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `ηin = 1.0`: DESCRIPTION
 - `setpressure = false`: Option to constrain outlet pressure
 - `Pyin = 10`: DESCRIPTION
@@ -810,7 +812,7 @@ EQUATIONS:
     n.h ~ p.h + q.Q̇ / (p.ṁ)
     n.P ~ p.P
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function SteamHeatTransfer(; name)
     @named p = BasicSteamPin()
@@ -843,7 +845,7 @@ C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000   # duty T/h = cp
 n.h ~ p.h + q.Q̇ / (p.ṁ)
 n.P ~ p.P
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `Q̇in = 1.5e8`: DESCRIPTION
 """
 function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
@@ -877,7 +879,7 @@ n.P ~ p.P                     # no pressure
 n.h ~ stm_hptfunc(p.P, T)       # work, multiply by 100 to get to kPa
 q.Q̇ ~ p.ṁ * (n.h - p.h)
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `Tout = 350`: DESCRIPTION
 """
 function IdealBoiler(; name, Tout = 350)
@@ -913,7 +915,7 @@ n.h ~ stm_hsatfunc(p.P)        # work, multiply by 100 to get to kPa
 q.Q̇ ~ p.ṁ * (n.h - p.h)
 q.Q̇ ~ Q̇
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function IdealCondensor(; name)
     #Pout in bar
@@ -946,7 +948,7 @@ q.Q̇ ~ p.ṁ * (n.h - p.h)
 0 ~ p.ṁ + n.ṁ
 q.Q̇ ~ Q̇
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function PassiveCondensor(; name)
     #Pout in bar
@@ -975,7 +977,7 @@ EQUATIONS:
 n.ṁ + p.ṁ ~ 0         
 q.Q̇ ~ p.Φ + n.Φ         
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 - `pressurecontrol = false`: DESCRIPTION
 """
 function ReliefElement(; name, pressurecontrol = false)
@@ -1011,7 +1013,7 @@ n.h ~ stm_hsatfunc(n.P) # sat liquid
 0 ~ n.ṁ + p1.ṁ + p2.ṁ
 0 ~ n.Φ + (p1.Φ + p2.Φ)
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function OpenFeedwaterHeater(; name)
     # flows x and y are the inlets
@@ -1054,7 +1056,7 @@ n.h ~ 1 / (p1.ṁ + p2.ṁ) * (p1.ṁ * p1.h + p2.ṁ * p2.h)
 0 ~ n.ṁ + p1.ṁ + p2.ṁ
 0 ~ n.Φ + p1.Φ + p2.Φ
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function MixingChamber(; name)
     # flows x and y are the inlets
@@ -1158,7 +1160,7 @@ p.h ~ n.h
 ΔP ~ p.P - n.P
 n.Φ ~ 0
 INPUTS
-- `name`: Name of the system, symbol. Or use the @named macro when initializing.
+- name: Name of the system, symbol. Or use the @named macro when initializing.
 """
 function throttle(; name)
     # flows x and y are the inlets

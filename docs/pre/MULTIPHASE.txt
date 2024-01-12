@@ -55,12 +55,12 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `η = 1.0`: Isentropic Effciency</li>
 				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
 				<li>- `Pout = 10`: Pressure (bar)</li>
 				<li>- `controlinlet = false`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -86,11 +86,11 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `η = 1.0`: Isentropic Effciency</li>
 				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
 				<li>- `Pout = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -99,7 +99,7 @@
 				\[ Ẇ = p.Φ + n.Φ\]
 				\[ w.Ẇ = Ẇ\]
 				\[ 0 = p.ṁ + n.ṁ\]
-				\[ n.h = p.h - (p.h - stm_hpsfunc(n.P, p.s)) * η\]
+				\[ n.h = p.h - (p.h - h(n.P, p.s)) * η\]
 				\[ w.Ẇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
@@ -129,12 +129,12 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `ηin = 1.0`: DESCRIPTION</li>
 				<li>- `setpressure = false`: Option to constrain outlet pressure</li>
 				<li>- `Pyin = 10`: DESCRIPTION</li>
 				<li>- `Pzin = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -157,8 +157,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -166,7 +166,7 @@
 				<p>
 				\[     0 = p.ṁ + n.ṁ           \]
 				\[     q.Q̇ = p.Φ + n.Φ             \]
-				\[     C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[     C = p.ṁ * c_p(p.P, p.h) \]
 				\[ 				    0 = q.Q̇ - Q̇\]
 				\[     n.h = p.h + q.Q̇ / (p.ṁ)\]
 				\[     n.P = p.P\]
@@ -186,9 +186,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `Q̇in = 1.5e8`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -196,7 +196,7 @@
 				<p>
 				\[ 0 = p.ṁ + n.ṁ           \]
 				\[ 				q.Q̇ = p.Φ + n.Φ         \]
-				\[ 				C = p.ṁ * stm_cphfunc(p.P, p.h) \]
+				\[ 				C = p.ṁ * c_p(p.P, p.h) \]
 				\[ 				0 = q.Q̇ - Q̇in\]
 				\[ n.h = p.h + q.Q̇ / (p.ṁ)\]
 				\[ n.P = p.P\]
@@ -216,9 +216,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `Tout = 350`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -227,7 +227,7 @@
 				\[ q.Q̇ = p.Φ + n.Φ                 \]
 				\[ 				0 = p.ṁ + n.ṁ\]
 				\[ n.P = p.P                     \]
-				\[ 				n.h = stm_hptfunc(p.P, T)       \]
+				\[ 				n.h = h(p.P, T)       \]
 				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
 				\[ \]
 		</li>
@@ -245,8 +245,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -255,7 +255,7 @@
 				\[ q.Q̇ = p.Φ + n.Φ             \]
 				\[ 				0 = p.ṁ + n.ṁ\]
 				\[ n.P = p.P                 \]
-				\[ 				n.h = stm_hsatfunc(p.P)        \]
+				\[ 				n.h = h_{sat}(p.P)        \]
 				\[ 				q.Q̇ = p.ṁ * (n.h - p.h)\]
 				\[ q.Q̇ = Q̇\]
 				\[ \]
@@ -274,8 +274,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -300,9 +300,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `pressurecontrol = false`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -326,8 +326,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -337,7 +337,7 @@
 				\[ [yfrac = 0] => [yfrac = 0.0]\]
 				\[ n.P = p2.P\]
 				\[ p1.P = n.P\]
-				\[ n.h = stm_hsatfunc(n.P) \]
+				\[ n.h = h_{sat}(n.P) \]
 				\[ 				0 = n.h - (yfrac * p1.h + (1 - yfrac) * p2.h)\]
 				\[ 0 = n.ṁ * yfrac + p1.ṁ\]
 				\[ 0 = n.ṁ + p1.ṁ + p2.ṁ\]
@@ -360,8 +360,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -393,7 +393,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -425,8 +425,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -461,18 +461,18 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `Pdef = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- Pdef = 0.1: DESCRIPTION</li>
+				
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[     T = stm_Tphfunc(P, h)\]
-				\[     s = stm_sphfunc(P, h)\]
-				\[     x = stm_xphfunc(P, h)\]
-				\[     v = stm_vphfunc(P, h)\]
+				\[     T = T(P, h)\]
+				\[     s = s(P, h)\]
+				\[     x = x(P, h)\]
+				\[     v = v(P, h)\]
 				\[ \]
 		</li>
 				</p>
@@ -493,9 +493,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- P = 0.1: DESCRIPTION</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -522,9 +522,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -555,16 +555,16 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>-  = 0.1`: DESCRIPTION</li>
+				
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
 				\[ n.P = P\]
-				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.h = h_{sat}(P)\]
 				\[ n.Φ = 0\]
 				\[ \]
 		</li>
@@ -582,9 +582,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>-  = 0.1`: DESCRIPTION</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -608,17 +608,17 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 150`: DESCRIPTION</li>
 				<li>- `T = 600`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
 				\[ n.P = P\]
-				\[ 0 = stm_hptfunc(P, T) + n.h\]
+				\[ 0 = h(P, T) + n.h\]
 				\[ n.Φ = -n.ṁ * n.h\]
 				\[ \]
 		</li>
@@ -630,23 +630,23 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				
+				Fluid reference element with the option to set both the inlet and outlet pressures
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>- `fixboth = false`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- P = 0.1: Pressure (bar)</li>
+				<li>- `fixboth = false`: Option to fix both the inlet an d the outlet</li>
+				
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
 				\[ n.P = P\]
-				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.h = h_{sat}(P)\]
 				\[ n.Φ = 0\]
 				\[ 0 = n.ṁ + p.ṁ\]
 				\[ \]
@@ -659,15 +659,15 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				
+				Basic eleemnt
 			</p>
 		</li>
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>- `P = 0.1`: DESCRIPTION</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- P = 0.1: Pressure for both the p and n ports</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -675,8 +675,11 @@
 				<p>
 				\[ n.P = P\]
 				\[ p.P = P\]
-				\[ n.h = stm_hsatfunc(P)\]
+				\[ n.h = h_{sat}(P)\]
 				\[ p.h = n.h\]
+				\[ p.Φ = 0             \]
+				\[ 0 = n.ṁ + p.ṁ                                                           \]
+				\[ 0 = n.Φ + p.Φ\]
 				\[ \]
 		</li>
 				</p>
@@ -693,8 +696,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -721,8 +724,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -749,8 +752,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -777,9 +780,9 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `ṁ = 1.0`: Mass flow rate (kg/s)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -806,8 +809,8 @@
 		<li>
 			<h5>INPUTS:</h5>
 			<ul>
-				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				<li>- name: Name of the system, symbol. Or use the @named macro when initializing.</li>
+				
 			</ul>
 		</li>
 		<li>

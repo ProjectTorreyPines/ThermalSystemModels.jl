@@ -32,7 +32,6 @@
 			<li>find_common_name(stringvec::Vector{String}; verbose = false)</li>
 			<li>graphBlocks(G)</li>
 			<li>hLineOverlap(xvec::Vector{<:Real}, x2::Real, w2::Real)</li>
-			<li>helium_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)</li>
 			<li>hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)</li>
 			<li>horizontal_visibility_graph(G::AbstractGraph)</li>
 			<li>intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)</li>
@@ -41,7 +40,7 @@
 			<li>node_propdict(G, prop)</li>
 			<li>occupied_grid_index(G)</li>
 			<li>occupied_grid_positions(G)</li>
-			<li>rankine_loop(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)</li>
+			<li>rankine(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)</li>
 			<li>swap_adjacents(G::AbstractGraph, vj::Int64; verbose = false, maxiter = 10)</li>
 			<li>vLineOverlap(yvec::Vector{<:Real}, y2::Real, h2::Real)</li>
 			<li>vertical_visibility_graph(G::AbstractGraph; accountForWidth = true)</li>
@@ -58,7 +57,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Liquid to Gas heat exchanger<br>
+			OPTIONAL INPUTS<br>
 			- `name`: DESCRIPTION<br>
 			- `ϵ = 0.95`: DESCRIPTION<br>
 			- `A = Liq.IncompressibleHeatTransfer()`: DESCRIPTION<br>
@@ -72,7 +72,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Steam to Gas heat exchanger<br>
+			OPTIONAL INPUTS<br>
 			- `name`: DESCRIPTION<br>
 			- `ϵ = 0.95`: DESCRIPTION<br>
 			- `A = Steam.SteamHeatTransfer()`: DESCRIPTION<br>
@@ -102,12 +103,13 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
-			- `name`: DESCRIPTION<br>
-			- `ϵ = 0.95`: DESCRIPTION<br>
-			- `A`: DESCRIPTION<br>
-			- `B`: DESCRIPTION<br>
-			- `returnmode = :ode`: DESCRIPTION
+				General model for a heat exchanger which only accounts for temperature and specific heat.<br>
+			OPTIONAL INPUTS<br>
+			- name: DESCRIPTION<br>
+			- ϵ = 0.95: DESCRIPTION<br>
+			- A: DESCRIPTION<br>
+			- B: DESCRIPTION<br>
+			- returnmode = :ode: DESCRIPTION
 			</p>
 		</li>
 			</ul>
@@ -184,6 +186,21 @@
 			</ul>
 
 	<h4>intermediate_loop(; Pmax = 40, Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, flowrate = 100)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				OPTIONAL INPUTS<br>
+			- `Pmax = 40`: DESCRIPTION<br>
+			- `Pmin = 32`: DESCRIPTION<br>
+			- `Nhx = 3`: DESCRIPTION<br>
+			- `Tmin = 350 + 273.15`: DESCRIPTION<br>
+			- `flowrate = 100`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>rankine(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)</h4>
 		<ul>
 		<li>
 			<h5>DESCRIPTION:</h5>
@@ -619,29 +636,6 @@
 			- `G::AbstractGraph`: DESCRIPTION<br>
 			OPTIONAL INPUTS<br>
 			- `accountForWidth = true`: DESCRIPTION
-			</p>
-		</li>
-			</ul>
-
-	<h4>visibility_graph(G::AbstractGraph, dir = 1)</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				# Arguments:<br>
-			- `G::AbstractGraph`: DESCRIPTION<br>
-			- `dir = 1`: DESCRIPTION
-			</p>
-		</li>
-			</ul>
-
-	<h4>shiftlayout!(lay::Vector{T})</h4>
-		<ul>
-		<li>
-			<h5>DESCRIPTION:</h5>
-			<p>
-				# Arguments:<br>
-			- `lay::Vector{T}`: DESCRIPTION
 			</p>
 		</li>
 			</ul>

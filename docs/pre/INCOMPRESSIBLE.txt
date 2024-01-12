@@ -42,7 +42,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -74,7 +74,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `Ṁ = 1.0`: mass flow rate of the fixed flow source</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -103,7 +103,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `η = 0.9`: DESCRIPTION</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -132,7 +132,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `η = 1.0`: Isentropic effeciency of the pump</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -163,7 +163,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -199,7 +199,7 @@
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `ΔP = 0.0`: Pressure drop across the heat transfer element (bar)</li>
 				<li>- `Tout = 1000.0`: outlet temperature (K)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -234,7 +234,7 @@
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 0.1`: Pressure, (bar)</li>
 				<li>- `T = 300`: Temperature (K)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -265,7 +265,7 @@
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 0.1`: Pressure</li>
 				<li>- `T = 300`: Bar</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -294,7 +294,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -318,7 +318,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -342,7 +342,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -377,15 +377,15 @@
 				<li>- `Pdef = 50`:  Initial Pressure (bar)</li>
 				<li>- `Tdef = 555`: Initial Temperature (K)</li>
 				<li>- `ṁdef = 0.0`: Initial Flow Rate (kg/s)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
 			<h5>EQUATIONS:</h5>
 				<p>
-				\[     cp = Lcpfunc(T)\]
-				\[     v = Lvfunc(T)\]
-				\[     s = Lsfunc(T)\]
+				\[     cp = c_p(T)\]
+				\[     v = v(T)\]
+				\[     s = s(T)\]
 				\[ \]
 				\[ \]
 		</li>
@@ -405,7 +405,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -429,7 +429,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -456,7 +456,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `Qin = 1000.0`: Heating rate, (W)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -487,7 +487,7 @@
 			<h5>INPUTS:</h5>
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -519,7 +519,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 0.1`: Pressure (bar)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -547,7 +547,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `P = 0.1`: Pressure (bar)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>
@@ -579,7 +579,7 @@
 			<ul>
 				<li>- `name`: Name of the system, symbol. Or use the @named macro when initializing.</li>
 				<li>- `T = 300`: Temperature (K)</li>
-				<li>			</li>
+				
 			</ul>
 		</li>
 		<li>

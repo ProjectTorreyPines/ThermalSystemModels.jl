@@ -13,4 +13,26 @@
     "juliaFormatter.whitespaceInKwargs": false,
     "juliaFormatter.overwriteFlags": true,
     "juliaFormatter.alwaysUseReturn": true,
+    "editor.tokenColorCustomizations": {
+        "comments": "#afa7a7",
+        "textMateRules": [
+            {
+                "scope": [
+                    "punctuation.definition.string",
+                    "string.docstring.julia"
+                ],
+                "settings": {
+                    "foreground": "#858585e4",
+                    "fontStyle": "italic"
+                }
+            },
+            {
+                "scope":"comment",
+                "settings": {
+                    "foreground": "#b6b6b6",
+                    "fontStyle": "italic"
+                }
+            }
+        ]
+    }
 }

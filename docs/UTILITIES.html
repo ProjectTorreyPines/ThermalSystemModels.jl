@@ -31,7 +31,7 @@
         h4 {
             font-size: 15px;
             color: brown;
-            padding: 1px;
+            padding: 10px;
             margin: 0px;
         }
 
@@ -176,6 +176,7 @@
 			<li>system2graph(ODESYS::ODESystem; verbose = false)</li>
 			<li>system_details(sys::ODESystem; alias_elimate = true)</li>
 			<li>systems(p::ODESystem)</li>
+			<li>updateGraphSoln(G,soln)</li>
 			<li>variable2symbol(var)</li>
 			<li>work_connect(pins...)</li>
 		</ul>
@@ -342,6 +343,7 @@
 			<p>
 				Gathers all equations within a system which represent connections rather than intercomponent equations<br>
 			i.e. all equations which are formed during component connections<br>
+			returns all connection equations<br>
 			# Arguments:<br>
 			- `BaseSys`: DESCRIPTION
 			</p>
@@ -539,6 +541,16 @@
 			OPTIONAL INPUTS<br>
 			- `verbose = false`: DESCRIPTION<br>
 			- `soln = nothing`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>convert_pressure(val::Real,from_unit::Symbol,to_unit::Symbol)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				convert pressure units, optional to specify to_unit, default = bar because that is what XSTeam uses
 			</p>
 		</li>
 			</ul>

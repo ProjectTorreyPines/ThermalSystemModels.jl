@@ -6,6 +6,7 @@ using LayeredLayouts, MetaGraphs, Graphs, Plots, Random
 using Statistics, GeometryBasics
 ModelingToolkit.@variables t
 # Logging.disable_logging(Logging.Warn) NonlinearSolve, DifferentialEquations, 
+
 include("03-MTK_UTILS.jl")
 module Gas
     include("01-ThermoGas.jl")
@@ -23,7 +24,7 @@ end
     L2G_HeatExchanger(; name, ϵ = 0.95, A = Liq.IncompressibleHeatTransfer(), B = Gas.ThermoHeatTransfer())
 
 DOCSTRING
-
+Liquid to Gas heat exchanger
 
 OPTIONAL INPUTS
 - `name`: DESCRIPTION
@@ -50,13 +51,12 @@ function L2G_HeatExchanger(;
     ODESystem(eqs, t, [Q̇], ps; name = name, systems = [A, B], defaults = [ϵ => 0.95])
 end
 
-#   Steam to Gas
 
 """
     S2G_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Gas.ThermoHeatTransfer(), returnmode = :eqs)
 
 DOCSTRING
-
+Steam to Gas heat exchanger
 
 OPTIONAL INPUTS
 - `name`: DESCRIPTION
@@ -72,7 +72,6 @@ function S2G_HeatExchanger(;
     B = Gas.ThermoHeatTransfer(),
     returnmode = :eqs,
 )
-
     if returnmode == :ode
 
         ps = @parameters ϵ = ϵ
@@ -130,7 +129,7 @@ end
     L2S_HeatExchanger(; name, ϵ = 0.95, A = Steam.SteamHeatTransfer(), B = Liq.IncompressibleHeatTransfer(), returnmode = :eqs)
 
 DOCSTRING
-
+Liquid to steam heat exchanger
 
 OPTIONAL INPUTS
 - `name`: DESCRIPTION
@@ -204,14 +203,14 @@ end
     Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
 
 DOCSTRING
-
+General model for a heat exchanger which only accounts for temperature and specific heat.
 
 OPTIONAL INPUTS
-- `name`: DESCRIPTION
-- `ϵ = 0.95`: DESCRIPTION
-- `A`: DESCRIPTION
-- `B`: DESCRIPTION
-- `returnmode = :ode`: DESCRIPTION
+- name: DESCRIPTION
+- ϵ = 0.95: DESCRIPTION
+- A: DESCRIPTION
+- B: DESCRIPTION
+- returnmode = :ode: DESCRIPTION
 """
 function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
     if returnmode == :ode
@@ -232,6 +231,7 @@ function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
 end
 
 ModelingToolkit.@variables t
+
 """
     default_energy_sys()
 
@@ -251,40 +251,11 @@ function default_energy_sys()
 end
 
 
-# function helium_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15, Tmax = 550+273.15, load = 100e6)
-#     params = @parameters Qwall = load
-#     pressure_max_wall   = max_pressure;  # bar
-#     pressure_drop_wall  = pressrue_drop;
-#     pressure_min_wall   = pressure_max_wall-pressure_drop_wall;
-#     Tmin_wall = Tmin;
-#     Tmax_wall = Tmax;
-    
-#     @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
-#     @named wall_circulator      = Gas.PassiveThermoCompressor(η = 0.9);
-#     @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
-#     @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
-#     @named wall_hx              = Gas.ThermoHeatTransfer() ; 
-#     @named wall_relief          = Gas.ReliefElement();
-    
-#     wall_sys = [wall_supply,wall_circulator,wall_const_pressure,wall_heat,wall_hx,wall_relief];
-
-#     sysdict = sys2dict(wall_sys)
-
-#     wall_connections = vcat(Gas.gas_connect(wall_supply.n,wall_circulator.p,wall_relief.n),
-#                             Gas.gas_connect(wall_circulator.n,wall_const_pressure.p),
-#                             Gas.gas_connect(wall_const_pressure.n,wall_heat.p),
-#                             Gas.gas_connect(wall_heat.n,wall_hx.p),
-#                             Gas.gas_connect(wall_hx.n,wall_relief.p),
-#                             wall_heat.Q̇ ~ Qwall);
-#     return wall_sys, wall_connections, params, sysdict
-# end
-
-
 """
     wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)
 
 DOCSTRING
-
+Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for helium as the fluid.
 
 OPTIONAL INPUTS
 - `max_pressure = 80`: DESCRIPTION
@@ -325,7 +296,7 @@ end
     divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 + 273.15, Tmax = 550 + 273.15, load = 1.0e8)
 
 DOCSTRING
-
+Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for helium as the fluid.
 
 OPTIONAL INPUTS
 - `max_pressure = 80`: DESCRIPTION
@@ -364,7 +335,7 @@ end
     breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 + 273.15, Tmax = 900 + 273.15, load = 1.0e8)
 
 DOCSTRING
-
+Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for PbLi as the fluid.
 
 OPTIONAL INPUTS
 - `max_pressure = 40`: DESCRIPTION
@@ -2513,7 +2484,7 @@ function create_plot_graph(
         end
     end
 
-    ##
+    ## 
     for v in vertices(G2)
         # fgv = findfirst(x -> v ∈ x, flow_groups)
         inn = get_prop(G2, v, :input)

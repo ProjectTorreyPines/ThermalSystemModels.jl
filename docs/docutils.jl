@@ -17,11 +17,13 @@ end
 function extract_docstrings(file_path::AbstractString)
     # Read the content of the file
     content = read(file_path, String)
-    function_docstr = Dict{String,String}()
+
     # Extract function names using a regular expression
     reg=r"\"\"\"\n\s*(.*)\s*DOCSTRING\n([\s\S]*?)\"\"\"";
+    
     matches = [ea.captures for ea in eachmatch(reg,content)];
     matches = string.(permutedims(hcat(matches...)))
+
     return matches
 end
 
@@ -46,7 +48,6 @@ function library_docstrings(file_path::AbstractString)
 
     return matches
 end
-
 
 # ## generates text files for component doc strings
 # function generate_libtxt(filename::String,docstrings::Matrix{String})
@@ -86,7 +87,27 @@ end
 #     # end
 # end
 
+
 function generate_libtxt(filename::String,file_path::AbstractString)
+    EQSWAP = ["gcpfunc" => "c_p",
+    "gkfunc" => "\\gamma",
+    "Lcpfunc" => "c_p",
+    "Lvfunc" => "v",
+    "Lsfunc" => "s",
+    "Lhfunc" => "h",
+    "stm_hsatfunc" => "h_{sat}",
+    "stm_cpfunc" => "c_p",
+    "stm_cphfunc" => "c_p",
+    "stm_vphfunc" => "v",
+    "stm_Tpsfunc" => "T",
+    "stm_Tphfunc" => "T",
+    "stm_xphfunc" => "x",
+    "stm_xptfunc" => "x",
+    "stm_sptfunc" => "s",
+    "stm_sphfunc" => "s",
+    "stm_hptfunc" => "h",
+    "stm_hpsfunc" => "h"];
+
     docstrings = library_docstrings(file_path);
     fcn_names = extract_function_names(file_path);
     fcn_names = fcn_names[sortperm(fcn_names)];
@@ -121,11 +142,12 @@ function generate_libtxt(filename::String,file_path::AbstractString)
             html *= "\t\t\t<ul>\n"
             html *= "\t\t\t\t<li>" * replace(row[5],"\n" => "</li>\n\t\t\t\t<li>") * "\t\t\t</li>\n\t\t\t</ul>\n\t\t</li>\n"
             html *= "\t\t<li>\n\t\t\t<h5>EQUATIONS:</h5>\n"
-            html *= "\t\t\t\t<p>\n\t\t\t\t\\[ " * replace(replace(row[4],r"#.*\n" => "\n\t\t\t\t"),"\n" => "\\]\n\t\t\t\t\\[ " ,"~" => "=")  * "\\]\n\t\t</li>\n"
+            html *= "\t\t\t\t<p>\n\t\t\t\t\\[ " * replace(replace(replace(row[4],r"#.*\n" => "\n\t\t\t\t"),"\n" => "\\]\n\t\t\t\t\\[ " ,"~" => "="),EQSWAP...)  * "\\]\n\t\t</li>\n"
             html *= "\t\t\t\t</p>\n\t\t\t</ul>\n"
         end
         html *= "\n</section></div>\n"
     end
+    html = replace(html,r"\<li\>\s*</li>" => "");
     touch(txtpath)
     write(txtpath,html)
 end
