@@ -30,6 +30,9 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 WebIO = "0f1e0344-ec1d-5b48-a673-e5cf874b6c29"
 XSteam = "95ff35a0-be81-11e9-2ca3-5b4e338e8476"
 
+[compat]
+ModelingToolkit = "9"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
