@@ -5,7 +5,7 @@
     "editor.tabSize": 4,
     "editor.detectIndentation": false,
     "[julia]": {
-        "editor.defaultFormatter": "singularitti.vscode-julia-formatter"
+        "editor.defaultFormatter": "0h7z.vscode-julia-format"
     },
     "juliaFormatter.margin": 160,
     "juliaFormatter.alwaysForIn": true,
@@ -29,8 +29,7 @@
             {
                 "scope":"comment",
                 "settings": {
-                    "foreground": "#b6b6b6",
-                    "fontStyle": "italic"
+                    "foreground": "#b6b6b6"
                 }
             }
         ]

@@ -2437,25 +2437,26 @@ function create_plot_graph(
     set_default_edge_prop!(G2, :weight, 1)
     # quick_plot(G2,xs,ys,paths)
     # quick_plot(gcopy,xs,ys,paths)
-    # begin
-    # handeling cycles with more than 1 input or output by removing interconnecting edges (so they can be in the same layer)
-    #     input_cycles = [(v == -1 ? -1 : embedded_dict[v]) for v in node_prop(G2,:input)]
-    #     output_cycles =  [(v == -1 ? -1 : embedded_dict[v]) for v in node_prop(G2,:output)]
-    #     ##
-    #     G2_edges = collect(edges(G2))
-    #     G2_src = [e.src for e in G2_edges]
-    #     G2_dst = [e.dst for e in G2_edges]
+        # begin
+        # handeling cycles with more than 1 input or output by removing interconnecting edges (so they can be in the same layer)
+        #     input_cycles = [(v == -1 ? -1 : embedded_dict[v]) for v in node_prop(G2,:input)]
+        #     output_cycles =  [(v == -1 ? -1 : embedded_dict[v]) for v in node_prop(G2,:output)]
+        #     ##
+        #     G2_edges = collect(edges(G2))
+        #     G2_src = [e.src for e in G2_edges]
+        #     G2_dst = [e.dst for e in G2_edges]
 
-    #     # input = more than one oncoming
-    #     # output = more than one outgoin
-    #     multi_output_cycles  = [G2_src[z] for z in findall(x -> length(findall(y -> y == x, G2_src)) > 1, unique(G2_src))]
-    #     multi_input_cycles   = [G2_dst[z] for z in findall(x -> length(findall(y -> y == x, G2_dst)) > 1, unique(G2_dst))]
+        #     # input = more than one oncoming
+        #     # output = more than one outgoin
+        #     multi_output_cycles  = [G2_src[z] for z in findall(x -> length(findall(y -> y == x, G2_src)) > 1, unique(G2_src))]
+        #     multi_input_cycles   = [G2_dst[z] for z in findall(x -> length(findall(y -> y == x, G2_dst)) > 1, unique(G2_dst))]
 
-    #     get_prop(G2, multi_input_cycles[1], :name)
-    #     get_prop(G2, multi_output_cycles[1], :name)
+        #     get_prop(G2, multi_input_cycles[1], :name)
+        #     get_prop(G2, multi_output_cycles[1], :name)
     # #
 
     # this is temp solution, it would be better to remove the edges and add later so they can be in same layer
+    # I remember fixing this but need to make sure
     for n = 1:nv(G2)
         inn = inneighbors(G2, n)
         if length(inn) > 2
@@ -2580,14 +2581,15 @@ DOCSTRING
         ),
     )
     takes in graph, returns 
-    maxAlignCnt specifies the largest groupings to requires equal layering, sometimes zarate struggles with more than 3
-    requirementsf ror force_equal_layers = xLayReqs,
-                force_order = vSortReqs,
-    from recent output xs,ys,paths
+    maxAlignCnt specifies the largest groupings to requires equal layering, 
+    sometimes zarate struggles with more than 3
+    requirements for force_equal_layers = xLayReqs,
+                            force_order = vSortReqs,
+                    from recent output xs,ys,paths
 # Arguments:
 - `gcopy: graph
 OPTIONAL INPUTS
-- `maxAlignCnt = 3`: DESCRIPTION
+- `maxAlignCnt = 3`: specifies the largest groupings to requires equal layering, 
 - `doplot = false`: DESCRIPTION
 - `plotattr`: DESCRIPTION
 """

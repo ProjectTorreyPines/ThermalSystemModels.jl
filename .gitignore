@@ -81,3 +81,5 @@ src/Playground/270723_demos.jl
 src/Playground/02-SystemModels.jl
 src/Playground/Verification.ipynb
 src/Playground/05-solvercompare.jl
+src/Playground/bondgraphdev.ipynb
+src/Playground/ThermalTSBond_working.ipynb
