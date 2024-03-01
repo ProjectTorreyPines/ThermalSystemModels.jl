@@ -576,13 +576,13 @@ function system_details(sys::ODESystem; alias_elimate = true)
     @printf "************ SYSTEM: %s ************\n" sys.name
     @printf "SYSTEM: %s \n" sys.name
     @printf "\t # of equations = %i\n" length(equations(sys))
-    @printf "\t # of states = %i\n" length(states(sys))
+    @printf "\t # of states = %i\n" length(unknowns(sys))
     @printf "\t # of parameters = %i\n" length(parameters(sys))
     if alias_elimate
         @printf "After Alias Elemination:\n"
         al_sys = alias_elimination(sys)
         @printf "\t # of equations = %i\n" length(equations(al_sys))
-        @printf "\t # of states = %i\n" length(states(al_sys))
+        @printf "\t # of states = %i\n" length(unknowns(al_sys))
         @printf "\t # of parameters = %i\n" length(parameters(al_sys))
     end
 end
