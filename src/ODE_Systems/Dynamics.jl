@@ -213,6 +213,8 @@ OPTIONAL INPUTS
 - returnmode = :ode: DESCRIPTION
 """
 function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
+
+    eff = ϵ
     if returnmode == :ode
         ps = @parameters ϵ = ϵ
 
@@ -223,7 +225,7 @@ function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
         ODESystem(eqs, t, [], ps; name = name, systems = [A, B], defaults = [ϵ => 0.95])
     else
         eqs = [
-            -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+            -A.Q̇ ~ eff * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
             0 ~ A.Q̇ + B.Q̇
         ]
         return eqs
@@ -526,6 +528,51 @@ function rankine(; steam_pmax = 30, steam_pmin = 0.75, flowrate = 50)
     sysdict = sys2dict(steam_sys)
     return steam_sys, steam_connections, params, sysdict
 end
+
+function brayton_cycle(; flowrate = 50, TminCycle = 300, PminCycle = 15)
+    params = @parameters cycle_ṁ = flowrate
+    @named cycle_supply        = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
+    @named cycle_compressor_lp = Gas.ActiveThermoCompressor(rp = 1.7, η = 0.9)
+    @named cycle_intercooler_1 = Gas.Intercooler(Tout = TminCycle)
+    @named cycle_compressor_mp = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
+    @named cycle_intercooler_2 = Gas.Intercooler(Tout = TminCycle)
+    @named cycle_compressor_hp = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
+    @named cycle_heat          = Gas.ThermoHeatTransfer()
+    @named cycle_turbine       = Gas.PassiveThermoTurbine()
+    @named cycle_cooler        = Gas.IdealCooler()
+
+
+    connections = vcat(
+        Gas.gas_connect(cycle_supply.n, cycle_compressor_lp.p),
+        Gas.gas_connect(cycle_compressor_lp.n, cycle_intercooler_1.p),
+        Gas.gas_connect(cycle_intercooler_1.n, cycle_compressor_mp.p),
+        Gas.gas_connect(cycle_compressor_mp.n, cycle_intercooler_2.p),
+        Gas.gas_connect(cycle_intercooler_2.n, cycle_compressor_hp.p),
+        Gas.gas_connect(cycle_compressor_hp.n, cycle_heat.p),
+        Gas.gas_connect(cycle_heat.n, cycle_turbine.p),
+        Gas.gas_connect(cycle_turbine.n, cycle_cooler.p),
+        Gas.gas_connect(cycle_cooler.n, cycle_supply.p),
+        cycle_compressor_lp.p.ṁ ~ cycle_ṁ,
+    )
+
+
+    cyclesys = [
+        cycle_supply,
+        cycle_compressor_lp,
+        cycle_intercooler_1,
+        cycle_compressor_mp,
+        cycle_intercooler_2,
+        cycle_compressor_hp,
+        cycle_heat,
+        cycle_turbine,
+        cycle_cooler,
+    ]
+    # ODESystem(connections,t; name = name, systems = systemNames)
+    sysdict = sys2dict(cyclesys)
+    return cyclesys, connections, params, sysdict
+end
+
+
 
 
 # function FeedwaterRankine2(; name, Pmin = 0.1, Pmid = 10, Pmax = 150)
@@ -1162,19 +1209,19 @@ end
 
 function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
     params = @parameters cycle_ṁ = flowrate
-    @named cycle_supply = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
+    @named cycle_supply        = Gas.TwoPortReservoir(P = PminCycle, T = TminCycle)
     @named cycle_compressor_lp = Gas.ActiveThermoCompressor(rp = 1.7, η = 0.9)
     @named cycle_intercooler_1 = Gas.Intercooler(Tout = TminCycle)
     @named cycle_compressor_mp = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
     @named cycle_intercooler_2 = Gas.Intercooler(Tout = TminCycle)
     @named cycle_compressor_hp = Gas.ActiveThermoCompressor(rp = 1.5, η = 0.95)
-    # @named cycle_regenerator      = Gas.Regenerator()
-    @named cycle_heat = Gas.ThermoHeatTransfer()
-    @named cycle_turbine = Gas.PassiveThermoTurbine()
-    @named cycle_cooler = Gas.IdealCooler()
+    @named cycle_heat          = Gas.ThermoHeatTransfer()
+    @named cycle_turbine       = Gas.PassiveThermoTurbine()
+    @named cycle_cooler        = Gas.IdealCooler()
 
     @named cycle_regenerator_A = Gas.ThermoHeatTransfer()
     @named cycle_regenerator_B = Gas.ThermoHeatTransfer()
+    
     @named hx4 = Gen_HeatExchanger(
         A = cycle_regenerator_A,
         B = cycle_regenerator_B,
@@ -1195,6 +1242,7 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
         Gas.gas_connect(cycle_cooler.n, cycle_supply.p),
         cycle_compressor_lp.p.ṁ ~ cycle_ṁ,
     )
+
     push!(connections, hx4...)
 
     cyclesys = [

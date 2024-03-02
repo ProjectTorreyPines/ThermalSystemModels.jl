@@ -643,11 +643,11 @@ INPUTS
 - `η = 1.0`: Isentropic Effecience
 """
 function PassiveThermoTurbine(; name, η = 1.0)
-    @named p = ThermoPin(Pdef = 80, Tdef = 800)
-    @named n = ThermoPin(Pdef = 80 / 3.5, Tdef = 500)
+    @named p = ThermoPin()
+    @named n = ThermoPin()
     @named w = WorkPin()
     ps = @parameters η = η
-    sts = @variables rp(t) = 3.5
+    sts = @variables rp(t) = 1.0
     eqs = [
         0 ~ p.ṁ + n.ṁ                               # conservation of mass
         p.P ~ n.P * rp
@@ -657,7 +657,7 @@ function PassiveThermoTurbine(; name, η = 1.0)
         w.Ẇ ~ p.ṁ * p.cp * (n.T - p.T)
         w.Ẇ ~ p.Φ + n.Φ
     ]
-    ODESystem(eqs, t, sts, ps; name = name, systems = [p, n, w], defaults = [rp => 3.5])
+    ODESystem(eqs, t, sts, ps; name = name, systems = [p, n, w])
 end
 
 """
