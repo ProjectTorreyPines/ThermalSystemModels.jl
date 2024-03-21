@@ -1,4 +1,4 @@
-using ThermalSystem_Models
+using ThermalSystemModels
 using ModelingToolkit
 using Test
 using MetaGraphs
@@ -6,8 +6,8 @@ using Plots, DifferentialEquations
 
 display("Running Tests")
 
-@testset "ThermalSystem_Models.jl" begin
-    TSM   = ThermalSystem_Models
+@testset "ThermalSystemModels.jl" begin
+    TSM   = ThermalSystemModels
     TSMD  = TSM.Dynamics
     MTK   = ModelingToolkit
     Steam = TSMD.Steam

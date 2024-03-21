@@ -1,4 +1,4 @@
-<h1>ThermalSystem_Models.jl Documentation Template</h1>
+<h1>ThermalSystemModels.jl Documentation Template</h1>
     <section>
         <h2>Multi-Phase Library</h2>
         <a href="MULTIPHASE.html">Read Documentation</a>

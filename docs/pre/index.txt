@@ -1,4 +1,4 @@
-<h1>ThermalSystem_Models.jl Documentation Home</h1>
+<h1>ThermalSystemModels.jl Documentation Home</h1>
 <section id="welcome">
     <h2>ThermalSystems_Models.jl Documentation</h2>
     <p>

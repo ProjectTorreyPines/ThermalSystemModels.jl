@@ -1,4 +1,4 @@
-module ThermalSystem_Models
+module ThermalSystemModels
 using ModelingToolkit, Plots, Revise, Unitful
 using Logging, Printf
 using Revise

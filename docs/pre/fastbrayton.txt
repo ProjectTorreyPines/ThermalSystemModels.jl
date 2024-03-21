@@ -1,4 +1,4 @@
-<h1>ThermalSystem_Models.jl Documentation Template</h1>
+<h1>ThermalSystemModels.jl Documentation Template</h1>
      <h2>COMPUTATION OF THE BRAYTON CYCLE</h2>
 
     <p>The following subsections consider a Brayton cycle with a constant specific heat working fluid and an OCR defined by \(r_p\).
