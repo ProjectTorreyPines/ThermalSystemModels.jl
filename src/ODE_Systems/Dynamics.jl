@@ -2328,6 +2328,7 @@ function create_plot_graph(
     # finding all cyclic instances within system graph
     cycles = simplecycles_hawick_james(G)
     if verbose
+        println("EXISTING CYCLES")
         for c in cycles
             println("CYCLE $c")
             for ci in c
@@ -2586,9 +2587,11 @@ function create_plot_graph(
         set_props!(gcopy, e.src, e.dst, epropsave[e])
         push!(non_flow_edges, e.src => e.dst)
         set_prop!(gcopy, e, :isReversed, false)
+        # println("($(e.src),$(get_prop(gcopy,e.src,:name))) -> ($(e.dst),$(get_prop(gcopy,e.dst,:name))) [$(get_prop(gcopy,e,:etype))]")
     end
 
     cycles = simplecycles_hawick_james(gcopy)
+    # println(cycles)
 
     if verbose
         for e in edges(gcopy)
@@ -2603,6 +2606,10 @@ function create_plot_graph(
     weightfield(gcopy)
     set_default_edge_prop!(gcopy, :weight, 1)
     set_prop!(gcopy, :reduced_graph, G2)
+    util_labels = string.(get_prop(gcopy, :utility_vector))
+    system_labels = string.(node_prop(G2, :name))
+    set_prop!(gcopy, :system_labels, system_labels)
+    set_prop!(gcopy, :util_labels, util_labels)
     return gcopy
     # edge_prop(gcopy,weightfield(gcopy))
     # weights_mat = Dict([e.src,e.dst] => get_prop(gcopy,e,:weight) for e in collect(edges(gcopy)))
