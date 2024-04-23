@@ -82,3 +82,7 @@ src/Playground/02-SystemModels.jl
 src/Playground/Verification.ipynb
 src/Playground/05-solvercompare.jl
 src/Playground/braytontest.jl
+src/Playground/in dev/pneumaticBasic.ipynb
+src/Playground/in dev/pneumaticBasic.jl
+src/Playground/in dev/thermo_mechanical_dof.jl
+src/Playground/in dev/ThermalTSBond_working.ipynb
