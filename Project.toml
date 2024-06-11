@@ -23,6 +23,9 @@ Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 XSteamTP = "d40c7a0e-b328-4954-9d8e-c203ade7593f"
 
+[compat]
+ModelingToolkit = "<9.11,^9.16"
+
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 

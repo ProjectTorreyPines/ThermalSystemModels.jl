@@ -107,7 +107,7 @@ display("Running Tests")
     simple_sys = structural_simplify(sys)
     tspan = (0.0, 1.0)
     prob = ODEProblem(simple_sys, [], tspan)
-    sol = DifferentialEquations.solve(prob, DifferentialEquations.ImplicitEuler())
+    sol = DifferentialEquations.solve(prob, DifferentialEquations.Rosenbrock23())
 
     println("Solved Rankine")
     
