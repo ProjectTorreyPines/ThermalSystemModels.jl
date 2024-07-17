@@ -163,6 +163,7 @@
 			<li>Water_loop(; name, Pmin = 32, Pmax = 40)</li>
 			<li>available_grid_position_with_size(G, vj)</li>
 			<li>available_grid_positions(G)</li>
+			<li>brayton_cycle(; flowrate = 50, TminCycle = 300, PminCycle = 15)</li>
 			<li>brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)</li>
 			<li>breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273.15, Tmax = 900+273.15, load = 100e6)</li>
 			<li>breeder_loop(; name, Pmin = 32, Pmax = 40, Tmin = 600)</li>
@@ -237,7 +238,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Liquid to steam heat exchanger<br>
+			OPTIONAL INPUTS<br>
 			- `name`: DESCRIPTION<br>
 			- `ϵ = 0.95`: DESCRIPTION<br>
 			- `A = Steam.SteamHeatTransfer()`: DESCRIPTION<br>
@@ -278,7 +280,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for helium as the fluid.<br>
+			OPTIONAL INPUTS<br>
 			- `max_pressure = 80`: DESCRIPTION<br>
 			- `pressrue_drop = 5`: DESCRIPTION<br>
 			- `Tmin = 450 + 273.15`: DESCRIPTION<br>
@@ -293,7 +296,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for helium as the fluid.<br>
+			OPTIONAL INPUTS<br>
 			- `max_pressure = 80`: DESCRIPTION<br>
 			- `pressrue_drop = 5`: DESCRIPTION<br>
 			- `Tmin = 450 + 273.15`: DESCRIPTION<br>
@@ -308,7 +312,8 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				OPTIONAL INPUTS<br>
+				Returns a simple fluid circuit for a helium heat extraction circuit. Currently only allows for PbLi as the fluid.<br>
+			OPTIONAL INPUTS<br>
 			- `max_pressure = 40`: DESCRIPTION<br>
 			- `pressrue_drop = 8`: DESCRIPTION<br>
 			- `Tmin = 750 + 273.15`: DESCRIPTION<br>
@@ -785,6 +790,18 @@
 			- `G::AbstractGraph`: DESCRIPTION<br>
 			OPTIONAL INPUTS<br>
 			- `accountForWidth = true`: DESCRIPTION
+			</p>
+		</li>
+			</ul>
+
+	<h4>visibility_graph(G::AbstractGraph, dir = 1)</h4>
+		<ul>
+		<li>
+			<h5>DESCRIPTION:</h5>
+			<p>
+				# Arguments:<br>
+			- `G::AbstractGraph`: DESCRIPTION<br>
+			- `dir = 1`: DESCRIPTION
 			</p>
 		</li>
 			</ul>

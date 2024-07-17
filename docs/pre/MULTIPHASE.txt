@@ -659,7 +659,7 @@
 		<li>
 			<h5>DESCRIPTION:</h5>
 			<p>
-				Basic eleemnt
+				Basic
 			</p>
 		</li>
 		<li>
