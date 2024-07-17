@@ -3,7 +3,7 @@ using ModelingToolkit, Plots, Revise, Unitful
 using Logging, Printf
 using Revise
 using Symbolics
-using XSteamTP, Printf
+using XSteam, Printf
 using Graphs
 using Plots, LinearAlgebra
 using Random

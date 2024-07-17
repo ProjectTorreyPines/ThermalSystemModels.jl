@@ -21,10 +21,11 @@ Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
-XSteamTP = "d40c7a0e-b328-4954-9d8e-c203ade7593f"
+XSteam = "95ff35a0-be81-11e9-2ca3-5b4e338e8476"
 
 [compat]
 ModelingToolkit = "<9.11,^9.16"
+XSteam = "99"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
