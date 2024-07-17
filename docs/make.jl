@@ -1,3 +1,6 @@
+cd(joinpath(@__DIR__, ".."))
+
+
 include("docutils.jl")
 
 
