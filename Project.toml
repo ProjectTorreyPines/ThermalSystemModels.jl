@@ -25,7 +25,7 @@ XSteam = "95ff35a0-be81-11e9-2ca3-5b4e338e8476"
 
 [compat]
 ModelingToolkit = "<9.11,^9.16"
-XSteam = "99"
+XSteam = "99, 0.3"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
