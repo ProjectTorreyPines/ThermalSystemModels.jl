@@ -1,5 +1,4 @@
 using Pkg
-using Revise
 using Printf
 using DelimitedFiles
 
@@ -20,7 +19,7 @@ function extract_docstrings(file_path::AbstractString)
 
     # Extract function names using a regular expression
     reg=r"\"\"\"\n\s*(.*)\s*DOCSTRING\n([\s\S]*?)\"\"\"";
-    
+
     matches = [ea.captures for ea in eachmatch(reg,content)];
     matches = string.(permutedims(hcat(matches...)))
 
@@ -186,7 +185,7 @@ function generate_utiltxt(filename::String,file_path::AbstractString)
     touch(txtpath)
     write(txtpath,html)
 end
-"""     
+"""
     buildhtml(filref)
 
 
@@ -196,7 +195,7 @@ end
 """
 function buildhtml(fileref)
     @printf "Building html file for : %s \n" fileref
-    
+
     # @printf "Active directory : %s \n" splitdir(pwd())[end]
 
     prefixpath  = "docs/tmpl/prefix.txt";

@@ -14,10 +14,9 @@
 #       Work in is positive
 #=============================================================#
 
-using ModelingToolkit, Plots, Revise,  Logging, Printf
-# using NonlinearSolve, Printf, DifferentialEquations, 
+using ModelingToolkit, Plots,  Logging, Printf
+# using NonlinearSolve, Printf, DifferentialEquations,
 # Unitful, CoolProp,
-Revise.retry()
 # Logging.disable_logging(Logging.Warn)
 @variables t
 # include("03-MTK_UTILS.jl")
@@ -48,9 +47,9 @@ propDict = Dict(gcpfunc => cphe, gkfunc => khe)
     ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
 
 DOCSTRING
-@variables P(t) = Pdef             [unit = u"bar"] 
-@variables ṁ(t) = ṁdef             [unit = u"kg/s"] 
-@variables T(t) = Tdef             [unit = u"K"] 
+@variables P(t) = Pdef             [unit = u"bar"]
+@variables ṁ(t) = ṁdef             [unit = u"kg/s"]
+@variables T(t) = Tdef             [unit = u"K"]
 @variables Φ(t) = 1.0
 @variables cp(t) = 5192
 @variables k(t) = 1.667
@@ -67,9 +66,9 @@ INPUTS
 - `ṁdef = 0.0`: DESCRIPTION
 """
 function ThermoPin(; name, Pdef = 10.0, Tdef = 300, ṁdef = 0.0)
-    @variables P(t) = Pdef              #[unit = u"bar"] 
-    @variables ṁ(t) = ṁdef              #[unit = u"kg/s"] 
-    @variables T(t) = Tdef             #[unit = u"K"] 
+    @variables P(t) = Pdef              #[unit = u"bar"]
+    @variables ṁ(t) = ṁdef              #[unit = u"kg/s"]
+    @variables T(t) = Tdef             #[unit = u"K"]
     @variables Φ(t) = 1.0
     @variables cp(t) = 5192
     @variables k(t) = 1.667
@@ -126,7 +125,7 @@ function gas_connect(pins...)
     return eqs
 end
 """
-    gas_mirror_pin(pinA,pinB) 
+    gas_mirror_pin(pinA,pinB)
     Used for internal pins to switch mass flow rate and energy flow rate
 """
 function gas_CopyConnect(pins...)   # creates thermoPin connections  P = P, T = T, mflow = mflow
@@ -400,7 +399,7 @@ function ThermoHeatTransfer(; name, ΔP = 0.0)
     ps = @parameters ΔP = ΔP
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ p.ṁ * p.cp          # duty
         0 ~ q.Q̇ - Q̇
         n.T ~ p.T + q.Q̇ / (p.ṁ * p.cp)
@@ -434,10 +433,10 @@ ps = @parameters ΔP = ΔP Tout = Tout
 ELEM TYPE: COMPONENT
 EQUATIONS:
     n.T ~ Tout
-    p.ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)         
-    0 ~ p.ṁ + n.ṁ         
-    q.Q̇ ~ p.Φ + n.Φ                 
-    C ~ p.ṁ * p.cp       
+    p.ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)
+    0 ~ p.ṁ + n.ṁ
+    q.Q̇ ~ p.Φ + n.Φ
+    C ~ p.ṁ * p.cp
     0 ~ q.Q̇ - Q̇
     n.P ~ p.P - ΔP
 INPUTS
@@ -455,7 +454,7 @@ function FlowControlThermoHeatTransfer(; name, ΔP = 0.0, Tout = 773.0)
         n.T ~ Tout
         p.ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)           # q = mcp*ΔT
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ p.ṁ * p.cp          # duty
         0 ~ q.Q̇ - Q̇
         n.P ~ p.P - ΔP
@@ -482,9 +481,9 @@ ps = @parameters Q̇ = Qin
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-0 = p.ṁ + n.ṁ          
-q.Q̇ = p.Φ + n.Φ        
-C = p.ṁ * p.cp          
+0 = p.ṁ + n.ṁ
+q.Q̇ = p.Φ + n.Φ
+C = p.ṁ * p.cp
 0 = q.Q̇ - Q̇
 n.T = p.T + Q̇ / C
 n.P = p.P
@@ -500,7 +499,7 @@ function FixedThermoHeatTransfer(; name, Qin = 1e6)
     ps = @parameters Q̇ = Qin
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ             # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ             # conservation of energy
         C ~ p.ṁ * p.cp          # duty
         0 ~ q.Q̇ - Q̇
         n.T ~ p.T + Q̇ / C
@@ -596,7 +595,7 @@ ps = @parameters rp = rp η = η
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-    0 ~ p.ṁ + n.ṁ                             
+    0 ~ p.ṁ + n.ṁ
     p.P ~ n.P * rp
     n.T ~
         p.T * (η + rp^((p.k - 1) / p.k) - η * (rp^((p.k - 1) / p.k))) /
@@ -671,9 +670,9 @@ sts = @variables Q̇(t) = 0.0
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-    q.Q̇ ~ p.Φ + n.Φ        
+    q.Q̇ ~ p.Φ + n.Φ
     0 ~ p.ṁ + n.ṁ
-    n.P ~ p.P              
+    n.P ~ p.P
     q.Q̇ ~ p.ṁ * p.cp * (n.T - p.T)
     Q̇ ~ q.Q̇
 INPUTS
@@ -688,7 +687,7 @@ function IdealCooler(; name)
     eqs = [
         q.Q̇ ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ
-        n.P ~ p.P                 # no pressure   
+        n.P ~ p.P                 # no pressure
         q.Q̇ ~ p.ṁ * p.cp * (n.T - p.T)
         Q̇ ~ q.Q̇
     ]
@@ -805,7 +804,7 @@ function Regenerator(; name, ϵ = 0.95)
     ps = @parameters ϵ = ϵ
     @variables Q̇(t) = 0.0 Cmin(t) = 0.0
     eqs = [
-        Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+        Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T
         0 ~ A.Q̇ + B.Q̇
         A.Q̇ ~ -Q̇
     ]
@@ -892,7 +891,7 @@ function showsol(c, sol)
 end
 
 ###################################################
-# #                   TEST FUNCTIONS                
+# #                   TEST FUNCTIONS
 # ###################################################
 
 # function testRegen()
@@ -995,7 +994,7 @@ end
 # end
 
 # ###################################################
-# #                   Cases            
+# #                   Cases
 # ###################################################
 # function simpleBrayton()
 #     @named cmsrc = GasFlowSource(Ṁ = 100)
