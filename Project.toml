@@ -24,6 +24,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 XSteam = "95ff35a0-be81-11e9-2ca3-5b4e338e8476"
 
 [compat]
+LayeredLayouts = "0.2"
 ModelingToolkit = "<9.11,^9.16"
 XSteam = "99"
 
