@@ -1,5 +1,5 @@
 # module ThermoSteam
-using ModelingToolkit, Revise, Unitful, Symbolics, Logging, Printf, XSteam # Unitful
+using ModelingToolkit, Unitful, Symbolics, Logging, Printf, XSteam # Unitful
 # using DifferentialEquations
 
 @variables t
@@ -387,8 +387,8 @@ n.P ~ P
 p.P ~ P
 n.h ~ stm_hsatfunc(P)
 p.h ~ n.h
-p.Φ ~ 0             
-0 ~ n.ṁ + p.ṁ                                                           
+p.Φ ~ 0
+0 ~ n.ṁ + p.ṁ
 0 ~ n.Φ + p.Φ
 INPUTS
 - name: Name of the system, symbol. Or use the @named macro when initializing.
@@ -480,7 +480,7 @@ EQUATIONS:
 p.P ~ P
 n.P ~ p.P
 n.h ~ p.h
-0 ~ p.Φ + n.Φ           
+0 ~ p.Φ + n.Φ
 0 ~ p.ṁ + n.ṁ
 INPUTS
 - name: Name of the system, symbol. Or use the @named macro when initializing.
@@ -508,7 +508,7 @@ DOCSTRING
 
 ELEM TYPE: SOURCE
 EQUATIONS:
-0 ~ p.Φ + n.Φ 
+0 ~ p.Φ + n.Φ
 0 ~ p.ṁ + n.ṁ
 p.ṁ ~ Ṁ
 p.h ~ n.h
@@ -540,7 +540,7 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-    0 ~ p.Φ + n.Φ  
+    0 ~ p.Φ + n.Φ
     0 ~ p.ṁ + n.ṁ
     p.ṁ ~ Ṁ
     p.h ~ n.h
@@ -571,7 +571,7 @@ DOCSTRING
 
 ELEM TYPE: UTILITY
 EQUATIONS:
-    0 ~ p.Φ + n.Φ  
+    0 ~ p.Φ + n.Φ
     0 ~ p.ṁ + n.ṁ
     p.ṁ ~ ṁ
     p.h ~ n.h
@@ -608,9 +608,9 @@ ps = @parameters η = η P = Pout
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-w.Ẇ ~ p.Φ + n.Φ                       
+w.Ẇ ~ p.Φ + n.Φ
 0 ~ p.ṁ + n.ṁ
-n.h ~ p.h + p.v * 1e5 * (n.P - p.P) / η 
+n.h ~ p.h + p.v * 1e5 * (n.P - p.P) / η
 w.Ẇ ~ p.ṁ * (n.h - p.h)
 INPUTS
 - name: Name of the system, symbol. Or use the @named macro when initializing.
@@ -805,8 +805,8 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-    0 ~ p.ṁ + n.ṁ           
-    q.Q̇ ~ p.Φ + n.Φ             
+    0 ~ p.ṁ + n.ṁ
+    q.Q̇ ~ p.Φ + n.Φ
     C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000
     0 ~ q.Q̇ - Q̇
     n.h ~ p.h + q.Q̇ / (p.ṁ)
@@ -821,7 +821,7 @@ function SteamHeatTransfer(; name)
     st = @variables Q̇(t) = 1.0 C(t) = 4000
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000   # duty T/h = cp
         0 ~ q.Q̇ - Q̇
         n.h ~ p.h + q.Q̇ / (p.ṁ)
@@ -839,7 +839,7 @@ DOCSTRING
 ELEM TYPE: COMPONENT
 EQUATIONS:
 0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
 C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000   # duty T/h = cp
 0 ~ q.Q̇ - Q̇in
 n.h ~ p.h + q.Q̇ / (p.ṁ)
@@ -856,7 +856,7 @@ function TunableSteamHeatTransfer(; name, Q̇in = 150e6)
     st = @variables C(t) = 4000
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ p.ṁ * stm_cphfunc(p.P, p.h) # * 1000   # duty T/h = cp
         0 ~ q.Q̇ - Q̇in
         n.h ~ p.h + q.Q̇ / (p.ṁ)
@@ -974,8 +974,8 @@ DOCSTRING
 
 ELEM TYPE: COMPONENT
 EQUATIONS:
-n.ṁ + p.ṁ ~ 0         
-q.Q̇ ~ p.Φ + n.Φ         
+n.ṁ + p.ṁ ~ 0
+q.Q̇ ~ p.Φ + n.Φ
 INPUTS
 - name: Name of the system, symbol. Or use the @named macro when initializing.
 - `pressurecontrol = false`: DESCRIPTION

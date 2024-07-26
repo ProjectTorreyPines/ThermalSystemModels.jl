@@ -1,5 +1,5 @@
 # module ThermoIncompressible
-using ModelingToolkit, Plots, Revise, Symbolics, Logging
+using ModelingToolkit, Plots, Symbolics, Logging
 using Printf
 using Plots
 # NonlinearSolve,   DifferentialEquations, #CoolProp,
@@ -29,7 +29,7 @@ propDict = Dict(Lcpfunc => cppb, Lvfunc => vpb, Lsfunc => spb, Lhfunc => hpb)
     IncompressiblePin(; name, Pdef = 50, Tdef = 555, ṁdef = 0.0)
 
 DOCSTRING
-Incompresible Fluid pin, 
+Incompresible Fluid pin,
     across_var = @variables P(t) = Pdef T(t) = Tdef s(t) = 1.0 cp(t) = 187 v(t) = 0.001
     thru_var = @variables ṁ(t) = ṁdef Φ(t) = 1.0                     # mass flow and energy flow
     sts = [T, P, ṁ, cp, s, v, Φ]
@@ -134,7 +134,7 @@ Oneport element for connecting single port components
 ELEM TYPE: PORT
 EQUATIONS:
     LHS ~ p.Φ + n.Φ             # conservation of energy
-    0 ~ p.ṁ + n.ṁ               # mass flow 
+    0 ~ p.ṁ + n.ṁ               # mass flow
     ΔP ~ n.P - p.P              # pressure drop
     ΔT ~ n.T - p.T              # Temerature change
 INPUTS
@@ -148,7 +148,7 @@ function IncompressibleOnePort(; name)
 
     eqs = [
         LHS ~ p.Φ + n.Φ             # conservation of energy
-        0 ~ p.ṁ + n.ṁ               # mass flow 
+        0 ~ p.ṁ + n.ṁ               # mass flow
         ΔP ~ n.P - p.P
         ΔT ~ n.T - p.T
     ]
@@ -391,7 +391,7 @@ Basic heat transfer port. Includes p,n ports for flow, and q which is a heat tra
 ELEM TYPE: COMPONENT
 EQUATIONS:
     0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-    q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+    q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
     C ~ p.ṁ * p.cp          # duty
     0 ~ q.Q̇ - Q̇
     n.T ~ p.T + q.Q̇ / C
@@ -408,7 +408,7 @@ function IncompressibleHeatTransfer(; name)
 
     eqs = [
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ p.ṁ * p.cp          # duty
         0 ~ q.Q̇ - Q̇
         n.T ~ p.T + q.Q̇ / C
@@ -442,7 +442,7 @@ EQUATIONS:
         ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)           # q = mcp*ΔT
         p.ṁ ~ ṁ
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ ṁ * p.cp            # duty
         0 ~ q.Q̇ - Q̇
         n.P ~ p.P - ΔP
@@ -463,7 +463,7 @@ function FlowControlIncompressibleHeatTransfer(; name, ΔP = 0.0, Tout = 1000.0)
         ṁ ~ q.Q̇ / ((n.T - p.T) * p.cp)           # q = mcp*ΔT
         p.ṁ ~ ṁ
         0 ~ p.ṁ + n.ṁ           # p.ṁ ~ n.ṁ                               # conservation of mass
-        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy            
+        q.Q̇ ~ p.Φ + n.Φ         # conservation of energy
         C ~ ṁ * p.cp          # duty
         0 ~ q.Q̇ - Q̇
         n.P ~ p.P - ΔP
@@ -593,7 +593,7 @@ function IdealCooler(; name)
     eqs = [
         q.Q̇ ~ p.Φ + n.Φ             # conservation of energy
         0 ~ p.ṁ + n.ṁ
-        n.P ~ p.P                 # no pressure   
+        n.P ~ p.P                 # no pressure
         q.Q̇ ~ p.ṁ * p.cp * (n.T - p.T)
         Q̇ ~ q.Q̇
     ]
@@ -644,7 +644,7 @@ for pin in pins[2:end]
 end
 
 INPUTS
-pins..., a set of pins from components in which to apply conservation laws too 
+pins..., a set of pins from components in which to apply conservation laws too
 """
 function incompressible_connect(pins...)
 

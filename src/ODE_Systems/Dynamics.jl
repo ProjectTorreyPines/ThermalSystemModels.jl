@@ -1,11 +1,11 @@
 module Dynamics
-using ModelingToolkit, Plots, Revise, Unitful, Logging,  Printf
+using ModelingToolkit, Plots, Unitful, Logging,  Printf
 using OrdinaryDiffEq, NonlinearSolve, DifferentialEquations
 using Symbolics
 using LayeredLayouts, MetaGraphs, Graphs, Plots, Random
 using Statistics, GeometryBasics
 ModelingToolkit.@variables t
-# Logging.disable_logging(Logging.Warn) NonlinearSolve, DifferentialEquations, 
+# Logging.disable_logging(Logging.Warn) NonlinearSolve, DifferentialEquations,
 
 include("03-MTK_UTILS.jl")
 module Gas
@@ -44,7 +44,7 @@ function L2G_HeatExchanger(;
     @variables Q̇(t) = 0.0 Cmin(t) = 0.0
 
     eqs = [
-        Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #heat transfer out of A -> B , if A/T > B/T 
+        Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #heat transfer out of A -> B , if A/T > B/T
         0 ~ A.Q̇ + B.Q̇
         A.Q̇ ~ -Q̇
     ]
@@ -94,7 +94,7 @@ function S2G_HeatExchanger(;
                             Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)) - A.p.h
                         )
                     )
-                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         ODESystem(eqs, t, [], ps; name = name, systems = [A, B])
@@ -117,7 +117,7 @@ function S2G_HeatExchanger(;
                             Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)) - A.p.h
                         )
                     )
-                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         return eqs
@@ -168,7 +168,7 @@ function L2S_HeatExchanger(;
                             Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)) - A.p.h
                         )
                     )
-                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         ODESystem(eqs, t, [], ps; name = name, systems = [A, B])
@@ -191,7 +191,7 @@ function L2S_HeatExchanger(;
                             Steam.stm_hptfunc(A.p.P, A.p.T + ((B.p.T - A.p.T) * ϵ)) - A.p.h
                         )
                     )
-                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T 
+                ) * (B.C * ((B.p.T - A.p.T) * ϵ))     # heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         return eqs
@@ -219,13 +219,13 @@ function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
         ps = @parameters ϵ = ϵ
 
         eqs = [
-            -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+            -A.Q̇ ~ ϵ * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         ODESystem(eqs, t, [], ps; name = name, systems = [A, B], defaults = [ϵ => 0.95])
     else
         eqs = [
-            -A.Q̇ ~ eff * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T 
+            -A.Q̇ ~ eff * (A.p.T - B.p.T) * ((A.C < B.C) * A.C + (A.C >= B.C) * B.C)      #   heat transfer out of A -> B , if A/T > B/T
             0 ~ A.Q̇ + B.Q̇
         ]
         return eqs
@@ -273,14 +273,14 @@ function wall_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +273.15
     pressure_min_wall   = pressure_max_wall-pressure_drop_wall;
     Tmin_wall = Tmin;
     Tmax_wall = Tmax;
-    
+
     @named wall_supply          = Gas.SinglePortReservoir(P = pressure_min_wall, T = Tmin_wall);
     @named wall_circulator      = Gas.PassiveThermoCompressor(η = 0.9);
     @named wall_const_pressure  = Gas.SetPressure(P=pressure_max_wall);
     @named wall_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_wall,Tout = Tmax_wall);
-    @named wall_hx              = Gas.ThermoHeatTransfer() ; 
+    @named wall_hx              = Gas.ThermoHeatTransfer() ;
     @named wall_relief          = Gas.ReliefElement();
-    
+
     wall_sys = [wall_supply,wall_circulator,wall_const_pressure,wall_heat,wall_hx,wall_relief];
 
     sysdict = sys2dict(wall_sys)
@@ -319,7 +319,7 @@ function divertor_circuit(; max_pressure = 80, pressrue_drop = 5, Tmin = 450 +27
     @named divertor_circulator      = Gas.PassiveThermoCompressor(η = 0.9)
     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
-    @named divertor_hx              = Gas.ThermoHeatTransfer()  
+    @named divertor_hx              = Gas.ThermoHeatTransfer()
     @named divertor_relief          = Gas.ReliefElement()
     divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
     sysdict = sys2dict(divertor_sys)
@@ -353,14 +353,14 @@ function breeder_circuit(; max_pressure = 40, pressrue_drop = 8, Tmin = 750 +273
     pressure_min_breeder = pressure_max_breeder-pressure_drop_breeder;
     Tmin_breeder = Tmin;
     Tmax_breeder = Tmax;
-    
+
     @named breeder_supply           = Liq.SinglePortReservoir(P = pressure_min_breeder,T = Tmin_breeder)
     @named breeder_circulator       = Liq.PassiveIncompressiblePump2(η = 0.9)
     @named breeder_const_pressure   = Liq.SetPressure2(P=pressure_max_breeder)
     @named breeder_heat       		= Liq.FlowControlIncompressibleHeatTransfer(ΔP = pressure_drop_breeder, Tout = Tmax_breeder)
     @named breeder_hx               = Liq.IncompressibleHeatTransfer()
     @named breeder_relief           = Liq.ReliefElement()
-    
+
     breeder_sys = [breeder_supply,breeder_circulator,breeder_const_pressure,breeder_heat,breeder_hx,breeder_relief]
     sysdict = sys2dict(breeder_sys)
     breeder_connections = vcat(Liq.incompressible_connect(breeder_supply.n,breeder_circulator.p,breeder_relief.n),
@@ -469,7 +469,7 @@ function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, 
     @named inter_loop_relief          	= Gas.ReliefElement();
 
     inter_loop_sys = [inter_loop_supply,inter_loop_relief,inter_loop_circulator,inter_loop_const_pressure,inter_loop_hx1]
-    
+
     inter_loop_connections = vcat(Gas.gas_connect(inter_loop_supply.n, inter_loop_circulator.p,inter_loop_relief.n),
                                     Gas.gas_connect(inter_loop_circulator.n,inter_loop_const_pressure.p),
                                     Gas.gas_connect(inter_loop_const_pressure.n,inter_loop_hx1.p),
@@ -478,7 +478,7 @@ function intermediate_loop(;Pmax = 40 ,Pmin = 32, Nhx = 3, Tmin = 350 + 273.15, 
         push!(inter_loop_sys,Gas.ThermoHeatTransfer(name = Symbol("inter_loop_hx" * "$(i)") ,ΔP = pdrop_per));
         inter_loop_connections = vcat(inter_loop_connections, Gas.gas_connect(inter_loop_sys[end-1].n, inter_loop_sys[end].p))
     end
-    inter_loop_connections = vcat(inter_loop_connections, 
+    inter_loop_connections = vcat(inter_loop_connections,
                                 Gas.gas_connect(inter_loop_sys[end].n, inter_loop_relief.p))
 
     sysdict = sys2dict(inter_loop_sys)
@@ -989,7 +989,7 @@ end
         #     @named divertor_circulator      = Gas.PassiveThermoCompressor(η = 0.9)
         #     @named divertor_const_pressure  = Gas.SetPressure(P=pressure_max_divertor)
         #     @named divertor_heat            = Gas.FlowControlThermoHeatTransfer(ΔP = pressure_drop_divertor,Tout = Tmax_divertor)
-        #     @named divertor_hx              = Gas.ThermoHeatTransfer()  
+        #     @named divertor_hx              = Gas.ThermoHeatTransfer()
         #     @named divertor_relief          = Gas.ReliefElement()
         #     divertor_sys = [divertor_supply,divertor_circulator,divertor_const_pressure,divertor_heat,divertor_hx,divertor_relief]
         #     sysdict = sys2dict(divertor_sys)
@@ -1221,7 +1221,7 @@ function brayton_regenerator(; flowrate = 50, TminCycle = 300, PminCycle = 15)
 
     @named cycle_regenerator_A = Gas.ThermoHeatTransfer()
     @named cycle_regenerator_B = Gas.ThermoHeatTransfer()
-    
+
     @named hx4 = Gen_HeatExchanger(
         A = cycle_regenerator_A,
         B = cycle_regenerator_B,
@@ -1757,7 +1757,7 @@ function available_grid_position_with_size(G, vj)
             y = ap[2] - hp #shift to bottom left
             rt = GeometryBasics.Rect(Vec(x, y), Vec(wp, hp))
 
-            # checking if any adjacent cells are filled 
+            # checking if any adjacent cells are filled
             overflow_nodes = findfirst(x -> x ∈ rt, opos) # indexin within apos
             if !isempty(overflow_nodes)
                 av_pos = setdiff(av_pos, ap)
@@ -1996,7 +1996,7 @@ function hlinecheck(x1::Real, w1::Real, x2::Real, w2::Real)
         return true
     elseif (x2 + w2) > x1 && x2 < x1
         #case x1-----xhi
-        #   x2---  
+        #   x2---
         return true
     elseif x2 < x1 && (x2 + w2) > xhi
         return true
@@ -2289,11 +2289,11 @@ function create_plot_graph(
     # Removing unnecessary comoponents FROM "G" (that don't need to be plotted)
     #   This includes all components with 1 edge only
     idx = Int[]
-    
+
     removeleafs && (idx = reverse(findall(x -> length(all_neighbors(G, x)) == 1, [1:nv(G)...])))                # components with 1 edge only
-    
+
     idx = reverse(sort(vcat(idx, [G[flag, :name] for flag in remove_from_plot]...)))                           # reverse sort so you can remove them in a loop
-    
+
     for id in idx
         verbose ? println("Removing node: $(get_prop(GG,id,:name))") : nothing
         rem_vertex!(G, id)
@@ -2314,7 +2314,7 @@ function create_plot_graph(
     verbose ? println("Components removed: $(removedNames)") : nothing
 
     # removing all edges (FROM "G") from the cold utility, ignoring steam condensor
-    # i.e. making it so only the steam condensor connects to the cold utility (cycle heat rejection element) 
+    # i.e. making it so only the steam condensor connects to the cold utility (cycle heat rejection element)
     # toig = G[toignore, :name]    #to_ignore
     # toig = [G[:cycle_cooler,:name]] #,G[:cycle_intercooler_1,:name],G[:cycle_intercooler_2,:name]]
     torm = G[:ColdUtility, :name]        #to_remove
@@ -2337,7 +2337,7 @@ function create_plot_graph(
         end
     end
 
-    # Creating "gcopy" 
+    # Creating "gcopy"
     # STEP 1) of plotting process finding independent inter_loop_supply
     gcopy = deepcopy(G)
     erem = []   # Logging array for storing the edges from gcopy removed
@@ -2373,7 +2373,7 @@ function create_plot_graph(
     end
 
     # Printing edge types to confirm only flow edges are left
-    # if verbose 
+    # if verbose
     #     for e = edges(gcopy)
     #         println(get_prop(gcopy,e,:etype))
     #     end
@@ -2384,7 +2384,7 @@ function create_plot_graph(
     # G2 vertices have property :node_group which contains the inner nodes of each cycle
 
     # creating auxilary graph with only flow elements
-    flow_groups = connected_components(gcopy)           # vector of connected components, 
+    flow_groups = connected_components(gcopy)           # vector of connected components,
     G2 = MetaDiGraph()                                 # graph object
     add_vertices!(G2, length(flow_groups))               # adding a vertex for each unique cycle
 
@@ -2419,7 +2419,7 @@ function create_plot_graph(
     end
     verbose = false
     # STEP 4) identifing connection scheme, Note G vs gcopy, have same nodes, not edges
-    embedded_dict = Dict()      # mapping G -> G2, by means of ∀v1 ∈ G, f(v1)=>(v2 ∈ G2) if v1 ∈ v2.flow_groups ) 
+    embedded_dict = Dict()      # mapping G -> G2, by means of ∀v1 ∈ G, f(v1)=>(v2 ∈ G2) if v1 ∈ v2.flow_groups )
     # in other words embedded_dict[steam_boiler] => steam cycle in G2
     default_node_props = Dict([:input => -1, :output => -1])
 
@@ -2435,9 +2435,9 @@ function create_plot_graph(
         g_out_connections = outneighbors(G, v)                 # outgoing adjecent nodes to v within orignal graph
 
         # difference in [incoming neigbors] and [cycle components]
-        # any difference in these values means that the component -> v is from another cycle 
+        # any difference in these values means that the component -> v is from another cycle
         in_diff = setdiff(g_in_connections, v_flow_connections)    # difference in incom
-        # out_diff = setdiff(g_out_connections,v_flow_connections)  
+        # out_diff = setdiff(g_out_connections,v_flow_connections)
 
         #if length(in_diff) != 0                 # if there are components connected to vertex v, that are not within the flow group
         for id in in_diff
@@ -2533,7 +2533,7 @@ function create_plot_graph(
         end
     end
 
-    ## 
+    ##
     for v in vertices(G2)
         # fgv = findfirst(x -> v ∈ x, flow_groups)
         inn = get_prop(G2, v, :input)
@@ -2634,7 +2634,7 @@ DOCSTRING
             legend = false,
         ),
     )
-    takes in graph, returns 
+    takes in graph, returns
     maxAlignCnt specifies the largest groupings to requires equal layering, sometimes zarate struggles with more than 3
     requirementsf ror force_equal_layers = xLayReqs,
                 force_order = vSortReqs,
@@ -2693,7 +2693,7 @@ function layers_to_force!(
 
     xLayReqs = Pair{Int64,Int64}[]
     vSortReqs = Pair{Int64,Int64}[]    # alphabetical
-    # xLayCnt = [count(==(xp),xpath,dims=1)-count(==(xp),xs,dims=1) for xp in xUnqLay]    
+    # xLayCnt = [count(==(xp),xpath,dims=1)-count(==(xp),xs,dims=1) for xp in xUnqLay]
     nprop_parent_lookup = node_propdict(gcopy, :parent)
     npl = nprop_parent_lookup
     lay2node = Dict()
@@ -2715,7 +2715,7 @@ function layers_to_force!(
         end
     end
 
-    # unique counts 
+    # unique counts
     xUnqCnt = reverse(sort(unique(xLayCnt)))
     rule2cnt = Dict()
 
@@ -2812,7 +2812,7 @@ function initialize_plot_props!(gcopy, lay2node,xs,ys,paths)
     edge_ids = [[c.src, c.dst] for c in ce(gcopy)]
     # edge_ids[flipped_edges] .= reverse!.(edge_ids[flipped_edges])
 
-    # this is dope, I should do this all the time, create a checker function 
+    # this is dope, I should do this all the time, create a checker function
     checker(x) = x == 1 ? 1 : -1
     directional_value = checker.(rev_status)
     # quick_plotG(gcopy)
@@ -2931,13 +2931,13 @@ function add_plot_elments(
         # xLayPts     = vcat(xLayActuals,xLayInters)
         # #y LayPts = vcat(ys,vcat(ypath[inter_pt_inx]...))
         # # unique x points
-        # xUnqLay = sort(unique(xLayPts)) 
+        # xUnqLay = sort(unique(xLayPts))
 
         # # count of how many points are positioned at the different unique x values
-        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]     
-        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]   
+        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]
+        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]
 
-        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]      
+        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]
         # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
 end
 
@@ -3051,13 +3051,13 @@ function add_plot_elments!(
         # xLayPts     = vcat(xLayActuals,xLayInters)
         # #y LayPts = vcat(ys,vcat(ypath[inter_pt_inx]...))
         # # unique x points
-        # xUnqLay = sort(unique(xLayPts)) 
+        # xUnqLay = sort(unique(xLayPts))
 
         # # count of how many points are positioned at the different unique x values
-        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]     
-        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]   
+        # xLayRealCnt     = [count(==(xp),xLayActuals,dims=1) for xp in xUnqLay]
+        # xLayInterCnt    = [count(==(xp),xLayInters,dims=1) for xp in xUnqLay]
 
-        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]      
+        # xLayCnt     = [count(==(xp),xLayPts,dims=1) for xp in xUnqLay]
         # xlaydict    = [i => xLayCnt[i] for i in eachindex(xLayCnt)]
 end
 
@@ -3580,7 +3580,7 @@ function plotplant(
     # end
 
 
-    ## plotting components 
+    ## plotting components
     for sl in syslabs
         fnn(g, n) = string(get_prop(g, n, :parent)) == sl
         nvert = filter_vertices(gc, fnn)
