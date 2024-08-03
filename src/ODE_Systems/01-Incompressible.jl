@@ -3,7 +3,7 @@ using ModelingToolkit, Plots, Symbolics, Logging
 using Printf
 using Plots
 # NonlinearSolve,   DifferentialEquations, #CoolProp,
-@variables t
+@independent_variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
 # data from [2]

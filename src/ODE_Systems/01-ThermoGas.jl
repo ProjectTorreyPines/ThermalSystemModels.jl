@@ -18,7 +18,7 @@ using ModelingToolkit, Plots,  Logging, Printf
 # using NonlinearSolve, Printf, DifferentialEquations,
 # Unitful, CoolProp,
 # Logging.disable_logging(Logging.Warn)
-@variables t
+@independent_variables t
 # include("03-MTK_UTILS.jl")
 # begin
 #     hpt_he(x,y) = PropsSI("HMASS","P",x*u"bar","T",y*u"K","He").val;

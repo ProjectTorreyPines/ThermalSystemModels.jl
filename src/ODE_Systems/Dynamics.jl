@@ -4,7 +4,7 @@ using OrdinaryDiffEq, NonlinearSolve, DifferentialEquations
 using Symbolics
 using LayeredLayouts, MetaGraphs, Graphs, Plots, Random
 using Statistics, GeometryBasics
-ModelingToolkit.@variables t
+ModelingToolkit.@independent_variables t
 # Logging.disable_logging(Logging.Warn) NonlinearSolve, DifferentialEquations,
 
 include("03-MTK_UTILS.jl")
@@ -232,7 +232,7 @@ function Gen_HeatExchanger(; name, ϵ = 0.95, A, B, returnmode = :ode)
     end
 end
 
-ModelingToolkit.@variables t
+ModelingToolkit.@independent_variables t
 
 """
     default_energy_sys()
@@ -623,7 +623,7 @@ end
         #     Pmid1 = 5
         #     Pmin = 0.1
         #     Tmax = 600 + 273.15
-        #     @variables t
+        #     @independent_variables t
         #     @named ElectricUtil = Steam.WorkPin()
         #     @named ElectricGen = Steam.WorkPin()
         #     @named ColdUtil = Steam.HeatTransferPin()

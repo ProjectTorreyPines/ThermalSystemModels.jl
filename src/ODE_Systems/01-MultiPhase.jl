@@ -2,7 +2,7 @@
 using ModelingToolkit, Unitful, Symbolics, Logging, Printf, XSteam # Unitful
 # using DifferentialEquations
 
-@variables t
+@independent_variables t
 # Logging.disable_logging(Logging.Warn)
 # include("03-MTK_UTILS.jl")
 ##

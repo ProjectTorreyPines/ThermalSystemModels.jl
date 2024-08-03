@@ -19,7 +19,7 @@ display("Running Tests")
     #=========================================================#
 
     ##########################
-    ModelingToolkit.@variables t
+    ModelingToolkit.@independent_variables t
 
     energy_sys, sts, edict = TSMD.default_energy_sys();
     wall_sys, wall_connections, wparams, wdict =
