@@ -573,8 +573,8 @@ OPTIONAL INPUTS
 - `alias_elimate = true`: DESCRIPTION
 """
 function system_details(sys::ODESystem; alias_elimate = true)
-    @printf "************ SYSTEM: %s ************\n" sys.name
-    @printf "SYSTEM: %s \n" sys.name
+    @printf "************ SYSTEM: %s ************\n" get_name(sys)
+    @printf "SYSTEM: %s \n" get_name(sys)
     @printf "\t # of equations = %i\n" length(equations(sys))
     @printf "\t # of states = %i\n" length(unknowns(sys))
     @printf "\t # of parameters = %i\n" length(parameters(sys))
@@ -741,7 +741,7 @@ function system2graph2(
 
     num_to_sys_dict = Dict()
     for sys in ODESYS.systems
-        num = component_name_dict[sys.name]
+        num = component_name_dict[get_name(sys)]
         num_to_sys_dict[num] = sys
     end
 
@@ -1084,9 +1084,9 @@ function system2metagraph(
                             # verbose ? println(cp) : nothing
                             dsys =
                                 get_prop(G, component_name_dict[Symbol(portNames[d])], :sys)
-                            verbose ? println("$(Symbol(portNames[s])) => $(dsys.name)") :
+                            verbose ? println("$(Symbol(portNames[s])) => $(get_name(dsys))") :
                             nothing
-                            # verbose ? println("$(dsys.name) $(typeof(portid[d]))") : nothing
+                            # verbose ? println("$(get_name(dsys)) $(typeof(portid[d]))") : nothing
                             set_prop!(
                                 G,
                                 Edge(
@@ -1155,7 +1155,7 @@ function system2metagraph(
                                 )
                             else
                                 println(
-                                    "Failed to find destination node name for $(Symbol(portNames[s])) => $(dsys.name) , add key $(portid[d])",
+                                    "Failed to find destination node name for $(Symbol(portNames[s])) => $(get_name(dsys)) , add key $(portid[d])",
                                 )
                             end
                         end
