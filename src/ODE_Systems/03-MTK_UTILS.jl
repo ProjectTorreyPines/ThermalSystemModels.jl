@@ -561,6 +561,11 @@ function all_component_names(sys; num2keep = 1, unique_only = true)
     return compnames
 end
 
+
+function get_name(sys::ODESystem)
+    return MTK.get_name(sys)
+end
+
 """
     system_details(sys::ODESystem; alias_elimate = true)
 
